@@ -3,7 +3,6 @@ const io = require('@pm2/io')
 const { createBluetooth } = require("./src");
 const axios = require('axios');
 var { Timer } = require("easytimer.js");
-
 const client = require("./mqtt")();
 var timerInstance = new Timer();
 
@@ -144,8 +143,8 @@ async function event(presence) {
       await setState(1);
       //_USER = await getRandomUser();
       _USERBPM = await scan();
-      await axios.put('http://192.168.1.15:8080/api/users/' + _USER.data.id, { 'pulse': _USERBPM })
-      await axios.put('http://192.168.1.15:8080/api/pulsesensors/s001', { 'state': 2, 'rgb': _USER.data.rgb })
+      await axios.put(`http://192.168.1.15:8080/api/users/${_USER.data.id}`, { 'pulse': _USERBPM })
+      await axios.put(`http://192.168.1.15:8080/api/pulsesensors/${ID}`, { 'state': 2, 'rgb': _USER.data.rgb })
       //reset();
       readyToScan = false;
       _HEARTRATE.stopNotifications();
@@ -169,7 +168,8 @@ async function event(presence) {
  */
 async function setState(id) {
   return new Promise(async (resolve) => {
-    await axios.put('http://192.168.1.15:8080/api/pulsesensors/s001', { 'state': id }).then(() => {
+    await axios.put(`http://192.168.1.15:8080/api/pulsesensors/${ID}`, { 'state': id }).then(() => {
+      client.publish(`/pulsesensors/${ID}/state`, JSON.stringify({ 'state': id }))
       resolve();
     })
   });
