@@ -12,8 +12,10 @@ let _HEARTRATE;
 let _PRESENCE = false;
 let readyToScan = true;
 
+const { ID, GROUP } = process.env;
+
 client.on('connect', function () {
-  client.subscribe('api/users/userpresence')
+  client.subscribe(`/station/${ID}/presence`)
   presence.set(_PRESENCE)
 })
 
@@ -27,7 +29,7 @@ client.on('message', function (topic, message) {
   event(valueParse);
 })
 
-const { ID, GROUP } = process.env;
+
 
 const state = io.metric({
   name: 'Scanning state',
