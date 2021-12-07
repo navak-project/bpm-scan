@@ -68,16 +68,19 @@ const polarName = io.metric({
 
 async function init() {
 
+
   console.clear();
 
-
+  await setState(5);
+  message.set('booting...')
+  
   const { bluetooth } = createBluetooth();
   const adapter = await bluetooth.defaultAdapter();
 
   if (!(await adapter.isDiscovering()))
     await adapter.startDiscovery();
   console.log("Discovering device...");
-
+  message.set('Discovering device...')
   const device = await adapter.waitDevice("A0:9E:1A:9F:0E:B4").catch((err) => {
     if (err) {
       process.exit(0);
@@ -164,6 +167,7 @@ async function event(presence) {
  * `STATE 2` = DONE
  * `STATE 3` = OUT OF LANTERN
  * `STATE 4` = ERROR FAILED (mainly because client presence is false while scanning)
+ * `STATE 5` = BOOTING
  * Set the state of the station
  * @return {Promise<axios>} return the current bpm value
  * @param {Number} id
