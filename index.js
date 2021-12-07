@@ -27,7 +27,7 @@ client.on('message', function (topic, message) {
   event(valueParse);
 })
 
-const { POLAR_MAC_ADRESSE, USERS_ENDPOINT, PULSESENSORS_ENDPOINT, ID } = process.env;
+const { ID, GROUP } = process.env;
 
 const state = io.metric({
   name: 'Scanning state',
