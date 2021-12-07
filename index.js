@@ -115,7 +115,7 @@ async function init() {
   })
 
   
-  _USER = await axios.get('http://192.168.1.15:8080/api/users/randomUser/').catch(async function (error) {
+  _USER = await axios.get(`http://192.168.1.15:8080/api/users/randomUser/${GROUP}`).catch(async function (error) {
     if (error) {
       console.log(error.response.data)
       await setState(3);
@@ -144,7 +144,7 @@ async function event(presence) {
       //_USER = await getRandomUser();
       _USERBPM = await scan();
       await axios.put(`http://192.168.1.15:8080/api/users/${_USER.data.id}`, { 'pulse': _USERBPM })
-      await axios.put(`http://192.168.1.15:8080/api/pulsesensors/${ID}`, { 'state': 2, 'rgb': _USER.data.rgb })
+      await axios.put(`http://192.168.1.15:8080/api/stations/${ID}`, { 'state': 2, 'rgb': _USER.data.rgb })
       //reset();
       readyToScan = false;
       _HEARTRATE.stopNotifications();
@@ -168,8 +168,7 @@ async function event(presence) {
  */
 async function setState(id) {
   return new Promise(async (resolve) => {
-    await axios.put(`http://192.168.1.15:8080/api/pulsesensors/${ID}`, { 'state': id }).then(() => {
-      client.publish(`/pulsesensors/${ID}/state`, JSON.stringify({ 'state': id }))
+    await axios.put(`http://192.168.1.15:8080/api/stations/${ID}`, { 'state': id }).then(() => {
       resolve();
     })
   });
