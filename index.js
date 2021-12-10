@@ -10,7 +10,7 @@ let _USERBPM;
 let _USER;
 let _HEARTRATE;
 let _PRESENCE = false;
-let readyToScan = true;
+let readyToScan = false;
 
 const { ID, GROUP } = process.env;
 
@@ -116,6 +116,9 @@ async function init() {
   _HEARTRATE.on("valuechanged", async (buffer) => {
     let json = JSON.stringify(buffer);
     let bpm = Math.max.apply(null, JSON.parse(json).data);
+    if (bpm > 0) { 
+      readyToScan = true;
+    }
     polarBPM.set(bpm);
   })
 
