@@ -10,7 +10,8 @@ let _USERBPM;
 let _USER;
 let _HEARTRATE;
 let _PRESENCE = false;
-let readyToScan = false;
+let readyToScan = true;
+let _POLARBPM;
 
 const { ID, GROUP } = process.env;
 
@@ -116,9 +117,7 @@ async function init() {
   _HEARTRATE.on("valuechanged", async (buffer) => {
     let json = JSON.stringify(buffer);
     let bpm = Math.max.apply(null, JSON.parse(json).data);
-    if (bpm > 0) { 
-      readyToScan = true;
-    }
+    _POLARBPM = bpm;
     polarBPM.set(bpm);
   })
 
@@ -146,7 +145,7 @@ async function init() {
 async function event(presence) {
   // make sure to wait to be sure someone is there and its stable
   // OR USE A PRESSUR SENSOR
-  if (presence) {
+  if (presence && _POLARBPM > 0) {
     if (readyToScan) {
       await setState(1);
       //_USER = await getRandomUser();
