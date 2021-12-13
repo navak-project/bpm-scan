@@ -84,7 +84,13 @@ async function init() {
   message.set('booting...')
   
   const { bluetooth } = createBluetooth();
-  const adapter = await bluetooth.defaultAdapter();
+  const adapter = await bluetooth.defaultAdapter().catch((err) => {
+    if (err) {
+      message.set(err.message);
+      sleep(3000);
+      process.exit(0);
+    }
+  });
 
   if (!(await adapter.isDiscovering()))
     await adapter.startDiscovery();
