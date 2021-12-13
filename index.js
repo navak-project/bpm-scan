@@ -88,7 +88,7 @@ async function init() {
     if (err) {
       console.log(err);
       message.set(err.message);
-      sleep(3000);
+      sleep(8000);
       process.exit(0);
     }
   });
