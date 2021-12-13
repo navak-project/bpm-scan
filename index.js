@@ -40,11 +40,17 @@ const polarBPM = io.metric({
   name: 'Polar BPM',
 })
 
+const polarHistogram = io.metric({
+  name: 'Polar BPM',
+  type: 'histogram',
+  measurement: 'p99'
+})
+
 const presence = io.metric({
   name: 'User presence',
 })
 
-const userPicked = io.metric({
+const user = io.metric({
   name: 'The current selected lantern',
 })
 
@@ -52,17 +58,19 @@ const timer = io.metric({
   name: 'The timer when the BPM is stable',
 })
 
-const error = io.metric({
+const catchError = io.metric({
   name: 'Catch error',
 })
 
 const message = io.metric({
   name: 'Global message',
+  historic : true
 })
 
 const polarMAC = io.metric({
   name: 'Polar Mac Adress',
 })
+
 const polarName = io.metric({
   name: 'Polar device name',
 })
@@ -119,12 +127,14 @@ async function init() {
     let bpm = Math.max.apply(null, JSON.parse(json).data);
     _POLARBPM = bpm;
     polarBPM.set(bpm);
+    polarHistogram.set(bpm);
   })
 
   
   _USER = await axios.get(`http://192.168.1.15:8080/api/users/randomUser/${GROUP}`).catch(async function (error) {
     if (error) {
       console.log(error.response.data)
+      catchError.set(error.response.data)
       await setState(3);
       state.set("No lantern [3]");
       await sleep(2000);
@@ -132,7 +142,7 @@ async function init() {
     }
   });
 
-  userPicked.set(`User [${_USER.data.id}]`)
+  user.set(`User [${_USER.data.id}]`)
   await setState(0);
   message.set("Init done")
   state.set("Ready [0]");
