@@ -92,6 +92,7 @@ async function init() {
       process.exit(0);
     }
   });
+  console.log(adapter);
 
   if (!(await adapter.isDiscovering()))
     await adapter.startDiscovery();
