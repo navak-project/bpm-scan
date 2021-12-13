@@ -86,6 +86,7 @@ async function init() {
   const { bluetooth } = createBluetooth();
   const adapter = await bluetooth.defaultAdapter().catch((err) => {
     if (err) {
+      console.log(err);
       message.set(err.message);
       sleep(3000);
       process.exit(0);
