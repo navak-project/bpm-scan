@@ -5,7 +5,7 @@ import {createBluetooth} from 'node-ble';
 const {bluetooth, destroy} = createBluetooth();
 import axios from 'axios';
 import { Timer } from 'easytimer.js';
-import {exec} from 'child_process'
+import exec from 'child_process'
 
 //import {clientConnect} from './mqtt.js';
 //const {client} = clientConnect();
@@ -126,39 +126,26 @@ async function init() {
 	polarMAC.set(macAdresss);
 	polarName.set(polarName);
 
-  await device.connect().catch((err) => {
-    if (err) {
-      console.log(err);
-    }
-  });
+  await device.connect();
 
   function execute(command, callback){
-      exec(command, function(error, stdout, stderr){ callback(stdout); });
+      exec.exec(command, function(error, stdout, stderr){ callback(stdout); });
   }
-  execute('reboot', function(callback){
+  execute('sudo /sbin/shutdown -r now', function(callback){
       console.log(callback);
   });
+
+  message.set('Connected');
+  console.log('Connected!');
+
   device.on('disconnect', async function (val) {
     console.log(`Device disconnected. State: ${val.connected}`);
     console.log('Will reboot in 5 seconds...');
     await sleep(5000);
- 
+
    // process.exit(0);
   });
-  message.set('Connected');
-  console.log('Connected!');
 	const gattServer = await device.gatt();
-	//var services = await gattServer.services();
-	// var checkDevice = new CronJob('*/5 * * * * *', async function () {
-	//   console.log("🚀 ~ file: index.js ~ line 108 ~ checkDevice ~ device", device);
-	//   if (device == null) {
-	//     console.log('No devices...');
-	//     console.log('Will reboot in 5 seconds...');
-	//     await sleep(5000);
-	//     process.exit(0);
-	//   }
-	// });
-	// checkDevice.start();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
 	await heartrate.startNotifications();
