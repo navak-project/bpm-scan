@@ -144,12 +144,8 @@ async function init() {
     });
    // process.exit(0);
   });
-  
-  device.on('connect', async function () {
-    message.set('Connected');
-    console.log('Connected!');
-  });
-
+  message.set('Connected');
+  console.log('Connected!');
 	const gattServer = await device.gatt();
 	//var services = await gattServer.services();
 	// var checkDevice = new CronJob('*/5 * * * * *', async function () {
