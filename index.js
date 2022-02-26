@@ -1,9 +1,9 @@
-require("dotenv").config();
-const io = require('@pm2/io')
-const { createBluetooth } = require("./src");
+require('dotenv').config();
+const io = require('@pm2/io');
+const {createBluetooth} = require('./src');
 const axios = require('axios');
-var { Timer } = require("easytimer.js");
-const client = require("./mqtt")();
+var {Timer} = require('easytimer.js');
+const client = require('./mqtt')();
 var timerInstance = new Timer();
 
 let _USERBPM;
@@ -13,171 +13,158 @@ let _PRESENCE = false;
 let readyToScan = true;
 let _POLARBPM;
 
-const { ID, GROUP, IP } = process.env;
-
-client.on('connect', function () {
-  console.log("🚀 ~ Connected to MQTT broker");
-  client.subscribe(`/station/${ID}/presence`)
-  presence.set(_PRESENCE)
-})
+const {ID, GROUP, IP} = process.env;
 
 client.on('message', function (topic, message) {
-  // message is Buffer
-  console.log("🚀 ~ file: index.js ~ line 34 ~ message", message);
-  let buff = message.toString();
-  let value = JSON.parse(buff);
-  let valueParse = JSON.parse(value.presence.toLowerCase());
-  _PRESENCE = valueParse
-  presence.set(valueParse);
-  event(valueParse);
-})
-
-
+	// message is Buffer
+	console.log('🚀 ~ file: index.js ~ line 34 ~ message', message);
+	let buff = message.toString();
+	let value = JSON.parse(buff);
+	let valueParse = JSON.parse(value.presence.toLowerCase());
+	_PRESENCE = valueParse;
+	presence.set(valueParse);
+	event(valueParse);
+});
 
 const state = io.metric({
-  name: 'Scanning state',
-})
+	name: 'Scanning state'
+});
 
 const polarBPM = io.metric({
-  name: 'Polar BPM',
-})
+	name: 'Polar BPM'
+});
 
 const polarHistogram = io.metric({
-  name: 'Polar BPM',
-  type: 'histogram',
-  measurement: 'p99'
-})
+	name: 'Polar BPM',
+	type: 'histogram',
+	measurement: 'p99'
+});
 
 const presence = io.metric({
-  name: 'User presence',
-})
+	name: 'User presence'
+});
 
 const user = io.metric({
-  name: 'The current selected lantern',
-})
+	name: 'The current selected lantern'
+});
 
 const timer = io.metric({
-  name: 'The timer when the BPM is stable',
-})
+	name: 'The timer when the BPM is stable'
+});
 
 const catchError = io.metric({
-  name: 'Catch error',
-})
+	name: 'Catch error'
+});
 
 const message = io.metric({
-  name: 'Global message',
-  historic : true
-})
+	name: 'Global message',
+	historic: true
+});
 
 const polarMAC = io.metric({
-  name: 'Polar Mac Adress',
-})
+	name: 'Polar Mac Adress'
+});
 
 const polarName = io.metric({
-  name: 'Polar device name',
-})
+	name: 'Polar device name'
+});
 
 async function init() {
+	console.clear();
 
+	client.on('connect', function () {
+		console.log('🚀 ~ Connected to MQTT broker');
+		client.subscribe(`/station/${ID}/presence`);
+		presence.set(_PRESENCE);
+	});
 
-  console.clear();
+	await setState(5);
+	message.set('booting...');
 
-  await setState(5);
-  message.set('booting...')
-  
-  const { bluetooth } = createBluetooth();
-  const adapter = await bluetooth.defaultAdapter().catch((err) => {
-    if (err) {
-      console.log(err);
-      process.exit(0);
-    }
-  });
+	const {bluetooth} = createBluetooth();
+	const adapter = await bluetooth.defaultAdapter().catch((err) => {
+		if (err) {
+			console.log(err);
+			process.exit(0);
+		}
+	});
 
-  if (!(await adapter.isDiscovering()))
-    await adapter.startDiscovery();
-  console.log("Discovering device...");
-  message.set('Discovering device...')
-  const device = await adapter.waitDevice("A0:9E:1A:9F:0E:B4").catch((err) => {
-    if (err) {
-      process.exit(0);
-    }
-  });
+	if (!(await adapter.isDiscovering())) await adapter.startDiscovery();
+	console.log('Discovering device...');
+	message.set('Discovering device...');
+	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch((err) => {
+		if (err) {
+			process.exit(0);
+		}
+	});
 
-  const macAdresss = await device.getAddress()
-  const deviceName = await device.getName()
+	const macAdresss = await device.getAddress();
+	const deviceName = await device.getName();
 
-  console.log("got device", macAdresss, deviceName);
-  polarMAC.set(macAdresss)
-  polarName.set(polarName);
+	console.log('got device', macAdresss, deviceName);
+	polarMAC.set(macAdresss);
+	polarName.set(polarName);
 
-  await device.connect();
-  console.log("Connected!");
-  message.set('Connected')
+	await device.connect();
+	console.log('Connected!');
+	message.set('Connected');
 
-  const gattServer = await device.gatt();
-  //var services = await gattServer.services();
+	const gattServer = await device.gatt();
+	//var services = await gattServer.services();
 
-  const service = await gattServer.getPrimaryService(
-    "0000180d-0000-1000-8000-00805f9b34fb"
-  );
-  const heartrate = await service.getCharacteristic(
-    "00002a37-0000-1000-8000-00805f9b34fb"
-  );
-  await heartrate.startNotifications();
+	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
+	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
+	await heartrate.startNotifications();
 
-  _HEARTRATE = heartrate
-  //checkNotification();
-  message.set("Waiting for notifications")
+	_HEARTRATE = heartrate;
+	//checkNotification();
+	message.set('Waiting for notifications');
 
-  _HEARTRATE.on("valuechanged", async (buffer) => {
-    let json = JSON.stringify(buffer);
-    let bpm = Math.max.apply(null, JSON.parse(json).data);
-    _POLARBPM = bpm;
-    polarBPM.set(bpm);
-    polarHistogram.set(bpm);
-  })
+	_HEARTRATE.on('valuechanged', async (buffer) => {
+		let json = JSON.stringify(buffer);
+		let bpm = Math.max.apply(null, JSON.parse(json).data);
+		_POLARBPM = bpm;
+		polarBPM.set(bpm);
+		polarHistogram.set(bpm);
+	});
 
-  
-  _USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`).catch(async function (error) {
-    if (error) {
-      console.log(error.response.data)
-      catchError.set(error.response.data)
-      await setState(3);
-      state.set("No lantern [3]");
-      await sleep(2000);
-      process.exit(0);
-    }
-  });
+	_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`).catch(async function (error) {
+		if (error) {
+			console.log(error.response.data);
+			catchError.set(error.response.data);
+			await setState(3);
+			state.set('No lantern [3]');
+			await sleep(2000);
+			process.exit(0);
+		}
+	});
 
-  user.set(`User [${_USER.data.id}]`)
-  await setState(0);
-  message.set("Init done")
-  state.set("Ready [0]");
-  console.log('Ready');
-
+	user.set(`User [${_USER.data.id}]`);
+	await setState(0);
+	message.set('Init done');
+	state.set('Ready [0]');
+	console.log('Ready');
 }
 
-
-
 async function event(presence) {
-  // make sure to wait to be sure someone is there and its stable
-  // OR USE A PRESSUR SENSOR
-  if (presence && _POLARBPM > 0) {
-    if (readyToScan) {
-      await setState(1);
-      //_USER = await getRandomUser();
-      _USERBPM = await scan();
-      await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { 'pulse': _USERBPM })
-      await axios.put(`http://${IP}/api/stations/${ID}`, { 'state': 2, 'rgb': _USER.data.rgb })
-      //reset();
-      readyToScan = false;
-      _HEARTRATE.stopNotifications();
-      timerInstance.pause();
-      state.set("Done [2]");
-      await sleep(5000);
-      process.exit(0);
-    }
-  }
+	// make sure to wait to be sure someone is there and its stable
+	// OR USE A PRESSUR SENSOR
+	if (presence && _POLARBPM > 0) {
+		if (readyToScan) {
+			await setState(1);
+			//_USER = await getRandomUser();
+			_USERBPM = await scan();
+			await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: _USERBPM});
+			await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
+			//reset();
+			readyToScan = false;
+			_HEARTRATE.stopNotifications();
+			timerInstance.pause();
+			state.set('Done [2]');
+			await sleep(5000);
+			process.exit(0);
+		}
+	}
 }
 
 /**
@@ -192,16 +179,16 @@ async function event(presence) {
  * @param {Number} id
  */
 async function setState(id) {
-  return new Promise(async (resolve) => {
-    await axios.put(`http://${IP}/api/stations/${ID}`, { 'state': id }).then(() => {
-      resolve();
-    })
-  });
+	return new Promise(async (resolve) => {
+		await axios.put(`http://${IP}/api/stations/${ID}`, {state: id}).then(() => {
+			resolve();
+		});
+	});
 }
 
 async function reset() {
-  timerInstance.stop();
-  process.exit(0);
+	timerInstance.stop();
+	process.exit(0);
 }
 
 /**
@@ -210,43 +197,43 @@ async function reset() {
  * @param {Number} ms
  */
 function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
 }
 /**
  * Start the BPM scan. When value is stable we launch the counter and return the last value
  * @return {Promise<number>} Last BPM after a certain time
  */
 async function scan() {
-  readyToScan = false;
-  return new Promise(async (resolve, reject) => {
-    let scanBPM;
-    // await _HEARTRATE.startNotifications();
-    timerInstance.addEventListener("secondsUpdated", async function (e) {
-      timer.set(timerInstance.getTimeValues().toString())
-      if (!_PRESENCE) {
-        await setState(4);
-        reset();
-      }
-    });
-    timerInstance.addEventListener("targetAchieved", async function (e) {
-      resolve(scanBPM);
-    });
+	readyToScan = false;
+	return new Promise(async (resolve, reject) => {
+		let scanBPM;
+		// await _HEARTRATE.startNotifications();
+		timerInstance.addEventListener('secondsUpdated', async function (e) {
+			timer.set(timerInstance.getTimeValues().toString());
+			if (!_PRESENCE) {
+				await setState(4);
+				reset();
+			}
+		});
+		timerInstance.addEventListener('targetAchieved', async function (e) {
+			resolve(scanBPM);
+		});
 
-    _HEARTRATE.on("valuechanged", async (buffer) => {
-      let json = JSON.stringify(buffer);
-      let bpm = Math.max.apply(null, JSON.parse(json).data);
-      polarBPM.set(bpm);
-      console.log(bpm);
-      if (bpm != 0) {
-        scanBPM = bpm;
-        await setState(1);
-        state.set("Scanning [1]");
-        timerInstance.start({ countdown: true, startValues: { seconds: 15 } });
-      }
-    })
-  });
+		_HEARTRATE.on('valuechanged', async (buffer) => {
+			let json = JSON.stringify(buffer);
+			let bpm = Math.max.apply(null, JSON.parse(json).data);
+			polarBPM.set(bpm);
+			console.log(bpm);
+			if (bpm != 0) {
+				scanBPM = bpm;
+				await setState(1);
+				state.set('Scanning [1]');
+				timerInstance.start({countdown: true, startValues: {seconds: 15}});
+			}
+		});
+	});
 }
 
 init();
