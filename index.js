@@ -1,14 +1,18 @@
 require('dotenv').config();
-var EventEmitter = require('events')
 const io = require('@pm2/io');
+var mqtt = require('mqtt');
 const { createBluetooth } = require('node-ble')
 const { bluetooth, destroy } = createBluetooth()
 const axios = require('axios');
 var {Timer} = require('easytimer.js');
-const client = require('./mqtt')();
+//const client = require('./mqtt')();
 var timerInstance = new Timer();
 
-var ee = new EventEmitter()
+const {MQTT} = process.env;
+console.log("🚀 ~ file: mqtt.js ~ line 5 ~ MQTT", MQTT);
+const host = `${MQTT}`;
+const port = '1883';
+var client = mqtt.connect(`mqtt://${host}:${port}`);
 
 let _USERBPM;
 let _USER;
@@ -29,6 +33,7 @@ client.on('message', function (topic, message) {
 	presence.set(valueParse);
 	event(valueParse);
 });
+
 
 const state = io.metric({
 	name: 'Scanning state'
@@ -74,19 +79,24 @@ const polarName = io.metric({
 });
 
 async function init() {
-  destroy();
   console.clear();
 
 
-	client.on('connect', function () {
+/*	client.on('connect', function () {
 		console.log('🚀 ~ Connected to MQTT broker');
 		client.subscribe(`/station/${ID}/presence`);
 		presence.set(_PRESENCE);
-	});
+	});*/
 
 	await setState(5);
-	message.set('booting...');
+  message.set('booting...');
 
+  await sleep(3000);
+  client.on('connect', function () {
+    console.log('🚀 ~ Connected to MQTT broker');
+    client.subscribe(`/station/${ID}/presence`);
+    presence.set(_PRESENCE);
+  });
   //const { bluetooth, destroy} = createBluetooth();
 	const adapter = await bluetooth.defaultAdapter().catch((err) => {
 		if (err) {
@@ -205,9 +215,11 @@ async function event(presence) {
  */
 async function setState(id) {
 	return new Promise(async (resolve) => {
-		await axios.put(`http://${IP}/api/stations/${ID}`, {state: id}).then(() => {
-			resolve();
-		});
+    await axios.put(`http://${IP}/api/stations/${ID}`, { state: id }).then(() => {
+      resolve();
+    }).catch((err) => {
+      reject(err);
+    });
 	});
 }
 
