@@ -128,12 +128,14 @@ async function init() {
 	polarMAC.set(macAdresss);
 	polarName.set(polarName);
 
-  await device.connect();
-
-
   execute('sudo /sbin/shutdown -r now', function(callback){
       console.log(callback);
   });
+
+  await device.connect();
+
+
+
 
   message.set('Connected');
   console.log('Connected!');
