@@ -136,7 +136,7 @@ async function init() {
   })
 
   
-  _USER = await axios.get(`http://${IP}/api/users/randomUser/${GROUP}`).catch(async function (error) {
+  _USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`).catch(async function (error) {
     if (error) {
       console.log(error.response.data)
       catchError.set(error.response.data)
@@ -165,7 +165,7 @@ async function event(presence) {
       await setState(1);
       //_USER = await getRandomUser();
       _USERBPM = await scan();
-      await axios.put(`http://${IP}/api/users/${_USER.data.id}`, { 'pulse': _USERBPM })
+      await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { 'pulse': _USERBPM })
       await axios.put(`http://${IP}/api/stations/${ID}`, { 'state': 2, 'rgb': _USER.data.rgb })
       //reset();
       readyToScan = false;
