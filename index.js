@@ -5,7 +5,7 @@ import {createBluetooth} from 'node-ble';
 const {bluetooth, destroy} = createBluetooth();
 import axios from 'axios';
 import { Timer } from 'easytimer.js';
-import exec from 'child_process'
+import { exec } from 'child_process';
 
 //import {clientConnect} from './mqtt.js';
 //const {client} = clientConnect();
@@ -81,7 +81,9 @@ const polarMAC = io.metric({
 const polarName = io.metric({
 	name: 'Polar device name'
 });
-
+function execute(command, callback){
+    exec(command, function(error, stdout, stderr){ callback(stdout); });
+}
 async function init() {
 //	console.clear();
   const host = MQTTIP;
@@ -128,9 +130,7 @@ async function init() {
 
   await device.connect();
 
-  function execute(command, callback){
-      exec.exec(command, function(error, stdout, stderr){ callback(stdout); });
-  }
+
   execute('sudo /sbin/shutdown -r now', function(callback){
       console.log(callback);
   });
