@@ -5,7 +5,8 @@ import {createBluetooth} from 'node-ble';
 const {bluetooth, destroy} = createBluetooth();
 import axios from 'axios';
 import { Timer } from 'easytimer.js';
-import exec from 'child_process'
+import {exec} from 'child_process'
+
 //import {clientConnect} from './mqtt.js';
 //const {client} = clientConnect();
 
