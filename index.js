@@ -1,4 +1,5 @@
 require('dotenv').config();
+var EventEmitter = require('events')
 const io = require('@pm2/io');
 const {createBluetooth} = require('./src');
 const axios = require('axios');
@@ -6,6 +7,8 @@ var {Timer} = require('easytimer.js');
 const client = require('./mqtt')();
 var timerInstance = new Timer();
 var CronJob = require('cron').CronJob;
+
+var ee = new EventEmitter()
 
 let _USERBPM;
 let _USER;
@@ -72,6 +75,9 @@ const polarName = io.metric({
 
 async function init() {
   console.clear();
+  ee.on('connect', function (text) {
+    console.log(text)
+  })
 
 	client.on('connect', function () {
 		console.log('🚀 ~ Connected to MQTT broker');
@@ -117,16 +123,16 @@ async function init() {
 
 	const gattServer = await device.gatt();
 	//var services = await gattServer.services();
-  var checkDevice = new CronJob('*/5 * * * * *', async function () {
-    console.log("🚀 ~ file: index.js ~ line 108 ~ checkDevice ~ device", device);
-    if (device == null) { 
-      console.log('No devices...');
-      console.log('Will reboot in 5 seconds...');
-      await sleep(5000);
-      process.exit(0);
-    }
-  });
-  checkDevice.start();
+  // var checkDevice = new CronJob('*/5 * * * * *', async function () {
+  //   console.log("🚀 ~ file: index.js ~ line 108 ~ checkDevice ~ device", device);
+  //   if (device == null) { 
+  //     console.log('No devices...');
+  //     console.log('Will reboot in 5 seconds...');
+  //     await sleep(5000);
+  //     process.exit(0);
+  //   }
+  // });
+  // checkDevice.start();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
 	await heartrate.startNotifications();
