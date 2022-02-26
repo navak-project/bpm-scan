@@ -89,7 +89,11 @@ async function init() {
 		}
 	});
 
-	if (!(await adapter.isDiscovering())) await adapter.startDiscovery();
+  if (!(await adapter.isDiscovering())) {
+    await adapter.startDiscovery();
+  } else {
+    process.exit(0);
+  } 
 	console.log('Discovering device...');
 	message.set('Discovering device...');
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch((err) => {
