@@ -1,12 +1,12 @@
 require('dotenv').config();
 var EventEmitter = require('events')
 const io = require('@pm2/io');
-const {createBluetooth} = require('./src');
+const { createBluetooth } = require('node-ble')
+const { bluetooth, destroy } = createBluetooth()
 const axios = require('axios');
 var {Timer} = require('easytimer.js');
 const client = require('./mqtt')();
 var timerInstance = new Timer();
-var CronJob = require('cron').CronJob;
 
 var ee = new EventEmitter()
 
@@ -74,6 +74,7 @@ const polarName = io.metric({
 });
 
 async function init() {
+  destroy();
   console.clear();
 
 
@@ -86,7 +87,7 @@ async function init() {
 	await setState(5);
 	message.set('booting...');
 
-	const {bluetooth} = createBluetooth();
+  //const { bluetooth, destroy} = createBluetooth();
 	const adapter = await bluetooth.defaultAdapter().catch((err) => {
 		if (err) {
 			console.log(err);
