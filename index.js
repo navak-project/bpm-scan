@@ -1,16 +1,11 @@
 require('dotenv').config();
 const io = require('@pm2/io');
-var mqtt = require('mqtt');
 const { createBluetooth } = require('node-ble')
 const { bluetooth, destroy } = createBluetooth()
 const axios = require('axios');
 var {Timer} = require('easytimer.js');
 var timerInstance = new Timer();
-import { connect } from "mqtt" 
-const {MQTT} = process.env;
-const host = `${MQTT}`;
-const port = '1883';
-var client = mqtt.connect(`mqtt://${host}:${port}`);
+const client = require('./mqtt.js')();
 
 let _USERBPM;
 let _USER;
@@ -21,27 +16,15 @@ let _POLARBPM;
 
 const {ID, GROUP, IP} = process.env;
 
-let client = connect(`mqtt://${host}:${port}`);
-console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ port", port);
-console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ host", host);
-console.log(`/station/${ID}/presence`);
-
 client.on('error', function (err) {
   console.dir(err);
 });
-client.on('connect', function (err) {
+client.subscribe(`/station/${ID}/presence`, function (err) {
   if (err) {
-    console.log("🚀 ~ file: index.js ~ line 97 ~ err", err);
+    console.log(err);
     process.exit(0);
   }
-  client.subscribe(`/station/${ID}/presence`, function (err) {
-    if (err) {
-      console.log(err);
-      process.exit(0);
-    }
-    client.publish(`/station/${ID}/presence`, 'Hello mqtt')
-  });
-  presence.set(_PRESENCE);
+  client.publish(`/station/${ID}/presence`, 'Hello mqtt')
 });
 
 client.on('message', function (topic, message) {
@@ -55,11 +38,25 @@ client.on('message', function (topic, message) {
 	event(valueParse);
 });
 
-return;
 
+const state = io.metric({
+	name: 'Scanning state'
+});
 
+const polarBPM = io.metric({
+	name: 'Polar BPM'
+});
 
+const polarHistogram = io.metric({
+	name: 'Polar BPM',
+	type: 'histogram',
+	measurement: 'p99'
+});
 
+const presence = io.metric({
+  name: 'User presence',
+  default: false
+});
 
 const user = io.metric({
 	name: 'The current selected lantern'
@@ -88,7 +85,7 @@ const polarName = io.metric({
 
 async function init() {
 //  console.clear();
-
+  await sleep(15000);
 
 /*	client.on('connect', function () {
 		console.log('🚀 ~ Connected to MQTT broker');
