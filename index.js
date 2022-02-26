@@ -21,6 +21,28 @@ let _POLARBPM;
 
 const {ID, GROUP, IP} = process.env;
 
+var client = mqtt.connect(`mqtt://${host}:${port}`);
+console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ port", port);
+console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ host", host);
+console.log(`/station/${ID}/presence`);
+
+client.on('error', function (err) {
+  console.dir(err);
+});
+client.on('connect', function (err) {
+  if (err) {
+    console.log("🚀 ~ file: index.js ~ line 97 ~ err", err);
+    process.exit(0);
+  }
+  client.subscribe(`/station/${ID}/presence`, function (err) {
+    if (err) {
+      console.log(err);
+      process.exit(0);
+    }
+  });
+  presence.set(_PRESENCE);
+});
+
 client.on('message', function (topic, message) {
 	// message is Buffer
 	console.log('🚀 ~ file: index.js ~ line 34 ~ message', message);
@@ -32,10 +54,8 @@ client.on('message', function (topic, message) {
 	event(valueParse);
 });
 
+return;
 
-const state = io.metric({
-	name: 'Scanning state'
-});
 
 const polarBPM = io.metric({
 	name: 'Polar BPM'
@@ -91,27 +111,7 @@ async function init() {
   message.set('booting...');
 
   await sleep(3000);
-  var client = mqtt.connect(`mqtt://${host}:${port}`);
-  console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ port", port);
-  console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ host", host);
-console.log(`/station/${ID}/presence`);
 
-  client.on('error', function(err) { 
-    console.dir(err); 
-  });
-  client.on('connect', function (err) {
-    if (err) {
-      console.log("🚀 ~ file: index.js ~ line 97 ~ err", err);  
-      process.exit(0);
-    }
-    client.subscribe(`/station/${ID}/presence`, function (err) {
-      if (err) {
-        console.log(err);
-        process.exit(0);
-      }
-    });
-    presence.set(_PRESENCE);
-  });
   //const { bluetooth, destroy} = createBluetooth();
 	const adapter = await bluetooth.defaultAdapter().catch((err) => {
 		if (err) {
