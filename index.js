@@ -1,11 +1,15 @@
-require('dotenv').config();
-const io = require('@pm2/io');
-const { createBluetooth } = require('node-ble')
+import 'dotenv/config'
+import io from '@pm2/io';
+import  {createBluetooth}  from 'node-ble';
 const { bluetooth, destroy } = createBluetooth()
-const axios = require('axios');
-var {Timer} = require('easytimer.js');
+import axios from 'axios';
+import  {Timer}  from 'easytimer.js';
+import { clientConnect }  from './mqtt.js';
+const { client } = clientConnect();
+
+//const {client} = require('./mqtt.js').connectMqtt();
+
 var timerInstance = new Timer();
-const client = require('./mqtt.js')();
 
 let _USERBPM;
 let _USER;
@@ -16,15 +20,15 @@ let _POLARBPM;
 
 const {ID, GROUP, IP} = process.env;
 
+
+client.on('connect', function () {
+  console.log('🚀 ~ Connected to MQTT broker');
+  client.subscribe(`/station/${ID}/presence`);
+  presence.set(_PRESENCE);
+});
+
 client.on('error', function (err) {
   console.dir(err);
-});
-client.subscribe(`/station/${ID}/presence`, function (err) {
-  if (err) {
-    console.log(err);
-    process.exit(0);
-  }
-  client.publish(`/station/${ID}/presence`, 'Hello mqtt')
 });
 
 client.on('message', function (topic, message) {
@@ -85,13 +89,11 @@ const polarName = io.metric({
 
 async function init() {
 //  console.clear();
-  await sleep(15000);
+ // const cc = await client.clientConnect()
 
-/*	client.on('connect', function () {
-		console.log('🚀 ~ Connected to MQTT broker');
-		client.subscribe(`/station/${ID}/presence`);
-		presence.set(_PRESENCE);
-	});*/
+  await sleep(5000);
+
+
 
   await setState(5);
   console.log('booting...');
