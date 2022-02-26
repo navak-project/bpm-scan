@@ -16,7 +16,7 @@ let _PRESENCE = false;
 let readyToScan = true;
 let _POLARBPM;
 
-const {ID, GROUP, IP} = process.env;
+const {ID, GROUP, IP, MQTTIP} = process.env;
 
 let client;
 
