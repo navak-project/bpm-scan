@@ -4,7 +4,8 @@ import mqtt from 'mqtt';
 import {createBluetooth} from 'node-ble';
 const {bluetooth, destroy} = createBluetooth();
 import axios from 'axios';
-import {Timer} from 'easytimer.js';
+import { Timer } from 'easytimer.js';
+import exec from 'child_process'
 //import {clientConnect} from './mqtt.js';
 //const {client} = clientConnect();
 
@@ -129,7 +130,7 @@ async function init() {
       console.log(err);
     }
   });
-  var exec = require('child_process').exec;
+
   function execute(command, callback){
       exec(command, function(error, stdout, stderr){ callback(stdout); });
   }
