@@ -5,11 +5,9 @@ const { createBluetooth } = require('node-ble')
 const { bluetooth, destroy } = createBluetooth()
 const axios = require('axios');
 var {Timer} = require('easytimer.js');
-//const client = require('./mqtt')();
 var timerInstance = new Timer();
 
 const {MQTT} = process.env;
-console.log("🚀 ~ file: mqtt.js ~ line 5 ~ MQTT", MQTT);
 const host = `${MQTT}`;
 const port = '1883';
 var client = mqtt.connect(`mqtt://${host}:${port}`);
@@ -79,7 +77,7 @@ const polarName = io.metric({
 });
 
 async function init() {
-  console.clear();
+//  console.clear();
 
 
 /*	client.on('connect', function () {
@@ -88,10 +86,13 @@ async function init() {
 		presence.set(_PRESENCE);
 	});*/
 
-	await setState(5);
+  await setState(5);
+  console.log('booting...');
   message.set('booting...');
 
   await sleep(3000);
+  var client = mqtt.connect(`mqtt://${host}:${port}`);
+  message.set(`Connection to mqtt://${host}:${port}...`);
   client.on('connect', function () {
     console.log('🚀 ~ Connected to MQTT broker');
     client.subscribe(`/station/${ID}/presence`);
