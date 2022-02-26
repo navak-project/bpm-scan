@@ -208,7 +208,7 @@ async function event(presence) {
  * @param {Number} id
  */
 async function setState(id) {
-	return new Promise(async (resolve) => {
+  return new Promise(async (resolve, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
 			.then(() => {
