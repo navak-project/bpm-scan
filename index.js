@@ -13,7 +13,7 @@ let _PRESENCE = false;
 let readyToScan = true;
 let _POLARBPM;
 
-const { ID, GROUP } = process.env;
+const { ID, GROUP, IP } = process.env;
 
 client.on('connect', function () {
   client.subscribe(`/station/${ID}/presence`)
@@ -136,7 +136,7 @@ async function init() {
   })
 
   
-  _USER = await axios.get(`http://192.168.1.15:8080/api/users/randomUser/${GROUP}`).catch(async function (error) {
+  _USER = await axios.get(`http://${IP}/api/users/randomUser/${GROUP}`).catch(async function (error) {
     if (error) {
       console.log(error.response.data)
       catchError.set(error.response.data)
@@ -165,8 +165,8 @@ async function event(presence) {
       await setState(1);
       //_USER = await getRandomUser();
       _USERBPM = await scan();
-      await axios.put(`http://192.168.1.15:8080/api/users/${_USER.data.id}`, { 'pulse': _USERBPM })
-      await axios.put(`http://192.168.1.15:8080/api/stations/${ID}`, { 'state': 2, 'rgb': _USER.data.rgb })
+      await axios.put(`http://${IP}/api/users/${_USER.data.id}`, { 'pulse': _USERBPM })
+      await axios.put(`http://${IP}/api/stations/${ID}`, { 'state': 2, 'rgb': _USER.data.rgb })
       //reset();
       readyToScan = false;
       _HEARTRATE.stopNotifications();
@@ -191,7 +191,7 @@ async function event(presence) {
  */
 async function setState(id) {
   return new Promise(async (resolve) => {
-    await axios.put(`http://192.168.1.15:8080/api/stations/${ID}`, { 'state': id }).then(() => {
+    await axios.put(`http://${IP}/api/stations/${ID}`, { 'state': id }).then(() => {
       resolve();
     })
   });
