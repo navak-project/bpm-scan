@@ -85,11 +85,7 @@ async function init() {
 	await setState(5);
 	console.log('booting...');
 	message.set('booting...');
-  client.on('connect', function () {
-    console.log('🚀 ~ Connected to MQTT broker');
-    client.subscribe(`/station/${ID}/presence`);
-    presence.set(_PRESENCE);
-  });
+
 	await sleep(3000);
 
 	const adapter = await bluetooth.defaultAdapter().catch((err) => {
