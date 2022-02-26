@@ -10,7 +10,8 @@ let _USERBPM;
 let _USER;
 let _HEARTRATE;
 let _PRESENCE = false;
-let readyToScan = false;
+let readyToScan = true;
+let _POLARBPM;
 
 const { ID, GROUP } = process.env;
 
@@ -39,11 +40,17 @@ const polarBPM = io.metric({
   name: 'Polar BPM',
 })
 
+const polarHistogram = io.metric({
+  name: 'Polar BPM',
+  type: 'histogram',
+  measurement: 'p99'
+})
+
 const presence = io.metric({
   name: 'User presence',
 })
 
-const userPicked = io.metric({
+const user = io.metric({
   name: 'The current selected lantern',
 })
 
@@ -51,17 +58,19 @@ const timer = io.metric({
   name: 'The timer when the BPM is stable',
 })
 
-const error = io.metric({
+const catchError = io.metric({
   name: 'Catch error',
 })
 
 const message = io.metric({
   name: 'Global message',
+  historic : true
 })
 
 const polarMAC = io.metric({
   name: 'Polar Mac Adress',
 })
+
 const polarName = io.metric({
   name: 'Polar device name',
 })
@@ -75,7 +84,12 @@ async function init() {
   message.set('booting...')
   
   const { bluetooth } = createBluetooth();
-  const adapter = await bluetooth.defaultAdapter();
+  const adapter = await bluetooth.defaultAdapter().catch((err) => {
+    if (err) {
+      console.log(err);
+      process.exit(0);
+    }
+  });
 
   if (!(await adapter.isDiscovering()))
     await adapter.startDiscovery();
@@ -116,16 +130,16 @@ async function init() {
   _HEARTRATE.on("valuechanged", async (buffer) => {
     let json = JSON.stringify(buffer);
     let bpm = Math.max.apply(null, JSON.parse(json).data);
-    if (bpm > 0) { 
-      readyToScan = true;
-    }
+    _POLARBPM = bpm;
     polarBPM.set(bpm);
+    polarHistogram.set(bpm);
   })
 
   
   _USER = await axios.get(`http://192.168.1.15:8080/api/users/randomUser/${GROUP}`).catch(async function (error) {
     if (error) {
       console.log(error.response.data)
+      catchError.set(error.response.data)
       await setState(3);
       state.set("No lantern [3]");
       await sleep(2000);
@@ -133,7 +147,7 @@ async function init() {
     }
   });
 
-  userPicked.set(`User [${_USER.data.id}]`)
+  user.set(`User [${_USER.data.id}]`)
   await setState(0);
   message.set("Init done")
   state.set("Ready [0]");
@@ -146,7 +160,7 @@ async function init() {
 async function event(presence) {
   // make sure to wait to be sure someone is there and its stable
   // OR USE A PRESSUR SENSOR
-  if (presence) {
+  if (presence && _POLARBPM > 0) {
     if (readyToScan) {
       await setState(1);
       //_USER = await getRandomUser();
