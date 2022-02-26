@@ -39,6 +39,7 @@ client.on('connect', function (err) {
       console.log(err);
       process.exit(0);
     }
+    client.publish(`/station/${ID}/presence`, 'Hello mqtt')
   });
   presence.set(_PRESENCE);
 });
@@ -57,9 +58,6 @@ client.on('message', function (topic, message) {
 return;
 
 
-const polarBPM = io.metric({
-	name: 'Polar BPM'
-});
 
 const polarHistogram = io.metric({
 	name: 'Polar BPM',
