@@ -107,7 +107,7 @@ async function init() {
       process.exit(0);
 		}
 	});
-  device.on('disconnect', function (val) {
+  device.on('disconnect', async function (val) {
     console.log(`Device disconnected. State: ${val.connected}`);
     console.log('Will reboot in 5 seconds...');
     await sleep(5000);
