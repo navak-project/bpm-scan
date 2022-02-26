@@ -5,6 +5,7 @@ const axios = require('axios');
 var {Timer} = require('easytimer.js');
 const client = require('./mqtt')();
 var timerInstance = new Timer();
+var CronJob = require('cron').CronJob;
 
 let _USERBPM;
 let _USER;
@@ -70,7 +71,7 @@ const polarName = io.metric({
 });
 
 async function init() {
-	console.clear();
+  console.clear();
 
 	client.on('connect', function () {
 		console.log('🚀 ~ Connected to MQTT broker');
@@ -91,17 +92,26 @@ async function init() {
 
   if (!(await adapter.isDiscovering())) {
     await adapter.startDiscovery();
-  } else {
-    process.exit(0);
-  } 
+  }
 	console.log('Discovering device...');
 	message.set('Discovering device...');
-	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch((err) => {
-		if (err) {
-			process.exit(0);
+	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
+    if (err) {
+      console.log(err);
+      console.log('Will reboot in 5 seconds...');
+      await sleep(5000);
+      process.exit(0);
 		}
 	});
-
+  var checkDevice = new CronJob('*/5 * * * * *', async function () {
+    if (device == null) { 
+      console.log('No devices...');
+      console.log('Will reboot in 5 seconds...');
+      await sleep(5000);
+      process.exit(0);
+    }
+  });
+  checkDevice.start();
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
 
