@@ -107,8 +107,11 @@ async function init() {
       process.exit(0);
 		}
 	});
-  device.on('disconnect', function (text) {
-    console.log(text)
+  device.on('disconnect', function (val) {
+    console.log(`Device disconnected. State: ${val.connected}`);
+    console.log('Will reboot in 5 seconds...');
+    await sleep(5000);
+    process.exit(0);
   })
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
