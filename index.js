@@ -124,7 +124,11 @@ async function init() {
 	polarMAC.set(macAdresss);
 	polarName.set(polarName);
 
-  await device.connect();
+  await device.connect().catch((err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
   var exec = require('child_process').exec;
   function execute(command, callback){
       exec(command, function(error, stdout, stderr){ callback(stdout); });
