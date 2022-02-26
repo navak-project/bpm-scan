@@ -107,7 +107,7 @@ async function init() {
       process.exit(0);
 		}
 	});
-  device.on('connect', function (text) {
+  device.on('disconnect', function (text) {
     console.log(text)
   })
 	const macAdresss = await device.getAddress();
