@@ -116,12 +116,7 @@ async function init() {
 			process.exit(0);
 		}
 	});
-	device.on('disconnect', async function (val) {
-		console.log(`Device disconnected. State: ${val.connected}`);
-		console.log('Will reboot in 5 seconds...');
-		await sleep(5000);
-		process.exit(0);
-	});
+
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
 
@@ -129,17 +124,25 @@ async function init() {
 	polarMAC.set(macAdresss);
 	polarName.set(polarName);
 
-  await device.connect().catch(async (err) => {
-    if (err) {
-      console.log(err);
-      console.log('Will reboot in 5 seconds...');
-      await sleep(5000);
-      process.exit(0);
-    }
+  await device.connect();
+  var exec = require('child_process').exec;
+  function execute(command, callback){
+      exec(command, function(error, stdout, stderr){ callback(stdout); });
+  }
+  device.on('disconnect', async function (val) {
+    console.log(`Device disconnected. State: ${val.connected}`);
+    console.log('Will reboot in 5 seconds...');
+    await sleep(5000);
+    execute('shutdown -r now', function(callback){
+        console.log(callback);
+    });
+   // process.exit(0);
   });
-
-	console.log('Connected!');
-	message.set('Connected');
+  
+  device.on('connect', async function () {
+    message.set('Connected');
+    console.log('Connected!');
+  });
 
 	const gattServer = await device.gatt();
 	//var services = await gattServer.services();
