@@ -92,6 +92,8 @@ async function init() {
 
   await sleep(3000);
   var client = mqtt.connect(`mqtt://${host}:${port}`);
+  console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ port", port);
+  console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ host", host);
   client.on('error', function(err) { 
     console.dir(err); 
   });
@@ -107,6 +109,7 @@ async function init() {
         process.exit(0);
       }
     });
+    console.log("🚀 ~ file: index.js ~ line 110 ~ ID", ID);
     presence.set(_PRESENCE);
   });
   //const { bluetooth, destroy} = createBluetooth();
