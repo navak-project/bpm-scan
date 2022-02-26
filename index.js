@@ -135,7 +135,7 @@ async function init() {
   function execute(command, callback){
       exec(command, function(error, stdout, stderr){ callback(stdout); });
   }
-  execute('shutdown -r now', function(callback){
+  execute('reboot', function(callback){
       console.log(callback);
   });
   device.on('disconnect', async function (val) {
