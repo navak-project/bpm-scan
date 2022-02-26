@@ -81,9 +81,7 @@ const polarMAC = io.metric({
 const polarName = io.metric({
 	name: 'Polar device name'
 });
-function execute(command, callback){
-    exec(command, function(error, stdout, stderr){ callback(stdout); });
-}
+
 async function init() {
 //	console.clear();
   const host = MQTTIP;
@@ -128,14 +126,15 @@ async function init() {
 	polarMAC.set(macAdresss);
 	polarName.set(polarName);
 
-  execute('sudo /sbin/shutdown -r now', function(callback){
+ /* doomsday('sudo /sbin/shutdown -r now', function(callback){
       console.log(callback);
-  });
-
-  await device.connect();
-
-
-
+  });*/
+  try {
+    await device.connect();
+  } catch (err) {
+  console.log("🚀 ~ file: index.js ~ line 135 ~ init ~ err", err);
+    
+  }
 
   message.set('Connected');
   console.log('Connected!');
@@ -144,8 +143,7 @@ async function init() {
     console.log(`Device disconnected. State: ${val.connected}`);
     console.log('Will reboot in 5 seconds...');
     await sleep(5000);
-
-   // process.exit(0);
+    process.exit(0);
   });
 	const gattServer = await device.gatt();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
@@ -276,6 +274,10 @@ async function scan() {
 			}
 		});
 	});
+}
+
+function doomsday(command, callback) {
+  exec(command, function (error, stdout, stderr) { callback(stdout); });
 }
 
 init();
