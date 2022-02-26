@@ -1,11 +1,11 @@
-import 'dotenv/config'
+import 'dotenv/config';
 import io from '@pm2/io';
-import  {createBluetooth}  from 'node-ble';
-const { bluetooth, destroy } = createBluetooth();
+import {createBluetooth} from 'node-ble';
+const {bluetooth, destroy} = createBluetooth();
 import axios from 'axios';
-import  {Timer}  from 'easytimer.js';
-import { clientConnect }  from './mqtt.js';
-const { client } = clientConnect();
+import {Timer} from 'easytimer.js';
+import {clientConnect} from './mqtt.js';
+const {client} = clientConnect();
 
 var timerInstance = new Timer();
 
@@ -17,19 +17,15 @@ let readyToScan = true;
 let _POLARBPM;
 
 const {ID, GROUP, IP} = process.env;
-console.log("🚀 ~ file: index.js ~ line 22 ~ IP", IP);
-console.log("🚀 ~ file: index.js ~ line 22 ~ GROUP", GROUP);
-console.log("🚀 ~ file: index.js ~ line 22 ~ ID", ID);
-
 
 client.on('connect', function () {
-  console.log('🚀 ~ Connected to MQTT broker');
-  client.subscribe(`/station/${ID}/presence`);
-  presence.set(_PRESENCE);
+	console.log('🚀 ~ Connected to MQTT broker');
+	client.subscribe(`/station/${ID}/presence`);
+	presence.set(_PRESENCE);
 });
 
 client.on('error', function (err) {
-  console.dir(err);
+	console.dir(err);
 });
 
 client.on('message', function (topic, message) {
@@ -42,7 +38,6 @@ client.on('message', function (topic, message) {
 	presence.set(valueParse);
 	event(valueParse);
 });
-
 
 const state = io.metric({
 	name: 'Scanning state'
@@ -59,8 +54,8 @@ const polarHistogram = io.metric({
 });
 
 const presence = io.metric({
-  name: 'User presence',
-  default: false
+	name: 'User presence',
+	default: false
 });
 
 const user = io.metric({
@@ -89,20 +84,14 @@ const polarName = io.metric({
 });
 
 async function init() {
-//  console.clear();
- // const cc = await client.clientConnect()
+	console.clear();
 
-  await sleep(5000);
+	await setState(5);
+	console.log('booting...');
+	message.set('booting...');
 
+	await sleep(3000);
 
-
-  await setState(5);
-  console.log('booting...');
-  message.set('booting...');
-
-  await sleep(3000);
-
-  //const { bluetooth, destroy} = createBluetooth();
 	const adapter = await bluetooth.defaultAdapter().catch((err) => {
 		if (err) {
 			console.log(err);
@@ -110,25 +99,25 @@ async function init() {
 		}
 	});
 
-  if (!(await adapter.isDiscovering())) {
-    await adapter.startDiscovery();
-  }
+	if (!(await adapter.isDiscovering())) {
+		await adapter.startDiscovery();
+	}
 	console.log('Discovering device...');
 	message.set('Discovering device...');
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
-    if (err) {
-      console.log(err);
-      console.log('Will reboot in 5 seconds...');
-      await sleep(5000);
-      process.exit(0);
+		if (err) {
+			console.log(err);
+			console.log('Will reboot in 5 seconds...');
+			await sleep(5000);
+			process.exit(0);
 		}
 	});
-  device.on('disconnect', async function (val) {
-    console.log(`Device disconnected. State: ${val.connected}`);
-    console.log('Will reboot in 5 seconds...');
-    await sleep(5000);
-    process.exit(0);
-  })
+	device.on('disconnect', async function (val) {
+		console.log(`Device disconnected. State: ${val.connected}`);
+		console.log('Will reboot in 5 seconds...');
+		await sleep(5000);
+		process.exit(0);
+	});
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
 
@@ -142,16 +131,16 @@ async function init() {
 
 	const gattServer = await device.gatt();
 	//var services = await gattServer.services();
-  // var checkDevice = new CronJob('*/5 * * * * *', async function () {
-  //   console.log("🚀 ~ file: index.js ~ line 108 ~ checkDevice ~ device", device);
-  //   if (device == null) { 
-  //     console.log('No devices...');
-  //     console.log('Will reboot in 5 seconds...');
-  //     await sleep(5000);
-  //     process.exit(0);
-  //   }
-  // });
-  // checkDevice.start();
+	// var checkDevice = new CronJob('*/5 * * * * *', async function () {
+	//   console.log("🚀 ~ file: index.js ~ line 108 ~ checkDevice ~ device", device);
+	//   if (device == null) {
+	//     console.log('No devices...');
+	//     console.log('Will reboot in 5 seconds...');
+	//     await sleep(5000);
+	//     process.exit(0);
+	//   }
+	// });
+	// checkDevice.start();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
 	await heartrate.startNotifications();
@@ -220,11 +209,14 @@ async function event(presence) {
  */
 async function setState(id) {
 	return new Promise(async (resolve) => {
-    await axios.put(`http://${IP}/api/stations/${ID}`, { state: id }).then(() => {
-      resolve();
-    }).catch((err) => {
-      reject(err);
-    });
+		await axios
+			.put(`http://${IP}/api/stations/${ID}`, {state: id})
+			.then(() => {
+				resolve();
+			})
+			.catch((err) => {
+				reject(err);
+			});
 	});
 }
 
