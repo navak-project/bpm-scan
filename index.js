@@ -129,7 +129,15 @@ async function init() {
 	polarMAC.set(macAdresss);
 	polarName.set(polarName);
 
-	await device.connect();
+  await device.connect().catch(async (err) => {
+    if (err) {
+      console.log(err);
+      console.log('Will reboot in 5 seconds...');
+      await sleep(5000);
+      process.exit(0);
+    }
+  });
+
 	console.log('Connected!');
 	message.set('Connected');
 
