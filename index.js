@@ -75,9 +75,7 @@ const polarName = io.metric({
 
 async function init() {
   console.clear();
-  ee.on('connect', function (text) {
-    console.log(text)
-  })
+
 
 	client.on('connect', function () {
 		console.log('🚀 ~ Connected to MQTT broker');
@@ -109,7 +107,9 @@ async function init() {
       process.exit(0);
 		}
 	});
-
+  device.on('connect', function (text) {
+    console.log(text)
+  })
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
 
