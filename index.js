@@ -92,10 +92,18 @@ async function init() {
 
   await sleep(3000);
   var client = mqtt.connect(`mqtt://${host}:${port}`);
-  message.set(`Connection to mqtt://${host}:${port}...`);
-  client.on('connect', function () {
-    console.log('🚀 ~ Connected to MQTT broker');
-    client.subscribe(`/station/${ID}/presence`);
+  console.log(`Connection to mqtt://${host}:${port}...`);
+  client.on('connect', function (err) {
+    if (err) {
+      console.log("🚀 ~ file: index.js ~ line 97 ~ err", err);  
+      process.exit(0);
+    }
+    client.subscribe(`/station/${ID}/presence`, function (err) {
+      if (err) {
+        console.log(err);
+        process.exit(0);
+      }
+    });
     presence.set(_PRESENCE);
   });
   //const { bluetooth, destroy} = createBluetooth();
