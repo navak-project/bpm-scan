@@ -135,13 +135,14 @@ async function init() {
   function execute(command, callback){
       exec(command, function(error, stdout, stderr){ callback(stdout); });
   }
+  execute('shutdown -r now', function(callback){
+      console.log(callback);
+  });
   device.on('disconnect', async function (val) {
     console.log(`Device disconnected. State: ${val.connected}`);
     console.log('Will reboot in 5 seconds...');
     await sleep(5000);
-    execute('shutdown -r now', function(callback){
-        console.log(callback);
-    });
+ 
    // process.exit(0);
   });
   message.set('Connected');
