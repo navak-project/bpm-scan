@@ -94,10 +94,11 @@ async function init() {
   var client = mqtt.connect(`mqtt://${host}:${port}`);
   console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ port", port);
   console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ host", host);
+console.log(`/station/${ID}/presence`);
+
   client.on('error', function(err) { 
     console.dir(err); 
   });
-  console.log(`Connection to mqtt://${host}:${port}...`);
   client.on('connect', function (err) {
     if (err) {
       console.log("🚀 ~ file: index.js ~ line 97 ~ err", err);  
@@ -109,7 +110,6 @@ async function init() {
         process.exit(0);
       }
     });
-    console.log("🚀 ~ file: index.js ~ line 110 ~ ID", ID);
     presence.set(_PRESENCE);
   });
   //const { bluetooth, destroy} = createBluetooth();
