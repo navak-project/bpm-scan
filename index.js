@@ -92,6 +92,10 @@ async function init() {
 
   await sleep(3000);
   var client = mqtt.connect(`mqtt://${host}:${port}`);
+  client.stream.on('error', (err) => {
+      console.log('error', err);
+      client.end()
+  });
   console.log(`Connection to mqtt://${host}:${port}...`);
   client.on('connect', function (err) {
     if (err) {
