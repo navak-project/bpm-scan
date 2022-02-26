@@ -18,11 +18,7 @@ let _POLARBPM;
 
 const {ID, GROUP, IP} = process.env;
 
-client.on('connect', function () {
-	console.log('🚀 ~ Connected to MQTT broker');
-	client.subscribe(`/station/${ID}/presence`);
-	presence.set(_PRESENCE);
-});
+
 
 client.on('error', function (err) {
 	console.dir(err);
@@ -84,12 +80,16 @@ const polarName = io.metric({
 });
 
 async function init() {
-	console.clear();
+//	console.clear();
 
 	await setState(5);
 	console.log('booting...');
 	message.set('booting...');
-
+  client.on('connect', function () {
+    console.log('🚀 ~ Connected to MQTT broker');
+    client.subscribe(`/station/${ID}/presence`);
+    presence.set(_PRESENCE);
+  });
 	await sleep(3000);
 
 	const adapter = await bluetooth.defaultAdapter().catch((err) => {
@@ -208,6 +208,7 @@ async function event(presence) {
  * @param {Number} id
  */
 async function setState(id) {
+  console.log("🚀 ~ file: index.js ~ line 211 ~ setState ~ id", id);
   return new Promise(async (resolve, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
