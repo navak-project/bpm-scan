@@ -6,7 +6,7 @@ const { bluetooth, destroy } = createBluetooth()
 const axios = require('axios');
 var {Timer} = require('easytimer.js');
 var timerInstance = new Timer();
-
+import { connect } from "mqtt" 
 const {MQTT} = process.env;
 const host = `${MQTT}`;
 const port = '1883';
@@ -21,7 +21,7 @@ let _POLARBPM;
 
 const {ID, GROUP, IP} = process.env;
 
-var client = mqtt.connect(`mqtt://${host}:${port}`);
+let client = connect(`mqtt://${host}:${port}`);
 console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ port", port);
 console.log("🚀 ~ file: index.js ~ line 95 ~ init ~ host", host);
 console.log(`/station/${ID}/presence`);
@@ -59,15 +59,7 @@ return;
 
 
 
-const polarHistogram = io.metric({
-	name: 'Polar BPM',
-	type: 'histogram',
-	measurement: 'p99'
-});
 
-const presence = io.metric({
-	name: 'User presence'
-});
 
 const user = io.metric({
 	name: 'The current selected lantern'
