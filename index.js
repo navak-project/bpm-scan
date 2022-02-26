@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import io from '@pm2/io';
+import mqtt from 'mqtt';
 import {createBluetooth} from 'node-ble';
 const {bluetooth, destroy} = createBluetooth();
 import axios from 'axios';
