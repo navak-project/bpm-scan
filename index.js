@@ -103,15 +103,7 @@ async function init() {
       process.exit(0);
 		}
 	});
-  var checkDevice = new CronJob('*/5 * * * * *', async function () {
-    if (device == null) { 
-      console.log('No devices...');
-      console.log('Will reboot in 5 seconds...');
-      await sleep(5000);
-      process.exit(0);
-    }
-  });
-  checkDevice.start();
+
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
 
@@ -125,7 +117,16 @@ async function init() {
 
 	const gattServer = await device.gatt();
 	//var services = await gattServer.services();
-
+  var checkDevice = new CronJob('*/5 * * * * *', async function () {
+    console.log("🚀 ~ file: index.js ~ line 108 ~ checkDevice ~ device", device);
+    if (device == null) { 
+      console.log('No devices...');
+      console.log('Will reboot in 5 seconds...');
+      await sleep(5000);
+      process.exit(0);
+    }
+  });
+  checkDevice.start();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
 	await heartrate.startNotifications();
