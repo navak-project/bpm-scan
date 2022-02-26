@@ -8,6 +8,7 @@ export function clientConnect() {
     const host = MQTTIP;
     const port = '1883';
     client = mqtt.connect(`mqtt://${host}:${port}`);
+    console.log("🚀 ~ file: mqtt.js ~ line 11 ~ clientConnect ~ `mqtt://${host}:${port}`", `mqtt://${host}:${port}`);
   } catch (err) {
     console.log('🚀 ~ file: mqtt.js ~ line 39 ~ returnnewpromise ~ err', err);
   }

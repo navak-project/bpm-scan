@@ -1,13 +1,11 @@
 import 'dotenv/config'
 import io from '@pm2/io';
 import  {createBluetooth}  from 'node-ble';
-const { bluetooth, destroy } = createBluetooth()
+const { bluetooth, destroy } = createBluetooth();
 import axios from 'axios';
 import  {Timer}  from 'easytimer.js';
 import { clientConnect }  from './mqtt.js';
 const { client } = clientConnect();
-
-//const {client} = require('./mqtt.js').connectMqtt();
 
 var timerInstance = new Timer();
 
@@ -19,6 +17,9 @@ let readyToScan = true;
 let _POLARBPM;
 
 const {ID, GROUP, IP} = process.env;
+console.log("🚀 ~ file: index.js ~ line 22 ~ IP", IP);
+console.log("🚀 ~ file: index.js ~ line 22 ~ GROUP", GROUP);
+console.log("🚀 ~ file: index.js ~ line 22 ~ ID", ID);
 
 
 client.on('connect', function () {
