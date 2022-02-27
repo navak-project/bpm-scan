@@ -88,7 +88,10 @@ async function init() {
 
 	if (!(await adapter.isDiscovering())) {
 		await adapter.startDiscovery();
-	}
+  }
+  doomsday('sudo invoke-rc.d bluetooth restart', function (callback) {
+    console.log(callback);
+  })
 	console.log('Discovering device...');
 	message.set('Discovering device...');
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
@@ -109,8 +112,9 @@ async function init() {
 		await device.connect();
 	} catch (err) {
     console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
-    message.set(err);
-    console.log('Will reboot in 5 seconds...');
+    message.set(err.text);
+
+    console.log('Will reboot bluetooth in 5 seconds...');
     await sleep(5000);
     process.exit(0);
 	}
