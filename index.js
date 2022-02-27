@@ -69,7 +69,8 @@ const polarName = io.metric({
 });
 
 async function init() {
-  doomsday('sudo invoke-rc.d bluetooth restart', function (callback){})
+  doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
+  doomsday('sudo hostname -I', function (callback) { })
 	presence.set(false);
 	user.set(null);
 
@@ -195,7 +196,6 @@ async function event(presence) {
  * @param {Number} id
  */
 async function setState(id) {
-	console.log('🚀 ~ file: index.js ~ line 211 ~ setState ~ id', id);
 	return new Promise(async (resolve, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
@@ -261,8 +261,6 @@ async function scan() {
 
 function doomsday(command, callback) {
 	exec(command, function (error, stdout, stderr) {
-    console.log("🚀 ~ file: index.js ~ line 265 ~ stdout", stdout);
-    console.log("🚀 ~ file: index.js ~ line 265 ~ stderr", stderr);
     console.log("🚀 ~ file: index.js ~ line 265 ~ error", error);
 		callback(stdout);
 	});
