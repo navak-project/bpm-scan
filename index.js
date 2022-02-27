@@ -90,7 +90,7 @@ async function init() {
   try {
       client.on('connect', function () {
         console.log('🚀 ~ Connected to MQTT broker');
-        client.subscribe(`/station/${ID}/presence`);
+        client.subscribe(`/station/s001/presence`);
         presence.set(_PRESENCE);
       });
   } catch (err) {  
