@@ -107,7 +107,7 @@ async function init() {
 
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
-
+  message.set(`${deviceName}: ${macAdresss}`);
 	console.log('got device', macAdresss, deviceName);
 	polarMAC.set(macAdresss);
 	polarName.set(polarName);
@@ -130,7 +130,7 @@ async function init() {
     console.log(`Device disconnected. State: ${val.connected}`);
     console.log('Will reboot in 5 seconds...');
     await sleep(5000);
-  //  process.exit(0);
+    process.exit(0);
 
   });
 	const gattServer = await device.gatt();
