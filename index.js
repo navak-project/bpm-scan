@@ -26,10 +26,10 @@ client.on('error', function (err) {
 
 client.on('message', function (topic, message) {
 	// message is Buffer
-	console.log('🚀 ~ file: index.js ~ line 34 ~ message', message);
 	let buff = message.toString();
 	let value = JSON.parse(buff);
 	let valueParse = JSON.parse(value.presence.toLowerCase());
+  console.log("🚀 ~ file: index.js ~ line 33 ~ valueParse", valueParse);
 	_PRESENCE = valueParse;
 	presence.set(valueParse);
 	event(valueParse);
