@@ -39,7 +39,8 @@ const state = io.metric({
 });
 
 const polarBPM = io.metric({
-	name: 'Polar BPM'
+  name: 'Polar BPM',
+  default: 0,
 });
 
 const presence = io.metric({
@@ -261,7 +262,7 @@ async function scan() {
 
 function doomsday(command, callback) {
 	exec(command, function (error, stdout, stderr) {
-    console.log("🚀 ~ file: index.js ~ line 265 ~ error", error);
+    //console.log("🚀 ~ file: index.js ~ line 265 ~ error", error);
 		callback(stdout);
 	});
 }
