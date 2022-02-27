@@ -43,12 +43,6 @@ const polarBPM = io.metric({
 	name: 'Polar BPM'
 });
 
-const polarHistogram = io.metric({
-	name: 'Polar BPM Stats',
-	type: 'histogram',
-	measurement: 'p99'
-});
-
 const presence = io.metric({
 	name: 'User presence',
 	default: false
@@ -151,8 +145,6 @@ async function init() {
 		let bpm = Math.max.apply(null, JSON.parse(json).data);
 		_POLARBPM = bpm;
 		polarBPM.set(bpm);
-    polarHistogram.set(bpm);
-    polarHistogram.set(0);
 	});
 
 	_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`).catch(async function (error) {
