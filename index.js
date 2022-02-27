@@ -6,9 +6,8 @@ const {bluetooth, destroy} = createBluetooth();
 import axios from 'axios';
 import { Timer } from 'easytimer.js';
 import { exec } from 'child_process';
-
-//import {clientConnect} from './mqtt.js';
-//const {client} = clientConnect();
+import {clientConnect} from './mqtt.js';
+const {client} = clientConnect();
 
 var timerInstance = new Timer();
 
@@ -21,9 +20,7 @@ let _POLARBPM;
 
 const {ID, GROUP, IP, MQTTIP} = process.env;
 
-let client;
-
-/*client.on('error', function (err) {
+client.on('error', function (err) {
 	console.dir(err);
 });
 
@@ -36,7 +33,7 @@ client.on('message', function (topic, message) {
 	_PRESENCE = valueParse;
 	presence.set(valueParse);
 	event(valueParse);
-});*/
+});
 
 const state = io.metric({
 	name: 'Scanning state'
@@ -84,19 +81,6 @@ const polarName = io.metric({
 
 async function init() {
 //	console.clear();
-  const host = MQTTIP;
-  const port = '1883';
-  client = mqtt.connect(`mqtt://${host}:${port}`);
-  try {
-      client.on('connect', function () {
-        console.log('🚀 ~ Connected to MQTT broker');
-        client.subscribe(`/station/s001/presence`);
-        presence.set(_PRESENCE);
-      });
-  } catch (err) {  
-    console.log('🚀 ~ file: index.js ~ line 250 ~ init ~ err', err);
-  }
-
 	await setState(5);
 	console.log('booting...');
 	message.set('booting...');
@@ -138,6 +122,7 @@ async function init() {
     await device.connect();
   } catch (err) {
     console.log("🚀 ~ file: index.js ~ line 135 ~ init ~ err", err);
+    
   }
 
   message.set('Connected');
