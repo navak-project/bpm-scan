@@ -87,11 +87,16 @@ async function init() {
   const host = MQTTIP;
   const port = '1883';
   client = mqtt.connect(`mqtt://${host}:${port}`);
-  client.on('connect', function () {
-    console.log('🚀 ~ Connected to MQTT broker');
-    client.subscribe(`/station/${ID}/presence`);
-    presence.set(_PRESENCE);
-  });
+  try {
+      client.on('connect', function () {
+        console.log('🚀 ~ Connected to MQTT broker');
+        client.subscribe(`/station/${ID}/presence`);
+        presence.set(_PRESENCE);
+      });
+  } catch (err) {  
+    console.log('🚀 ~ file: index.js ~ line 250 ~ init ~ err', err);
+  }
+
 	await setState(5);
 	console.log('booting...');
 	message.set('booting...');
@@ -132,8 +137,7 @@ async function init() {
   try {
     await device.connect();
   } catch (err) {
-  console.log("🚀 ~ file: index.js ~ line 135 ~ init ~ err", err);
-    
+    console.log("🚀 ~ file: index.js ~ line 135 ~ init ~ err", err);
   }
 
   message.set('Connected');
