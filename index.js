@@ -103,14 +103,9 @@ async function init() {
 
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
-	message.set(`${deviceName}`);
 	console.log('got device', macAdresss, deviceName);
 	polarName.set(polarName);
 
-	// doomsday only if device is not found
-	/* doomsday('sudo /sbin/shutdown -r now', function(callback){
-      console.log(callback);
-  });*/
 	try {
 		await device.connect();
 	} catch (err) {
