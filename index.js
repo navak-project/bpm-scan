@@ -69,6 +69,7 @@ const polarName = io.metric({
 });
 
 async function init() {
+  doomsday('sudo invoke-rc.d bluetooth restart')
 	presence.set(false);
 	user.set(null);
 
@@ -89,9 +90,7 @@ async function init() {
 	if (!(await adapter.isDiscovering())) {
 		await adapter.startDiscovery();
   }
-  doomsday('sudo invoke-rc.d bluetooth restart', function (callback) {
-    console.log(callback);
-  })
+
 	console.log('Discovering device...');
 	message.set('Discovering device...');
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
@@ -262,6 +261,9 @@ async function scan() {
 
 function doomsday(command, callback) {
 	exec(command, function (error, stdout, stderr) {
+    console.log("🚀 ~ file: index.js ~ line 265 ~ stdout", stdout);
+    console.log("🚀 ~ file: index.js ~ line 265 ~ stderr", stderr);
+    console.log("🚀 ~ file: index.js ~ line 265 ~ error", error);
 		callback(stdout);
 	});
 }
