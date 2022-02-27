@@ -129,7 +129,10 @@ async function init() {
     console.log(`Device disconnected. State: ${val.connected}`);
     console.log('Will reboot in 5 seconds...');
     await sleep(5000);
-    process.exit(0);
+  //  process.exit(0);
+    doomsday('sudo /sbin/shutdown -r now', function(callback){
+        console.log(callback);
+    });
   });
 	const gattServer = await device.gatt();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
