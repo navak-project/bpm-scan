@@ -69,7 +69,7 @@ const polarName = io.metric({
 });
 
 async function init() {
-  doomsday('sudo invoke-rc.d bluetooth restart')
+  doomsday('sudo invoke-rc.d bluetooth restart', function (callback){})
 	presence.set(false);
 	user.set(null);
 
