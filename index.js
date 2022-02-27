@@ -29,7 +29,6 @@ client.on('message', function (topic, message) {
 	let buff = message.toString();
 	let value = JSON.parse(buff);
 	let valueParse = JSON.parse(value.presence.toLowerCase());
-  console.log("🚀 ~ file: index.js ~ line 33 ~ valueParse", valueParse);
 	_PRESENCE = valueParse;
 	presence.set(valueParse);
 	event(valueParse);
@@ -109,7 +108,11 @@ async function init() {
 	try {
 		await device.connect();
 	} catch (err) {
-		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
+    console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
+    message.set(err);
+    console.log('Will reboot in 5 seconds...');
+    await sleep(5000);
+    process.exit(0);
 	}
 
 	message.set('Connected');
