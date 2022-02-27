@@ -152,7 +152,6 @@ async function init() {
 		_POLARBPM = bpm;
 		polarBPM.set(bpm);
     polarHistogram.set(bpm);
-    await sleep(1000);
     polarHistogram.set(0);
 	});
 
