@@ -65,10 +65,6 @@ const message = io.metric({
 	default: 'No message'
 });
 
-const polar = io.metric({
-	name: 'Polar'
-});
-
 const polarName = io.metric({
 	name: 'Polar device name'
 });
@@ -107,9 +103,9 @@ async function init() {
 
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
-	message.set(`${deviceName}: ${macAdresss}`);
+	message.set(`${deviceName}`);
 	console.log('got device', macAdresss, deviceName);
-  polar.set(polarName);
+	polarName.set(polarName);
 
 	// doomsday only if device is not found
 	/* doomsday('sudo /sbin/shutdown -r now', function(callback){
