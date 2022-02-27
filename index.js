@@ -160,7 +160,7 @@ async function init() {
 
 	user.set(`User [${_USER.data.id}]`);
 	await setState(0);
-	message.set('Init done');
+	message.set('Ready to scan');
 	state.set('Ready [0]');
 	console.log('Ready');
 }
@@ -179,8 +179,9 @@ async function event(presence) {
 			readyToScan = false;
 			_HEARTRATE.stopNotifications();
 			timerInstance.pause();
-			state.set('Done [2]');
-			await sleep(5000);
+      state.set('Done [2]');
+      message.set('Done, will reboot in 5 seconds...');
+      await sleep(5000);
 			process.exit(0);
 		}
 	}
@@ -254,7 +255,8 @@ async function scan() {
 			if (bpm != 0) {
 				scanBPM = bpm;
 				await setState(1);
-				state.set('Scanning [1]');
+        state.set('Scanning [1]');
+        message.set('Scanning...');
 				timerInstance.start({countdown: true, startValues: {seconds: 15}});
 			}
 		});
