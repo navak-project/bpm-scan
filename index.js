@@ -44,7 +44,7 @@ const polarBPM = io.metric({
 });
 
 const polarHistogram = io.metric({
-	name: 'Polar BPM',
+	name: 'Polar BPM Stats',
 	type: 'histogram',
 	measurement: 'p99'
 });
@@ -67,8 +67,8 @@ const catchError = io.metric({
 });
 
 const message = io.metric({
-	name: 'Global message',
-	historic: true
+  name: 'Global message',
+  default: 'No message'
 });
 
 const polarMAC = io.metric({
@@ -80,8 +80,11 @@ const polarName = io.metric({
 });
 
 async function init() {
-//	console.clear();
-	await setState(5);
+  presence.set(false);
+  user.set(null)
+
+  await setState(5);
+  
 	console.log('booting...');
 	message.set('booting...');
 
