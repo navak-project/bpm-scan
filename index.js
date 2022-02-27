@@ -4,8 +4,8 @@ import mqtt from 'mqtt';
 import {createBluetooth} from 'node-ble';
 const {bluetooth, destroy} = createBluetooth();
 import axios from 'axios';
-import { Timer } from 'easytimer.js';
-import { exec } from 'child_process';
+import {Timer} from 'easytimer.js';
+import {exec} from 'child_process';
 import {clientConnect} from './mqtt.js';
 const {client} = clientConnect();
 
@@ -61,8 +61,8 @@ const catchError = io.metric({
 });
 
 const message = io.metric({
-  name: 'Global message',
-  default: 'No message'
+	name: 'Global message',
+	default: 'No message'
 });
 
 const polarMAC = io.metric({
@@ -74,11 +74,11 @@ const polarName = io.metric({
 });
 
 async function init() {
-  presence.set(false);
-  user.set(null)
+	presence.set(false);
+	user.set(null);
 
-  await setState(5);
-  
+	await setState(5);
+
 	console.log('booting...');
 	message.set('booting...');
 
@@ -107,32 +107,30 @@ async function init() {
 
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
-  message.set(`${deviceName}: ${macAdresss}`);
+	message.set(`${deviceName}: ${macAdresss}`);
 	console.log('got device', macAdresss, deviceName);
 	polarMAC.set(macAdresss);
 	polarName.set(polarName);
 
-  // doomsday only if device is not found
- /* doomsday('sudo /sbin/shutdown -r now', function(callback){
+	// doomsday only if device is not found
+	/* doomsday('sudo /sbin/shutdown -r now', function(callback){
       console.log(callback);
   });*/
-  try {
-    await device.connect();
-  } catch (err) {
-    console.log("🚀 ~ file: index.js ~ line 135 ~ init ~ err", err);
-    
-  }
+	try {
+		await device.connect();
+	} catch (err) {
+		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
+	}
 
-  message.set('Connected');
-  console.log('Connected!');
+	message.set('Connected');
+	console.log('Connected!');
 
-  device.on('disconnect', async function (val) {
-    console.log(`Device disconnected. State: ${val.connected}`);
-    console.log('Will reboot in 5 seconds...');
-    await sleep(5000);
-    process.exit(0);
-
-  });
+	device.on('disconnect', async function (val) {
+		console.log(`Device disconnected. State: ${val.connected}`);
+		console.log('Will reboot in 5 seconds...');
+		await sleep(5000);
+		process.exit(0);
+	});
 	const gattServer = await device.gatt();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
@@ -181,9 +179,9 @@ async function event(presence) {
 			readyToScan = false;
 			_HEARTRATE.stopNotifications();
 			timerInstance.pause();
-      state.set('Done [2]');
-      message.set('Done, will reboot in 5 seconds...');
-      await sleep(5000);
+			state.set('Done [2]');
+			message.set('Done, will reboot in 5 seconds...');
+			await sleep(5000);
 			process.exit(0);
 		}
 	}
@@ -201,8 +199,8 @@ async function event(presence) {
  * @param {Number} id
  */
 async function setState(id) {
-  console.log("🚀 ~ file: index.js ~ line 211 ~ setState ~ id", id);
-  return new Promise(async (resolve, reject) => {
+	console.log('🚀 ~ file: index.js ~ line 211 ~ setState ~ id', id);
+	return new Promise(async (resolve, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
 			.then(() => {
@@ -257,8 +255,8 @@ async function scan() {
 			if (bpm != 0) {
 				scanBPM = bpm;
 				await setState(1);
-        state.set('Scanning [1]');
-        message.set('Scanning...');
+				state.set('Scanning [1]');
+				message.set('Scanning...');
 				timerInstance.start({countdown: true, startValues: {seconds: 15}});
 			}
 		});
@@ -266,7 +264,9 @@ async function scan() {
 }
 
 function doomsday(command, callback) {
-  exec(command, function (error, stdout, stderr) { callback(stdout); });
+	exec(command, function (error, stdout, stderr) {
+		callback(stdout);
+	});
 }
 
 init();
