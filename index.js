@@ -151,7 +151,9 @@ async function init() {
 		let bpm = Math.max.apply(null, JSON.parse(json).data);
 		_POLARBPM = bpm;
 		polarBPM.set(bpm);
-		polarHistogram.set(bpm);
+    polarHistogram.set(bpm);
+    await sleep(1000);
+    polarHistogram.set(0);
 	});
 
 	_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`).catch(async function (error) {
