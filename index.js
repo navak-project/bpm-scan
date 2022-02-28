@@ -17,6 +17,7 @@ let _HEARTRATE;
 let _PRESENCE = false;
 let readyToScan = true;
 let _POLARBPM;
+const _TIMERSCAN = 15
 
 const {ID, GROUP, IP} = process.env;
 
@@ -38,7 +39,6 @@ client.on('message', function (topic, message) {
 
 const state = io.metric({
 	name: 'Scanning state',
-	default: null
 });
 
 const polarBPM = io.metric({
@@ -53,12 +53,12 @@ const presence = io.metric({
 
 const user = io.metric({
 	name: 'Selected lantern',
-	default: null
+	default: {}
 });
 
 const timer = io.metric({
 	name: 'The timer when the BPM is stable',
-	default: '0:00:00'
+  default: `${_TIMERSCAN}`
 });
 
 const catchError = io.metric({
@@ -71,8 +71,7 @@ const message = io.metric({
 });
 
 const polarName = io.metric({
-	name: 'Polar device name',
-	default: null
+	name: 'Polar device name'
 });
 
 async function init() {
@@ -120,7 +119,6 @@ async function init() {
 	} catch (err) {
 		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
 		message.set(err.text);
-
 		console.log('Will reboot bluetooth in 5 seconds...');
 		await sleep(5000);
 		process.exit(0);
@@ -159,7 +157,7 @@ async function getUser() {
 	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
-      console.log("🚀 ~ file: index.js ~ line 157 ~ _USER", _USER);
+      console.log(`Got User [${_USER.data.id}]`);
       user.set(`User [${_USER.data.id}]`);
       await setState(0);
       message.set('Ready to scan');
@@ -171,7 +169,8 @@ async function getUser() {
 			catchError.set(error.response.data);
 			await setState(3);
 			state.set('No lantern [3]');
-			message.set('No lantern');
+      message.set('No lantern');
+      console.log('No lantern, will try to get a user in 5 seconds...');
 			await sleep(5000);
 			await getUser();
 			//process.exit(0);
@@ -228,7 +227,8 @@ async function setState(id) {
 }
 
 async function reset() {
-	timerInstance.stop();
+  timerInstance.stop();
+  timer.set(`${_TIMERSCAN}`)
 	message.set('User presence is false, will reboot in 5 seconds...');
   await sleep(5000);
   await setState(0);
@@ -275,7 +275,7 @@ async function scan() {
 				await setState(1);
 				state.set('Scanning [1]');
 				message.set('Scanning...');
-				timerInstance.start({countdown: true, startValues: {seconds: 15}});
+        timerInstance.start({ countdown: true, startValues: { seconds: _TIMERSCAN}});
 			}
 		});
 	});
