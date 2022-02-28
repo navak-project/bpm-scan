@@ -147,17 +147,18 @@ async function init() {
 	});
 
 	await getUser();
-	await setState(0);
-	message.set('Ready to scan');
-	state.set('Ready [0]');
-	console.log('Ready');
+
 }
 
 async function getUser() {
 	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
-			user.set(`User [${_USER.data.id}]`);
+      user.set(`User [${_USER.data.id}]`);
+      await setState(0);
+      message.set('Ready to scan');
+      state.set('Ready [0]');
+      console.log('Ready');
 			resolve();
 		} catch (error) {
 			console.log(error.response.data);
@@ -176,14 +177,14 @@ async function event(presence) {
 	// make sure to wait to be sure someone is there and its stable
 	// OR USE A PRESSUR SENSOR
 	if (presence && _POLARBPM > 0) {
-		if (readyToScan) {
+		//if (readyToScan) {
 			await setState(1);
 			//_USER = await getRandomUser();
 			_USERBPM = await scan();
 			await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: _USERBPM});
 			await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
 			//reset();
-			readyToScan = false;
+			//readyToScan = false;
 			_HEARTRATE.stopNotifications();
 			timerInstance.pause();
 			state.set('Done [2]');
@@ -191,7 +192,7 @@ async function event(presence) {
       await sleep(5000);
       await getUser();
 		//	process.exit(0);
-		}
+		//}
 	}
 }
 
@@ -223,7 +224,8 @@ async function setState(id) {
 async function reset() {
 	timerInstance.stop();
 	message.set('User presence is false, will reboot in 5 seconds...');
-	await sleep(5000);
+  await sleep(5000);
+  await setState(0);
 	// process.exit(0);
 }
 
@@ -242,7 +244,7 @@ function sleep(ms) {
  * @return {Promise<number>} Last BPM after a certain time
  */
 async function scan() {
-	readyToScan = false;
+	//readyToScan = false;
 	return new Promise(async (resolve, reject) => {
 		let scanBPM;
 		// await _HEARTRATE.startNotifications();
