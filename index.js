@@ -35,12 +35,13 @@ client.on('message', function (topic, message) {
 });
 
 const state = io.metric({
-	name: 'Scanning state'
+	name: 'Scanning state',
+	default: null
 });
 
 const polarBPM = io.metric({
-  name: 'Polar BPM',
-  default: 0,
+	name: 'Polar BPM',
+	default: 0
 });
 
 const presence = io.metric({
@@ -49,12 +50,13 @@ const presence = io.metric({
 });
 
 const user = io.metric({
-  name: 'Selected lantern',
-  default: null
+	name: 'Selected lantern',
+	default: null
 });
 
 const timer = io.metric({
-	name: 'The timer when the BPM is stable'
+	name: 'The timer when the BPM is stable',
+	default: '0:00:00'
 });
 
 const catchError = io.metric({
@@ -67,14 +69,13 @@ const message = io.metric({
 });
 
 const polarName = io.metric({
-	name: 'Polar device name'
+	name: 'Polar device name',
+	default: null
 });
 
 async function init() {
- // doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
- // doomsday('sudo hostname -I', function (callback) { })
-	presence.set(false);
-	user.set(null);
+	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
+	// doomsday('sudo hostname -I', function (callback) { })
 
 	await setState(5);
 
@@ -92,7 +93,7 @@ async function init() {
 
 	if (!(await adapter.isDiscovering())) {
 		await adapter.startDiscovery();
-  }
+	}
 
 	console.log('Discovering device...');
 	message.set('Discovering device...');
@@ -113,12 +114,12 @@ async function init() {
 	try {
 		await device.connect();
 	} catch (err) {
-    console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
-    message.set(err.text);
+		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
+		message.set(err.text);
 
-    console.log('Will reboot bluetooth in 5 seconds...');
-    await sleep(5000);
-    process.exit(0);
+		console.log('Will reboot bluetooth in 5 seconds...');
+		await sleep(5000);
+		process.exit(0);
 	}
 
 	message.set('Connected');
@@ -136,7 +137,6 @@ async function init() {
 	await heartrate.startNotifications();
 
 	_HEARTRATE = heartrate;
-	//checkNotification();
 	message.set('Waiting for notifications');
 
 	_HEARTRATE.on('valuechanged', async (buffer) => {
@@ -144,24 +144,32 @@ async function init() {
 		let bpm = Math.max.apply(null, JSON.parse(json).data);
 		_POLARBPM = bpm;
 		polarBPM.set(bpm);
-  });
-  
-  try {
-    _USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
-    user.set(`User [${_USER.data.id}]`);
-  } catch(error) {
-     console.log(error.response.data);
-     catchError.set(error.response.data);
-     await setState(3);
-     state.set('No lantern [3]');
-     await sleep(2000);
-     process.exit(0);
-  }
-	
+	});
+
+	await getUser();
 	await setState(0);
 	message.set('Ready to scan');
 	state.set('Ready [0]');
 	console.log('Ready');
+}
+
+async function getUser() {
+	return new Promise(function (resolve, reject) {
+		try {
+			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
+			user.set(`User [${_USER.data.id}]`);
+			resolve();
+		} catch (error) {
+			console.log(error.response.data);
+			catchError.set(error.response.data);
+			await setState(3);
+			state.set('No lantern [3]');
+			message.set('No lantern');
+			await sleep(5000);
+			await getUser();
+			//process.exit(0);
+		}
+	});
 }
 
 async function event(presence) {
@@ -179,9 +187,10 @@ async function event(presence) {
 			_HEARTRATE.stopNotifications();
 			timerInstance.pause();
 			state.set('Done [2]');
-			message.set('Done, will reboot in 5 seconds...');
-			await sleep(5000);
-			process.exit(0);
+			message.set('Done, will get a new user in 5 seconds...');
+      await sleep(5000);
+      await getUser();
+		//	process.exit(0);
 		}
 	}
 }
@@ -202,6 +211,7 @@ async function setState(id) {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
 			.then(() => {
+				state.set(id);
 				resolve();
 			})
 			.catch((err) => {
@@ -211,10 +221,10 @@ async function setState(id) {
 }
 
 async function reset() {
-  timerInstance.stop();
-  message.set('User presence is false, will reboot in 5 seconds...');
-  await sleep(5000);
- // process.exit(0);
+	timerInstance.stop();
+	message.set('User presence is false, will reboot in 5 seconds...');
+	await sleep(5000);
+	// process.exit(0);
 }
 
 /**
@@ -265,7 +275,7 @@ async function scan() {
 
 function doomsday(command, callback) {
 	exec(command, function (error, stdout, stderr) {
-    //console.log("🚀 ~ file: index.js ~ line 265 ~ error", error);
+		//console.log("🚀 ~ file: index.js ~ line 265 ~ error", error);
 		callback(stdout);
 	});
 }
