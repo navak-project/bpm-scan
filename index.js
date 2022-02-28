@@ -179,16 +179,15 @@ async function checkScan(presence) {
 	// OR USE A PRESSUR SENSOR
 	if (presence && _POLARBPM > 0) {
 		//if (readyToScan) {
-		await setState(1);
+		
 		//_USER = await getRandomUser();
-		_USERBPM = await scan();
+    _USERBPM = await scan();
+    timerInstance.stop();
 		await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: _USERBPM});
 		await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
-		//reset();
-		//readyToScan = false;
-		_HEARTRATE.stopNotifications();
-		timerInstance.pause();
-		state.set('Done [2]');
+		//_HEARTRATE.stopNotifications();
+    state.set('Done [2]');
+    timer.set(_TIMERSCAN);
 		message.set('Done, will get a new user in 5 seconds...');
 		await sleep(5000);
 		await getUser();
@@ -227,7 +226,8 @@ async function reset() {
   timer.set(`${_TIMERSCAN}`);
 	message.set('User presence is false, will reboot in 5 seconds...');
 	await sleep(5000);
-	await setState(0);
+  await setState(0);
+  message.set('Ready to scan');
 	// process.exit(0);
 }
 
@@ -254,17 +254,17 @@ async function scan() {
 			timer.set(timerInstance.getTimeValues().toString());
 			if (!_PRESENCE) {
 				await setState(4);
-				reset();
+        reset();
 			}
 		});
 		timerInstance.addEventListener('targetAchieved', async function (e) {
 			resolve(scanBPM);
 		});
     
-		_HEARTRATE.on('valuechanged', async (buffer) => {
-			let json = JSON.stringify(buffer);
-			let bpm = Math.max.apply(null, JSON.parse(json).data);
-			polarBPM.set(bpm);
+		//_HEARTRATE.on('valuechanged', async (buffer) => {
+		//	let json = JSON.stringify(buffer);
+		//	let bpm = Math.max.apply(null, JSON.parse(json).data);
+		//	polarBPM.set(bpm);
 			//console.log(bpm);
 			if (_POLARBPM > 0 && _PRESENCE) {
         scanBPM = bpm;
@@ -274,7 +274,7 @@ async function scan() {
         timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
 			}
 		});
-	});
+//	});
 }
 
 function doomsday(command, callback) {
