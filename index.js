@@ -18,7 +18,7 @@ let _PRESENCE = false;
 let readyToScan = true;
 let _POLARBPM;
 
-const {ID, GROUP, IP, MQTTIP} = process.env;
+const {ID, GROUP, IP} = process.env;
 
 client.on('error', function (err) {
 	console.dir(err);
@@ -30,8 +30,10 @@ client.on('message', function (topic, message) {
 	let value = JSON.parse(buff);
 	let valueParse = JSON.parse(value.presence.toLowerCase());
 	_PRESENCE = valueParse;
-	presence.set(valueParse);
-	event(valueParse);
+  presence.set(valueParse);
+  if (presence && _POLARBPM > 0) { 
+    startScan(valueParse);
+  }
 });
 
 const state = io.metric({
@@ -96,7 +98,8 @@ async function init() {
 	}
 
 	console.log('Discovering device...');
-	message.set('Discovering device...');
+  message.set('Discovering device...');
+  
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
 		if (err) {
 			console.log(err);
@@ -107,7 +110,8 @@ async function init() {
 	});
 
 	const macAdresss = await device.getAddress();
-	const deviceName = await device.getName();
+  const deviceName = await device.getName();
+  
 	console.log('got device', macAdresss, deviceName);
 	polarName.set(polarName);
 
@@ -130,15 +134,14 @@ async function init() {
 		console.log('Will reboot in 5 seconds...');
 		await sleep(5000);
 		process.exit(0);
-	});
+  });
+  
 	const gattServer = await device.gatt();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
 	await heartrate.startNotifications();
 
 	_HEARTRATE = heartrate;
-	message.set('Waiting for notifications');
-
 	_HEARTRATE.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
 		let bpm = Math.max.apply(null, JSON.parse(json).data);
@@ -151,9 +154,12 @@ async function init() {
 }
 
 async function getUser() {
+  console.log('Getting user...');
+  user.set(`Getting user...`);
 	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
+      console.log("🚀 ~ file: index.js ~ line 157 ~ _USER", _USER);
       user.set(`User [${_USER.data.id}]`);
       await setState(0);
       message.set('Ready to scan');
@@ -173,10 +179,10 @@ async function getUser() {
 	});
 }
 
-async function event(presence) {
+async function startScan(presence) {
 	// make sure to wait to be sure someone is there and its stable
 	// OR USE A PRESSUR SENSOR
-	if (presence && _POLARBPM > 0) {
+	
 		//if (readyToScan) {
 			await setState(1);
 			//_USER = await getRandomUser();
@@ -193,7 +199,7 @@ async function event(presence) {
       await getUser();
 		//	process.exit(0);
 		//}
-	}
+	
 }
 
 /**
