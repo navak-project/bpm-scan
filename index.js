@@ -154,7 +154,7 @@ async function init() {
 }
 
 async function getUser() {
-	return new Promise(function (resolve, reject) {
+	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			user.set(`User [${_USER.data.id}]`);
