@@ -15,7 +15,7 @@ let _USERBPM;
 let _USER;
 let _HEARTRATE;
 let _PRESENCE = false;
-let readyToScan = true;
+let _READYTOSCAN = false;
 let _POLARBPM;
 const _TIMERSCAN = 15;
 
@@ -74,7 +74,8 @@ const polarName = io.metric({
 async function init() {
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
-
+  messageHandler(message, 'Hello World!');
+  sleep(10000);
 	await setState(5);
 
 	console.log('booting...');
@@ -143,9 +144,9 @@ async function init() {
 		_POLARBPM = bpm;
 		polarBPM.set(bpm);
 	});
-
 	await getUser();
 }
+
 
 async function getUser() {
 	console.log('Getting user...');
@@ -159,6 +160,7 @@ async function getUser() {
 			message.set('Ready to scan');
 			state.set('Ready [0]');
 			console.log('Ready');
+			_READYTOSCAN = true;
 			resolve();
 		} catch (error) {
 			console.log(error.response.data);
@@ -179,15 +181,14 @@ async function checkScan(presence) {
 	// OR USE A PRESSUR SENSOR
 	if (presence && _POLARBPM > 0) {
 		//if (readyToScan) {
-		
 		//_USER = await getRandomUser();
-    _USERBPM = await scan();
-    timerInstance.stop();
+		_USERBPM = await scan();
+		timerInstance.stop();
 		await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: _USERBPM});
 		await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
 		//_HEARTRATE.stopNotifications();
-    state.set('Done [2]');
-    timer.set(_TIMERSCAN);
+		state.set('Done [2]');
+		timer.set(_TIMERSCAN);
 		message.set('Done, will get a new user in 5 seconds...');
 		await sleep(5000);
 		await getUser();
@@ -222,12 +223,14 @@ async function setState(id) {
 }
 
 async function reset() {
+	_READYTOSCAN = false;
 	timerInstance.stop();
-  timer.set(`${_TIMERSCAN}`);
-	message.set('User presence is false, will reboot in 5 seconds...');
+	timer.set(`${_TIMERSCAN}`);
+	message.set('User presence is false, will restart in 5 seconds...');
 	await sleep(5000);
-  await setState(0);
-  message.set('Ready to scan');
+	_READYTOSCAN = true;
+	await setState(0);
+	message.set('Ready to scan');
 	// process.exit(0);
 }
 
@@ -254,26 +257,27 @@ async function scan() {
 			timer.set(timerInstance.getTimeValues().toString());
 			if (!_PRESENCE) {
 				await setState(4);
-        reset();
+				reset();
 			}
 		});
 		timerInstance.addEventListener('targetAchieved', async function (e) {
+			scanBPM = _POLARBPM;
+			_READYTOSCAN = false;
 			resolve(scanBPM);
 		});
-    
-		//_HEARTRATE.on('valuechanged', async (buffer) => {
-		//	let json = JSON.stringify(buffer);
-		//	let bpm = Math.max.apply(null, JSON.parse(json).data);
-		//	polarBPM.set(bpm);
-			//console.log(bpm);
+		if (_READYTOSCAN) {
 			if (_POLARBPM > 0 && _PRESENCE) {
-        await setState(1);
-        state.set('Scanning [1]');
-        message.set('Scanning...');
-        timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
+				await setState(1);
+				state.set('Scanning [1]');
+				message.set('Scanning...');
+				timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
 			}
-		});
-//	});
+		}
+	});
+}
+
+function messageHandler(metrics, msg) {
+  metrics.set(msg);
 }
 
 function doomsday(command, callback) {
