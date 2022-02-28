@@ -1,8 +1,7 @@
 import 'dotenv/config';
 import io from '@pm2/io';
-import mqtt from 'mqtt';
 import {createBluetooth} from 'node-ble';
-const {bluetooth, destroy} = createBluetooth();
+const {bluetooth} = createBluetooth();
 import axios from 'axios';
 import {Timer} from 'easytimer.js';
 import {exec} from 'child_process';
@@ -18,22 +17,7 @@ let _PRESENCE = false;
 let _READYTOSCAN = false;
 let _POLARBPM;
 const _TIMERSCAN = 15;
-
 const {ID, GROUP, IP} = process.env;
-
-client.on('error', function (err) {
-	console.dir(err);
-});
-
-client.on('message', async function (topic, message) {
-	// message is Buffer
-	let buff = message.toString();
-	let value = JSON.parse(buff);
-	let valueParse = JSON.parse(value.presence.toLowerCase());
-	_PRESENCE = valueParse;
-	presence.set(_PRESENCE);
-	checkScan(_PRESENCE);
-});
 
 const state = io.metric({
 	name: 'Scanning state'
@@ -71,11 +55,25 @@ const polarName = io.metric({
 	name: 'Polar device name'
 });
 
-async function init() {
+client.on('error', function (err) {
+	console.dir(err);
+});
+
+client.on('message', async function (topic, message) {
+	// message is Buffer
+	let buff = message.toString();
+	let value = JSON.parse(buff);
+	let valueParse = JSON.parse(value.presence.toLowerCase());
+	_PRESENCE = valueParse;
+	presence.set(_PRESENCE);
+	checkScan(_PRESENCE);
+});
+
+(async function () {
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
-  messageHandler(message, 'Hello World!');
-  sleep(10000);
+	messageHandler(message, 'Hello World!');
+	sleep(10000);
 	await setState(5);
 
 	console.log('booting...');
@@ -109,7 +107,7 @@ async function init() {
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
 
-	console.log('got device', macAdresss, deviceName);
+	console.log('Device:', macAdresss, deviceName);
 	polarName.set(polarName);
 
 	try {
@@ -117,7 +115,7 @@ async function init() {
 	} catch (err) {
 		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
 		message.set(err.text);
-		console.log('Will reboot bluetooth in 5 seconds...');
+		console.log('Will reboot in 5 seconds...');
 		await sleep(5000);
 		process.exit(0);
 	}
@@ -145,8 +143,7 @@ async function init() {
 		polarBPM.set(bpm);
 	});
 	await getUser();
-}
-
+})();
 
 async function getUser() {
 	console.log('Getting user...');
@@ -171,29 +168,21 @@ async function getUser() {
 			console.log('No lantern, will try to get a user in 5 seconds...');
 			await sleep(5000);
 			await getUser();
-			//process.exit(0);
 		}
 	});
 }
 
 async function checkScan(presence) {
-	// make sure to wait to be sure someone is there and its stable
-	// OR USE A PRESSUR SENSOR
 	if (presence && _POLARBPM > 0) {
-		//if (readyToScan) {
-		//_USER = await getRandomUser();
 		_USERBPM = await scan();
 		timerInstance.stop();
 		await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: _USERBPM});
 		await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
-		//_HEARTRATE.stopNotifications();
 		state.set('Done [2]');
 		timer.set(_TIMERSCAN);
 		message.set('Done, will get a new user in 5 seconds...');
 		await sleep(5000);
 		await getUser();
-		//	process.exit(0);
-		//}
 	}
 }
 
@@ -225,13 +214,12 @@ async function setState(id) {
 async function reset() {
 	_READYTOSCAN = false;
 	timerInstance.stop();
-	timer.set(`${_TIMERSCAN}`);
+	timer.set(_TIMERSCAN);
 	message.set('User presence is false, will restart in 5 seconds...');
 	await sleep(5000);
 	_READYTOSCAN = true;
 	await setState(0);
 	message.set('Ready to scan');
-	// process.exit(0);
 }
 
 /**
@@ -249,10 +237,8 @@ function sleep(ms) {
  * @return {Promise<number>} Last BPM after a certain time
  */
 async function scan() {
-	//readyToScan = false;
 	return new Promise(async (resolve, reject) => {
 		let scanBPM;
-		// await _HEARTRATE.startNotifications();
 		timerInstance.addEventListener('secondsUpdated', async function (e) {
 			timer.set(timerInstance.getTimeValues().toString());
 			if (!_PRESENCE) {
@@ -277,14 +263,11 @@ async function scan() {
 }
 
 function messageHandler(metrics, msg) {
-  metrics.set(msg);
+	metrics.set(msg);
 }
 
 function doomsday(command, callback) {
 	exec(command, function (error, stdout, stderr) {
-		//console.log("🚀 ~ file: index.js ~ line 265 ~ error", error);
 		callback(stdout);
 	});
 }
-
-init();
