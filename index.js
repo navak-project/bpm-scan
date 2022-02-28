@@ -25,7 +25,7 @@ client.on('error', function (err) {
 	console.dir(err);
 });
 
-client.on('message', function (topic, message) {
+client.on('message', async function (topic, message) {
 	// message is Buffer
 	let buff = message.toString();
 	let value = JSON.parse(buff);
