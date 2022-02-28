@@ -225,7 +225,6 @@ async function setState(id) {
 async function reset() {
 	timerInstance.stop();
   timer.set(`${_TIMERSCAN}`);
-  console.log('Reset');
 	message.set('User presence is false, will reboot in 5 seconds...');
 	await sleep(5000);
 	await setState(0);
@@ -249,8 +248,7 @@ function sleep(ms) {
 async function scan() {
 	//readyToScan = false;
 	return new Promise(async (resolve, reject) => {
-    let scanBPM;
-    let readyToScan = false;
+		let scanBPM;
 		// await _HEARTRATE.startNotifications();
 		timerInstance.addEventListener('secondsUpdated', async function (e) {
 			timer.set(timerInstance.getTimeValues().toString());
@@ -261,23 +259,18 @@ async function scan() {
 		});
 		timerInstance.addEventListener('targetAchieved', async function (e) {
 			resolve(scanBPM);
-    });
-    if (_POLARBPM > 0 && _PRESENCE) { 
-      readyToScan = true;
-      await setState(1);
-      state.set('Scanning [1]');
-      message.set('Scanning...');
-      console.log('Scanning...');
-    } else {
-      readyToScan = false;
-    }
+		});
+    
 		_HEARTRATE.on('valuechanged', async (buffer) => {
 			let json = JSON.stringify(buffer);
 			let bpm = Math.max.apply(null, JSON.parse(json).data);
 			polarBPM.set(bpm);
 			//console.log(bpm);
-      if (readyToScan) {
+			if (_POLARBPM > 0 && _PRESENCE) {
         scanBPM = bpm;
+        await setState(1);
+        state.set('Scanning [1]');
+        message.set('Scanning...');
         timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
 			}
 		});
