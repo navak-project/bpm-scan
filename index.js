@@ -267,7 +267,6 @@ async function scan() {
 		//	polarBPM.set(bpm);
 			//console.log(bpm);
 			if (_POLARBPM > 0 && _PRESENCE) {
-        scanBPM = bpm;
         await setState(1);
         state.set('Scanning [1]');
         message.set('Scanning...');
