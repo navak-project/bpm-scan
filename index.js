@@ -34,6 +34,9 @@ client.on('message', function (topic, message) {
   presence.set(valueParse);
   if (presence && _POLARBPM > 0) { 
     startScan(valueParse);
+  } else {
+    await setState(4);
+    reset();
   }
 });
 
@@ -51,9 +54,8 @@ const presence = io.metric({
 	default: false
 });
 
-const user = io.metric({
-	name: 'Selected lantern',
-	default: {}
+const lantern = io.metric({
+	name: 'Lantern',
 });
 
 const timer = io.metric({
@@ -153,12 +155,12 @@ async function init() {
 
 async function getUser() {
   console.log('Getting user...');
-  user.set(`Getting user...`);
+  lantern.set(`Getting user...`);
 	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
       console.log(`Got User [${_USER.data.id}]`);
-      user.set(`User [${_USER.data.id}]`);
+      lantern.set(`User [${_USER.data.id}]`);
       await setState(0);
       message.set('Ready to scan');
       state.set('Ready [0]');
@@ -256,10 +258,10 @@ async function scan() {
 		// await _HEARTRATE.startNotifications();
 		timerInstance.addEventListener('secondsUpdated', async function (e) {
 			timer.set(timerInstance.getTimeValues().toString());
-			if (!_PRESENCE) {
+			/*if (!_PRESENCE) {
 				await setState(4);
 				reset();
-			}
+			}*/
 		});
 		timerInstance.addEventListener('targetAchieved', async function (e) {
 			resolve(scanBPM);
