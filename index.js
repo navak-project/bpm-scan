@@ -49,7 +49,8 @@ const presence = io.metric({
 });
 
 const user = io.metric({
-	name: 'The current selected lantern'
+  name: 'Selected lantern',
+  default: null
 });
 
 const timer = io.metric({
@@ -210,8 +211,10 @@ async function setState(id) {
 }
 
 async function reset() {
-	timerInstance.stop();
-	process.exit(0);
+  timerInstance.stop();
+  message.set('User presence is false, will reboot in 5 seconds...');
+  await sleep(5000);
+ // process.exit(0);
 }
 
 /**
