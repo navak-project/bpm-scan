@@ -143,20 +143,20 @@ async function init() {
 		let bpm = Math.max.apply(null, JSON.parse(json).data);
 		_POLARBPM = bpm;
 		polarBPM.set(bpm);
-	});
-
-	_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`).catch(async function (error) {
-		if (error) {
-			console.log(error.response.data);
-			catchError.set(error.response.data);
-			await setState(3);
-			state.set('No lantern [3]');
-			await sleep(2000);
-			process.exit(0);
-		}
-	});
-
-	user.set(`User [${_USER.data.id}]`);
+  });
+  
+  try {
+    _USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
+    user.set(`User [${_USER.data.id}]`);
+  } catch(error) {
+     console.log(error.response.data);
+     catchError.set(error.response.data);
+     await setState(3);
+     state.set('No lantern [3]');
+     await sleep(2000);
+     process.exit(0);
+  }
+	
 	await setState(0);
 	message.set('Ready to scan');
 	state.set('Ready [0]');
