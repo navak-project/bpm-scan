@@ -72,8 +72,7 @@ client.on('message', async function (topic, message) {
 (async function () {
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
-	messageHandler(message, 'Hello World!');
-	sleep(10000);
+
 	await setState(5);
 
 	console.log('booting...');
@@ -222,16 +221,7 @@ async function reset() {
 	message.set('Ready to scan');
 }
 
-/**
- * Check the BPM at his current state
- * @return {Promise<number>} return the current bpm value
- * @param {Number} ms
- */
-function sleep(ms) {
-	return new Promise((resolve) => {
-		setTimeout(resolve, ms);
-	});
-}
+
 /**
  * Start the BPM scan. When value is stable we launch the counter and return the last value
  * @return {Promise<number>} Last BPM after a certain time
@@ -262,8 +252,15 @@ async function scan() {
 	});
 }
 
-function messageHandler(metrics, msg) {
-	metrics.set(msg);
+/**
+ * Check the BPM at his current state
+ * @return {Promise<number>} return the current bpm value
+ * @param {Number} ms
+ */
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 function doomsday(command, callback) {
