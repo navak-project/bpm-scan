@@ -17,7 +17,7 @@ let _HEARTRATE;
 let _PRESENCE = false;
 let readyToScan = true;
 let _POLARBPM;
-const _TIMERSCAN = 15
+const _TIMERSCAN = 15;
 
 const {ID, GROUP, IP} = process.env;
 
@@ -31,12 +31,12 @@ client.on('message', async function (topic, message) {
 	let value = JSON.parse(buff);
 	let valueParse = JSON.parse(value.presence.toLowerCase());
 	_PRESENCE = valueParse;
-  presence.set(_PRESENCE);
-  checkScan(_PRESENCE);
+	presence.set(_PRESENCE);
+	checkScan(_PRESENCE);
 });
 
 const state = io.metric({
-	name: 'Scanning state',
+	name: 'Scanning state'
 });
 
 const polarBPM = io.metric({
@@ -50,12 +50,12 @@ const presence = io.metric({
 });
 
 const lantern = io.metric({
-	name: 'Lantern',
+	name: 'Lantern'
 });
 
 const timer = io.metric({
 	name: 'The timer when the BPM is stable',
-  default: `${_TIMERSCAN}`
+	default: `${_TIMERSCAN}`
 });
 
 const catchError = io.metric({
@@ -94,8 +94,8 @@ async function init() {
 	}
 
 	console.log('Discovering device...');
-  message.set('Discovering device...');
-  
+	message.set('Discovering device...');
+
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
 		if (err) {
 			console.log(err);
@@ -106,8 +106,8 @@ async function init() {
 	});
 
 	const macAdresss = await device.getAddress();
-  const deviceName = await device.getName();
-  
+	const deviceName = await device.getName();
+
 	console.log('got device', macAdresss, deviceName);
 	polarName.set(polarName);
 
@@ -129,8 +129,8 @@ async function init() {
 		console.log('Will reboot in 5 seconds...');
 		await sleep(5000);
 		process.exit(0);
-  });
-  
+	});
+
 	const gattServer = await device.gatt();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
@@ -145,29 +145,28 @@ async function init() {
 	});
 
 	await getUser();
-
 }
 
 async function getUser() {
-  console.log('Getting user...');
-  lantern.set(`Getting user...`);
+	console.log('Getting user...');
+	lantern.set(`Getting user...`);
 	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
-      console.log(`Got User [${_USER.data.id}]`);
-      lantern.set(`User [${_USER.data.id}]`);
-      await setState(0);
-      message.set('Ready to scan');
-      state.set('Ready [0]');
-      console.log('Ready');
+			console.log(`Got User [${_USER.data.id}]`);
+			lantern.set(`User [${_USER.data.id}]`);
+			await setState(0);
+			message.set('Ready to scan');
+			state.set('Ready [0]');
+			console.log('Ready');
 			resolve();
 		} catch (error) {
 			console.log(error.response.data);
 			catchError.set(error.response.data);
 			await setState(3);
 			state.set('No lantern [3]');
-      message.set('No lantern');
-      console.log('No lantern, will try to get a user in 5 seconds...');
+			message.set('No lantern');
+			console.log('No lantern, will try to get a user in 5 seconds...');
 			await sleep(5000);
 			await getUser();
 			//process.exit(0);
@@ -178,24 +177,24 @@ async function getUser() {
 async function checkScan(presence) {
 	// make sure to wait to be sure someone is there and its stable
 	// OR USE A PRESSUR SENSOR
-  if (presence && _POLARBPM > 0) {
-    //if (readyToScan) {
-    await setState(1);
-    //_USER = await getRandomUser();
-    _USERBPM = await scan();
-    await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { pulse: _USERBPM });
-    await axios.put(`http://${IP}/api/stations/${ID}`, { state: 2, rgb: _USER.data.rgb });
-    //reset();
-    //readyToScan = false;
-    _HEARTRATE.stopNotifications();
-    timerInstance.pause();
-    state.set('Done [2]');
-    message.set('Done, will get a new user in 5 seconds...');
-    await sleep(5000);
-    await getUser();
-    //	process.exit(0);
-    //}
-  }
+	if (presence && _POLARBPM > 0) {
+		//if (readyToScan) {
+		await setState(1);
+		//_USER = await getRandomUser();
+		_USERBPM = await scan();
+		await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: _USERBPM});
+		await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
+		//reset();
+		//readyToScan = false;
+		_HEARTRATE.stopNotifications();
+		timerInstance.pause();
+		state.set('Done [2]');
+		message.set('Done, will get a new user in 5 seconds...');
+		await sleep(5000);
+		await getUser();
+		//	process.exit(0);
+		//}
+	}
 }
 
 /**
@@ -224,11 +223,12 @@ async function setState(id) {
 }
 
 async function reset() {
-  timerInstance.stop();
-  timer.set(`${_TIMERSCAN}`)
+	timerInstance.stop();
+  timer.set(`${_TIMERSCAN}`);
+  console.log('Reset');
 	message.set('User presence is false, will reboot in 5 seconds...');
-  await sleep(5000);
-  await setState(0);
+	await sleep(5000);
+	await setState(0);
 	// process.exit(0);
 }
 
@@ -249,7 +249,8 @@ function sleep(ms) {
 async function scan() {
 	//readyToScan = false;
 	return new Promise(async (resolve, reject) => {
-		let scanBPM;
+    let scanBPM;
+    let readyToScan = false;
 		// await _HEARTRATE.startNotifications();
 		timerInstance.addEventListener('secondsUpdated', async function (e) {
 			timer.set(timerInstance.getTimeValues().toString());
@@ -260,20 +261,25 @@ async function scan() {
 		});
 		timerInstance.addEventListener('targetAchieved', async function (e) {
 			resolve(scanBPM);
-		});
+    });
+    if (_POLARBPM > 0 && _PRESENCE) { 
+      readyToScan = true;
+      await setState(1);
+      state.set('Scanning [1]');
+      message.set('Scanning...');
+      console.log('Scanning...');
+    } else {
+      readyToScan = false;
+    }
 		_HEARTRATE.on('valuechanged', async (buffer) => {
 			let json = JSON.stringify(buffer);
 			let bpm = Math.max.apply(null, JSON.parse(json).data);
 			polarBPM.set(bpm);
 			//console.log(bpm);
-     // if (_POLARBPM != 0 && _PRESENCE) {
-				scanBPM = bpm;
-				await setState(1);
-				state.set('Scanning [1]');
-      message.set('Scanning...');
-      console.log('Scanning...');
-        timerInstance.start({ countdown: true, startValues: { seconds: _TIMERSCAN}});
-			//}
+      if (readyToScan) {
+        scanBPM = bpm;
+        timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
+			}
 		});
 	});
 }
