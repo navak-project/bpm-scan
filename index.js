@@ -231,7 +231,7 @@ async function scan() {
 		let scanBPM;
 		timerInstance.addEventListener('secondsUpdated', async function (e) {
 			timer.set(timerInstance.getTimeValues().toString());
-			if (!_PRESENCE) {
+      if (!_PRESENCE || _POLARBPM === 0) {
 				await setState(4);
 				reset();
 			}
@@ -247,7 +247,7 @@ async function scan() {
 				state.set('Scanning [1]');
 				message.set('Scanning...');
 				timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
-			}
+      }
 		}
 	});
 }
