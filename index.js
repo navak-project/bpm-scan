@@ -252,7 +252,7 @@ async function scan() {
 			let bpm = Math.max.apply(null, JSON.parse(json).data);
 			polarBPM.set(bpm);
 			console.log(bpm);
-			if (bpm != 0) {
+			if (bpm != 0 && _PRESENCE) {
 				scanBPM = bpm;
 				await setState(1);
 				state.set('Scanning [1]');
