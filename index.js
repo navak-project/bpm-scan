@@ -137,12 +137,12 @@ async function init() {
 	await heartrate.startNotifications();
 
 	_HEARTRATE = heartrate;
-/*	_HEARTRATE.on('valuechanged', async (buffer) => {
+	_HEARTRATE.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
 		let bpm = Math.max.apply(null, JSON.parse(json).data);
 		_POLARBPM = bpm;
 		polarBPM.set(bpm);
-	});*/
+	});
 
 	await getUser();
 
@@ -270,7 +270,8 @@ async function scan() {
 				scanBPM = bpm;
 				await setState(1);
 				state.set('Scanning [1]');
-				message.set('Scanning...');
+      message.set('Scanning...');
+      console.log('Scanning...');
         timerInstance.start({ countdown: true, startValues: { seconds: _TIMERSCAN}});
 			//}
 		});
