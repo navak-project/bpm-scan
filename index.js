@@ -7,7 +7,8 @@ import {Timer} from 'easytimer.js';
 import {exec} from 'child_process';
 import {clientConnect} from './mqtt.js';
 const {client} = clientConnect();
-
+const EventEmitter = require('events')
+const eventEmitter = new EventEmitter()
 var timerInstance = new Timer();
 
 let _USERBPM;
@@ -17,6 +18,7 @@ let _PRESENCE = false;
 let _READYTOSCAN = false;
 let _SCANNING = false;
 let _POLARBPM;
+let _SCANDONE = false;
 const _TIMERSCAN = 15;
 const {ID, GROUP, IP} = process.env;
 
@@ -71,6 +73,14 @@ client.on('message', async function (topic, message) {
 	  checkScan(_PRESENCE);
   }
 });
+
+eventEmitter.on('done', () => {
+  if (presence == false && _SCANNING == false) {
+    message.set('User left, will get a new user in 10 seconds...');
+    await sleep(10000);
+    await getUser();
+  }
+})
 
 (async function () {
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
@@ -186,13 +196,12 @@ async function checkScan(presence) {
       state.set('Done 2');
       timer.set(_TIMERSCAN);
       message.set('Done!');
-      if (presence === false && _SCANNING == false) {
-        message.set('User left, will get a new user in 10 seconds...');
-        await sleep(10000);
-        await getUser();
-      }
+      _SCANDONE = true;
+      //emite done
+      eventEmitter.emit('done');
     } 
-  } 
+  }
+
 }
 
 /**
@@ -248,7 +257,6 @@ async function scan() {
 		});
 		timerInstance.addEventListener('targetAchieved', async function (e) {
 			scanBPM = _POLARBPM;
-      _READYTOSCAN = false;
       _SCANNING = false;
 			resolve(scanBPM);
     });
