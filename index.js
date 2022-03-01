@@ -115,7 +115,7 @@ eventEmitter.on('presence', async (value) => {
   if (value == false && firstData == false) { return }
   presence.set(_PRESENCE);
   if (value == true) {
-    if(_BPM > 0) {
+    if(_POLARBPM > 0) {
       let lanternBpm = await scan();
       await setLantern(lanternBpm)
     }
