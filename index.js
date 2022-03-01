@@ -112,7 +112,9 @@ eventEmitter.on('done', async () => {
 
 // listen to the event
 eventEmitter.on('presence', async (value) => {
-  if (value == false && firstData == false) { return }
+  console.log("🚀 ~ file: index.js ~ line 116 ~ eventEmitter.on ~ firstData", firstData);
+  if (value == false && firstData == false){
+  }
   presence.set(_PRESENCE);
   if (value == true) {
     if(_POLARBPM > 0) {
@@ -319,8 +321,8 @@ async function scan() {
 		timerInstance.addEventListener('secondsUpdated', async function (e) {
 			timer.set(timerInstance.getTimeValues().toString());
 			if (!_PRESENCE || _POLARBPM === 0) {
-				await setState(4);
-				reset();
+			//	await setState(4);
+			//	reset();
 			}
 		});
     timerInstance.addEventListener('targetAchieved', async function (e) {
