@@ -7,10 +7,13 @@ import {Timer} from 'easytimer.js';
 import {exec} from 'child_process';
 import {clientConnect} from './mqtt.js';
 const {client} = clientConnect();
-const EventEmitter = require('events')
-const eventEmitter = new EventEmitter()
+import { EventEmitter } from 'events';
+const eventEmitter = new EventEmitter();
 var timerInstance = new Timer();
 
+
+
+let _DONE =false;
 let _USERBPM;
 let _USER;
 let _HEARTRATE;
@@ -21,6 +24,8 @@ let _POLARBPM;
 let _SCANDONE = false;
 const _TIMERSCAN = 15;
 const {ID, GROUP, IP} = process.env;
+
+let firstData = false;
 
 const state = io.metric({
 	name: 'Scanning state'
@@ -66,22 +71,66 @@ client.on('message', async function (topic, message) {
 	// message is Buffer
 	let buff = message.toString();
 	let value = JSON.parse(buff);
-	let valueParse = JSON.parse(value.presence.toLowerCase());
-	_PRESENCE = valueParse;
-  presence.set(_PRESENCE);
-  if (!_SCANNING) {
+  _PRESENCE = JSON.parse(value.presence.toLowerCase());
+  eventEmitter.emit('presence', _PRESENCE);
+  /*if (!_SCANNING) {
 	  checkScan(_PRESENCE);
+  }*/
+});
+
+
+
+// listen to the event
+eventEmitter.on('init', async () => {
+  await init().then(() => {
+    console.log('init done!');
+  }).catch((err) => {
+    console.log(err);
+    sleep(5000);
+    console.log('init failed, will try again in 5 seconds...');
+    eventEmitter.emit('init');
+  });
+});
+
+// listen to the event
+eventEmitter.on('ready', async () => {
+  await setState(0);
+  message.set('Ready to scan');
+  state.set('Ready 0');
+  console.log('Ready');
+  _READYTOSCAN = true;
+});
+
+// listen to the event
+eventEmitter.on('done', async () => {
+    await setState(2);
+    state.set('Done 2');
+    timer.set(_TIMERSCAN);
+  message.set('Done!');
+  _DONE = true;
+});
+
+// listen to the event
+eventEmitter.on('presence', async (value) => {
+  if (value == false && firstData == false) { return }
+  presence.set(_PRESENCE);
+  if (value == true) {
+    if(_BPM > 0) {
+      let lanternBpm = await scan();
+      await setLantern(lanternBpm)
+    }
+  } else if (value == false && firstData == true) {
+    
+    if (_DONE == false) {
+      scanFail()
+    } else {
+      done();
+    }
   }
 });
 
-eventEmitter.on('done', async () => {
-  if (presence == false && _SCANNING == false) {
-    message.set('User left, will get a new user in 10 seconds...');
-    await sleep(10000);
-    await getUser();
-  }
-})
 
+// BOOT
 (async function () {
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
@@ -153,11 +202,12 @@ eventEmitter.on('done', async () => {
 		let bpm = Math.max.apply(null, JSON.parse(json).data);
 		_POLARBPM = bpm;
 		polarBPM.set(bpm);
-	});
-	await getUser();
+  });
+  
+  eventEmitter.emit('init');
 })();
 
-async function getUser() {
+async function init() {
   await setState(5);
 	console.log('Getting user...');
 	return new Promise(async function (resolve, reject) {
@@ -165,12 +215,7 @@ async function getUser() {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			console.log(`Got User [${_USER.data.id}]`);
 			lantern.set(`User ${_USER.data.id}`);
-			await setState(0);
-			message.set('Ready to scan');
-			state.set('Ready 0');
-      console.log('Ready');
-      await sleep(5000);
-			_READYTOSCAN = true;
+      eventEmitter.emit('ready');
 			resolve();
 		} catch (error) {
 			console.log(error.response.data);
@@ -180,16 +225,36 @@ async function getUser() {
 			message.set('No lantern');
 			console.log('No lantern, will try to get a user in 5 seconds...');
 			await sleep(5000);
-			await getUser();
+      reject();
 		}
 	});
 }
 
-async function checkScan(presence) {
+async function setLantern(userBpm) {
+    await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { pulse: _USERBPM });
+  await axios.put(`http://${IP}/api/stations/${ID}`, { state: 2, rgb: _USER.data.rgb });
+  eventEmitter.emit('done');
+
+}
+
+async function done() {
+  _READYTOSCAN = false;
+  _SCANNING = false;
+  timerInstance.stop();
+  timer.set(_TIMERSCAN);
+  message.set('User presence is false, will restart in 5 seconds...');
+  await sleep(5000);
+  _READYTOSCAN = true;
+  _DONE = false;
+  await setState(0);
+  message.set('Ready to scan');
+}
+
+/*async function checkScan(presence) {
   if (_READYTOSCAN) {
     if (presence && _POLARBPM > 0) {
       _USERBPM = await scan();
-      timerInstance.stop();
+      
       await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { pulse: _USERBPM });
       await axios.put(`http://${IP}/api/stations/${ID}`, { state: 2, rgb: _USER.data.rgb });
       await setState(2);
@@ -197,12 +262,15 @@ async function checkScan(presence) {
       timer.set(_TIMERSCAN);
       message.set('Done!');
       _SCANDONE = true;
-      //emite done
-      eventEmitter.emit('done');
+      if (presence == false && _SCANNING == false) {
+        message.set('User left, will get a new user in 10 seconds...');
+        await sleep(10000);
+        await init();
+      }
     } 
   }
 
-}
+}*/
 
 /**
  * `STATE 0` = READY or IDLE
@@ -229,7 +297,7 @@ async function setState(id) {
 	});
 }
 
-async function reset() {
+async function scanFail() {
   _READYTOSCAN = false;
   _SCANNING = false;
 	timerInstance.stop();
@@ -247,7 +315,7 @@ async function reset() {
  */
 async function scan() {
 	return new Promise(async (resolve, reject) => {
-		let scanBPM;
+		let userBpm;
 		timerInstance.addEventListener('secondsUpdated', async function (e) {
 			timer.set(timerInstance.getTimeValues().toString());
 			if (!_PRESENCE || _POLARBPM === 0) {
@@ -255,24 +323,17 @@ async function scan() {
 				reset();
 			}
 		});
-		timerInstance.addEventListener('targetAchieved', async function (e) {
-			scanBPM = _POLARBPM;
+    timerInstance.addEventListener('targetAchieved', async function (e) {
+      timerInstance.stop();
+      userBpm = _POLARBPM;
       _SCANNING = false;
-			resolve(scanBPM);
+      resolve(userBpm);
     });
-   // _HEARTRATE.on("valuechanged", async (buffer) => {
-    //  let json = JSON.stringify(buffer);
-      //let bpm = Math.max.apply(null, JSON.parse(json).data);
-     // if (_READYTOSCAN) {
-     //   if (_POLARBPM > 0 && _PRESENCE) {
       _SCANNING = true;
       await setState(1);
       state.set('Scanning 1');
       message.set('Scanning...');
       timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
-      //  }
-     // }
-   // })
 	});
 }
 
