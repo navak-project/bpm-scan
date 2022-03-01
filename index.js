@@ -151,7 +151,7 @@ async function getUser() {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			console.log(`Got User [${_USER.data.id}]`);
-			lantern.set(`User [${_USER.data.id}]`);
+			lantern.set(`User ${_USER.data.id}`);
 			await setState(0);
 			message.set('Ready to scan');
 			state.set('Ready [0]');
@@ -177,6 +177,7 @@ async function checkScan(presence) {
 		timerInstance.stop();
 		await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: _USERBPM});
 		await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
+		await setState(2);
 		state.set('Done [2]');
 		timer.set(_TIMERSCAN);
 		message.set('Done, will get a new user in 5 seconds...');
@@ -221,7 +222,6 @@ async function reset() {
 	message.set('Ready to scan');
 }
 
-
 /**
  * Start the BPM scan. When value is stable we launch the counter and return the last value
  * @return {Promise<number>} Last BPM after a certain time
@@ -231,7 +231,7 @@ async function scan() {
 		let scanBPM;
 		timerInstance.addEventListener('secondsUpdated', async function (e) {
 			timer.set(timerInstance.getTimeValues().toString());
-      if (!_PRESENCE || _POLARBPM === 0) {
+			if (!_PRESENCE || _POLARBPM === 0) {
 				await setState(4);
 				reset();
 			}
@@ -247,7 +247,7 @@ async function scan() {
 				state.set('Scanning [1]');
 				message.set('Scanning...');
 				timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
-      }
+			}
 		}
 	});
 }
@@ -258,9 +258,9 @@ async function scan() {
  * @param {Number} ms
  */
 function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
 }
 
 function doomsday(command, callback) {
