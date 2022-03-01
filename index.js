@@ -15,6 +15,7 @@ let _USER;
 let _HEARTRATE;
 let _PRESENCE = false;
 let _READYTOSCAN = false;
+let _SCANNING = false;
 let _POLARBPM;
 const _TIMERSCAN = 15;
 const {ID, GROUP, IP} = process.env;
@@ -65,8 +66,10 @@ client.on('message', async function (topic, message) {
 	let value = JSON.parse(buff);
 	let valueParse = JSON.parse(value.presence.toLowerCase());
 	_PRESENCE = valueParse;
-	presence.set(_PRESENCE);
-	checkScan(_PRESENCE);
+  presence.set(_PRESENCE);
+  if (!_SCANNING) {
+	  checkScan(_PRESENCE);
+  }
 });
 
 (async function () {
@@ -172,18 +175,20 @@ async function getUser() {
 }
 
 async function checkScan(presence) {
-	if (presence && _POLARBPM > 0) {
-		_USERBPM = await scan();
-		timerInstance.stop();
-		await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: _USERBPM});
-		await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
-		await setState(2);
-		state.set('Done [2]');
-		timer.set(_TIMERSCAN);
-		message.set('Done, will get a new user in 5 seconds...');
-		await sleep(5000);
-		await getUser();
-	}
+  if (_READYTOSCAN) {
+    if (presence && _POLARBPM > 0) {
+      _USERBPM = await scan();
+      timerInstance.stop();
+      await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: _USERBPM});
+      await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
+      await setState(2);
+      state.set('Done [2]');
+      timer.set(_TIMERSCAN);
+      message.set('Done, will get a new user in 5 seconds...');
+      await sleep(5000);
+      await getUser();
+    } 
+  } 
 }
 
 /**
@@ -238,21 +243,23 @@ async function scan() {
 		});
 		timerInstance.addEventListener('targetAchieved', async function (e) {
 			scanBPM = _POLARBPM;
-			_READYTOSCAN = false;
+      _READYTOSCAN = false;
+      _SCANNING = false;
 			resolve(scanBPM);
     });
-    _HEARTRATE.on("valuechanged", async (buffer) => {
-      let json = JSON.stringify(buffer);
+   // _HEARTRATE.on("valuechanged", async (buffer) => {
+    //  let json = JSON.stringify(buffer);
       //let bpm = Math.max.apply(null, JSON.parse(json).data);
-      if (_READYTOSCAN) {
-        if (_POLARBPM > 0 && _PRESENCE) {
-          await setState(1);
-          state.set('Scanning [1]');
-          message.set('Scanning...');
-          timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
-        }
-      }
-    })
+     // if (_READYTOSCAN) {
+     //   if (_POLARBPM > 0 && _PRESENCE) {
+      _SCANNING = true;
+      await setState(1);
+      state.set('Scanning [1]');
+      message.set('Scanning...');
+      timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
+      //  }
+     // }
+   // })
 	});
 }
 
