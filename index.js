@@ -85,9 +85,9 @@ client.on('message', async function (topic, message) {
 eventEmitter.on('init', async () => {
   await init().then(() => {
     console.log('init done!');
-  }).catch((err) => {
+  }).catch(async (err) => {
     console.log(err);
-    sleep(5000);
+    await sleep(5000);
     console.log('init failed, will try again in 5 seconds...');
     eventEmitter.emit('init');
   });
@@ -97,7 +97,6 @@ eventEmitter.on('init', async () => {
 eventEmitter.on('ready', async () => {
   await setState(0);
   message.set('Ready to scan');
-  state.set('Ready 0');
   console.log('Ready');
   _READYTOSCAN = true;
 });
@@ -105,10 +104,10 @@ eventEmitter.on('ready', async () => {
 // listen to the event
 eventEmitter.on('done', async () => {
   _DONE = true;
-    await setState(2);
-    state.set('Done 2');
-    timer.set(_TIMERSCAN);
+  await setState(2);
   message.set('Done!');
+  timer.set(_TIMERSCAN);
+
 
 });
 
@@ -216,14 +215,13 @@ async function init() {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			console.log(`Got User [${_USER.data.id}]`);
-			lantern.set(`User ${_USER.data.id}`);
+      lantern.set(_USER.data.id);
       eventEmitter.emit('ready');
 			resolve();
 		} catch (error) {
 			console.log(error.response.data);
 			catchError.set(error.response.data);
 			await setState(3);
-			state.set('No lantern 3');
 			message.set('No lantern');
 			console.log('No lantern, will try to get a user in 5 seconds...');
 			await sleep(5000);
@@ -233,6 +231,7 @@ async function init() {
 }
 
 async function setLantern(userBpm) {
+  message.set('Setting lantern...');
   await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { pulse: userBpm });
   await axios.put(`http://${IP}/api/stations/${ID}`, { state: 2, rgb: _USER.data.rgb });
   eventEmitter.emit('done');
@@ -243,9 +242,10 @@ async function done() {
   message.set('User is done and left! Will restart 5 seconds...');
   await sleep(5000);
   await setState(0);
+  message.set('Ready to scan');
   _READYTOSCAN = true;
   _DONE = false;
-  message.set('Ready to scan');
+
 }
 
 /*async function checkScan(presence) {
@@ -285,7 +285,8 @@ async function setState(id) {
 	return new Promise(async (resolve, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
-			.then(() => {
+      .then(() => {
+        state.set(id);
 				resolve();
 			})
 			.catch((err) => {
@@ -296,7 +297,6 @@ async function setState(id) {
 
 async function scanFail() {
   _READYTOSCAN = false;
-
 	message.set('User presence is false, will restart in 5 seconds...');
 	await sleep(5000);
 	_READYTOSCAN = true;
@@ -321,7 +321,6 @@ async function scan() {
       await setLantern(_POLARBPM)
     });
       await setState(1);
-      state.set('Scanning 1');
       message.set('Scanning...');
       timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
 }
