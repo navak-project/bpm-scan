@@ -116,10 +116,10 @@ eventEmitter.on('presence', async (value) => {
   presence.set(_PRESENCE);
   if (value == true) {
     if(_POLARBPM > 0) {
-      let lanternBpm = await scan();
-      await setLantern(lanternBpm)
+      await scan();
     }
-  } else if (value == false) {
+  }
+  if (value == false) {
     if (_DONE == false) {
       scanFail()
     } else {
@@ -313,10 +313,11 @@ async function scanFail() {
  * @return {Promise<number>} Last BPM after a certain time
  */
 async function scan() {
-	return new Promise(async (resolve, reject) => {
+	//return new Promise(async (resolve, reject) => {
 		let userBpm;
 		timerInstance.addEventListener('secondsUpdated', async function (e) {
-			timer.set(timerInstance.getTimeValues().toString());
+      timer.set(timerInstance.getTimeValues().toString());
+      console.log(timerInstance.getTimeValues().toString());
 			if (!_PRESENCE || _POLARBPM === 0) {
 			//	await setState(4);
 			//	reset();
@@ -325,15 +326,16 @@ async function scan() {
     timerInstance.addEventListener('targetAchieved', async function (e) {
       timerInstance.stop();
       userBpm = _POLARBPM;
+      await setLantern(userBpm)
       _SCANNING = false;
-      resolve(userBpm);
+     // resolve(userBpm);
     });
       _SCANNING = true;
-      await setState(1);
+  await setState(1);
       state.set('Scanning 1');
       message.set('Scanning...');
       timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
-	});
+	//});
 }
 
 /**
