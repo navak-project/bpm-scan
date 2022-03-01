@@ -112,17 +112,14 @@ eventEmitter.on('done', async () => {
 
 // listen to the event
 eventEmitter.on('presence', async (value) => {
-  console.log("🚀 ~ file: index.js ~ line 116 ~ eventEmitter.on ~ firstData", firstData);
-  if (value == false && firstData == false){
-  }
+  console.log("🚀 ~ file: index.js ~ line 115 ~ eventEmitter.on ~ value", value);
   presence.set(_PRESENCE);
   if (value == true) {
     if(_POLARBPM > 0) {
       let lanternBpm = await scan();
       await setLantern(lanternBpm)
     }
-  } else if (value == false && firstData == true) {
-    
+  } else if (value == false) {
     if (_DONE == false) {
       scanFail()
     } else {
