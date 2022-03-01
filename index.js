@@ -74,7 +74,7 @@ client.on('message', async function (topic, message) {
   }
 });
 
-eventEmitter.on('done', () => {
+eventEmitter.on('done', async () => {
   if (presence == false && _SCANNING == false) {
     message.set('User left, will get a new user in 10 seconds...');
     await sleep(10000);
