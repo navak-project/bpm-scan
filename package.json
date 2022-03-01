@@ -1,8 +1,9 @@
 {
   "name": "bpm-scan",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "nodejs library for heartbeat scanning",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,10 +19,11 @@
   "homepage": "https://github.com/navak-project/bpm-scan#readme",
   "dependencies": {
     "@pm2/io": "^5.0.0",
+    "cron": "^1.8.2",
     "dotenv": "^10.0.0",
     "easytimer.js": "^4.5.1",
     "mqtt": "^4.2.8",
-    "node-ble": "^1.6.0",
+    "node-ble": "^1.7.0",
     "pm2": "^5.1.2"
   }
 }
