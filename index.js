@@ -301,7 +301,10 @@ async function scanFail() {
 	await sleep(5000);
 	_READYTOSCAN = true;
 	await setState(0);
-	message.set('Ready to scan');
+  message.set('Ready to scan');
+  if(_PRESENCE) {
+    await scan();
+  }
 }
 
 /**
