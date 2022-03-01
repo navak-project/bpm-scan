@@ -217,7 +217,8 @@ async function setState(id) {
 }
 
 async function reset() {
-	_READYTOSCAN = false;
+  _READYTOSCAN = false;
+  _SCANNING = false;
 	timerInstance.stop();
 	timer.set(_TIMERSCAN);
 	message.set('User presence is false, will restart in 5 seconds...');
