@@ -104,23 +104,25 @@ eventEmitter.on('ready', async () => {
 
 // listen to the event
 eventEmitter.on('done', async () => {
+  _DONE = true;
     await setState(2);
     state.set('Done 2');
     timer.set(_TIMERSCAN);
   message.set('Done!');
-  _DONE = true;
+
 });
 
 // listen to the event
 eventEmitter.on('presence', async (value) => {
-  console.log("🚀 ~ file: index.js ~ line 115 ~ eventEmitter.on ~ value", value);
   presence.set(_PRESENCE);
   if (value == true) {
-    if(_POLARBPM > 0) {
+    if (_POLARBPM > 0 && _READYTOSCAN) {
       await scan();
     }
   }
   if (value == false) {
+    timerInstance.stop();
+    timer.set(_TIMERSCAN);
     if (_DONE == false) {
       scanFail()
     } else {
@@ -231,22 +233,18 @@ async function init() {
 }
 
 async function setLantern(userBpm) {
-    await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { pulse: _USERBPM });
+  await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { pulse: userBpm });
   await axios.put(`http://${IP}/api/stations/${ID}`, { state: 2, rgb: _USER.data.rgb });
   eventEmitter.emit('done');
-
 }
 
 async function done() {
   _READYTOSCAN = false;
-  _SCANNING = false;
-  timerInstance.stop();
-  timer.set(_TIMERSCAN);
-  message.set('User presence is false, will restart in 5 seconds...');
+  message.set('User is done and left! Will restart 5 seconds...');
   await sleep(5000);
+  await setState(0);
   _READYTOSCAN = true;
   _DONE = false;
-  await setState(0);
   message.set('Ready to scan');
 }
 
@@ -288,7 +286,6 @@ async function setState(id) {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
 			.then(() => {
-				//state.set(id);
 				resolve();
 			})
 			.catch((err) => {
@@ -299,9 +296,7 @@ async function setState(id) {
 
 async function scanFail() {
   _READYTOSCAN = false;
-  _SCANNING = false;
-	timerInstance.stop();
-	timer.set(_TIMERSCAN);
+
 	message.set('User presence is false, will restart in 5 seconds...');
 	await sleep(5000);
 	_READYTOSCAN = true;
@@ -314,29 +309,18 @@ async function scanFail() {
  * @return {Promise<number>} Last BPM after a certain time
  */
 async function scan() {
-	//return new Promise(async (resolve, reject) => {
-		let userBpm;
 		timerInstance.addEventListener('secondsUpdated', async function (e) {
       timer.set(timerInstance.getTimeValues().toString());
       console.log(timerInstance.getTimeValues().toString());
-			if (!_PRESENCE || _POLARBPM === 0) {
-			//	await setState(4);
-			//	reset();
-			}
 		});
     timerInstance.addEventListener('targetAchieved', async function (e) {
       timerInstance.stop();
-      userBpm = _POLARBPM;
-      await setLantern(userBpm)
-      _SCANNING = false;
-     // resolve(userBpm);
+      await setLantern(_POLARBPM)
     });
-      _SCANNING = true;
-  await setState(1);
+      await setState(1);
       state.set('Scanning 1');
       message.set('Scanning...');
       timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
-	//});
 }
 
 /**
