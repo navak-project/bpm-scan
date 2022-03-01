@@ -240,15 +240,19 @@ async function scan() {
 			scanBPM = _POLARBPM;
 			_READYTOSCAN = false;
 			resolve(scanBPM);
-		});
-		if (_READYTOSCAN) {
-			if (_POLARBPM > 0 && _PRESENCE) {
-				await setState(1);
-				state.set('Scanning [1]');
-				message.set('Scanning...');
-				timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
-			}
-		}
+    });
+    _HEARTRATE.on("valuechanged", async (buffer) => {
+      let json = JSON.stringify(buffer);
+      //let bpm = Math.max.apply(null, JSON.parse(json).data);
+      if (_READYTOSCAN) {
+        if (_POLARBPM > 0 && _PRESENCE) {
+          await setState(1);
+          state.set('Scanning [1]');
+          message.set('Scanning...');
+          timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
+        }
+      }
+    })
 	});
 }
 
