@@ -9,7 +9,8 @@ import {clientConnect} from './mqtt.js';
 const {client} = clientConnect();
 import { EventEmitter } from 'events';
 const eventEmitter = new EventEmitter();
-var timerInstance = new Timer();
+
+const timerInstance = new Timer();
 
 
 
