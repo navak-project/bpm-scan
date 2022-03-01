@@ -286,7 +286,7 @@ async function setState(id) {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
       .then(() => {
-        state.set(id);
+        state.set(toString(id));
 				resolve();
 			})
 			.catch((err) => {
@@ -297,6 +297,7 @@ async function setState(id) {
 
 async function scanFail() {
   _READYTOSCAN = false;
+  await setState(4);
 	message.set('User presence is false, will restart in 5 seconds...');
 	await sleep(5000);
 	_READYTOSCAN = true;
