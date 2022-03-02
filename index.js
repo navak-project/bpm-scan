@@ -143,7 +143,7 @@ eventEmitter.on('presence', async (value) => {
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
   _BOOTING = true;
-	await setState(5);
+	await setState(6);
 
 	console.log('booting...');
 	message.set('booting...');
@@ -214,20 +214,20 @@ eventEmitter.on('presence', async (value) => {
 		_POLARBPM = bpm;
     polarBPM.set(bpm);
   });
-  
+  await sleep(5000);
   eventEmitter.emit('init');
-  _BOOTING = false;
 })();
 
 async function init() {
   _READYTOSCAN = false;
   await setState(5);
   console.log('Getting user...');
-  await sleep(6000)
+  await sleep(3000)
 	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
       eventEmitter.emit('ready');
+      _BOOTING = false;
 			resolve();
 		} catch (error) {
 			console.log(error.response.data);
@@ -268,7 +268,8 @@ async function scanFail() {
  * `STATE 2` = DONE
  * `STATE 3` = OUT OF LANTERN
  * `STATE 4` = ERROR FAILED (mainly because client presence is false while scanning)
- * `STATE 5` = BOOTING
+ * `STATE 5` = Getting new user
+ * `STATE 6` = BOOTING
  * Set the state of the station
  * @return {Promise<axios>} return the current bpm value
  * @param {Number} id
