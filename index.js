@@ -251,8 +251,6 @@ async function setLantern(userBpm) {
 }
 
 async function done() {
-  _READYTOSCAN = false;
-  _DONE = true;
   message.set('User is done and left! Will restart 5 seconds...');
   await sleep(5000);
   eventEmitter.emit('ready');
@@ -303,6 +301,8 @@ async function scan() {
 		});
     timerInstance.addEventListener('targetAchieved', async function (e) {
       timerInstance.stop();
+      _READYTOSCAN = false;
+      _DONE = true;
       await setLantern(_POLARBPM)
     });
       await setState(1);
