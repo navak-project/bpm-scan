@@ -159,20 +159,12 @@ eventEmitter.on('presence', async (value) => {
       await sleep(5000);
 			process.exit(0);
 		}
-  });
+	});
 
   console.log('Discovering device...');
   message.set('Discovering device...');
-  const isDiscovering = await adapter.isDiscovering().catch(async (err) => {
-    console.log(err);
-    await setState(4);
-    console.log('No device, will try to get one in 5 seconds...');
-    message.set('No device, will try to get one in 5 seconds...');
-    await sleep(5000);
-    process.exit(0);
-  });
 
-  if (!isDiscovering) {
+	if (!(await adapter.isDiscovering())) {
 		await adapter.startDiscovery();
 	}
 
@@ -197,7 +189,8 @@ eventEmitter.on('presence', async (value) => {
 		await device.connect();
 	} catch (err) {
 		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
-		message.set(err.text);
+    message.set(err.text);
+    await setState(4);
 		console.log('Will reboot in 5 seconds...');
 		await sleep(5000);
 		process.exit(0);
