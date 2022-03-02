@@ -95,16 +95,16 @@ eventEmitter.on('init', async () => {
 
 // listen to the event
 eventEmitter.on('ready', async () => {
+  if (validate()) {
+    await sleep(2500);
+    eventEmitter.emit('presence/true');
+    return;
+  }
   await setState(0);
   message.set('Ready to scan');
   console.log('Ready');
   _READYTOSCAN = true;
   _DONE = false;
-
-  if (validate()) {
-    await sleep(2500);
-    eventEmitter.emit('presence/true');
-  }
 });
 
 // listen to the event
