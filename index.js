@@ -101,7 +101,10 @@ eventEmitter.on('ready', async () => {
   _READYTOSCAN = true;
   _DONE = false;
 
-  if (validate()) {eventEmitter.emit('presence/true');}
+  if (validate()) {
+    await sleep(2500);
+    eventEmitter.emit('presence/true');
+  }
 });
 
 // listen to the event
