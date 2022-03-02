@@ -150,7 +150,7 @@ eventEmitter.on('presence', async (value) => {
 
 	await sleep(3000);
 
-	const adapter = await bluetooth.defaultAdapter().catch((err) => {
+	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
     if (err) {
       await setState(4);
       console.log(err);
