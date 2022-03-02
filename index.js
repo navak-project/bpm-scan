@@ -151,8 +151,12 @@ eventEmitter.on('presence', async (value) => {
 	await sleep(3000);
 
 	const adapter = await bluetooth.defaultAdapter().catch((err) => {
-		if (err) {
-			console.log(err);
+    if (err) {
+      await setState(4);
+      console.log(err);
+      console.log('No bluetooth adapter, will try to get one in 5 seconds...');
+      message.set('No bluetooth adapter, will try to get one in 5 seconds...');
+      await sleep(5000);
 			process.exit(0);
 		}
 	});
@@ -166,8 +170,10 @@ eventEmitter.on('presence', async (value) => {
 
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
 		if (err) {
-			console.log(err);
-			console.log('Will reboot in 5 seconds...');
+      console.log(err);
+      await setState(4);
+      console.log('No device, will try to get one in 5 seconds...');
+			message.set('No device, will try to get one in 5 seconds...');
 			await sleep(5000);
 			process.exit(0);
 		}
