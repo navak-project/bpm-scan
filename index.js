@@ -219,6 +219,7 @@ eventEmitter.on('presence', async (value) => {
 })();
 
 async function init() {
+  _READYTOSCAN = false;
   await setState(5);
 	console.log('Getting user...');
 	return new Promise(async function (resolve, reject) {
