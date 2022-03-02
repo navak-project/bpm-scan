@@ -213,9 +213,6 @@ eventEmitter.on('presence', async (value) => {
     }
 		_POLARBPM = bpm;
     polarBPM.set(bpm);
-    if (validate()) {
-      await scan();
-    }
   });
   
   eventEmitter.emit('init');
