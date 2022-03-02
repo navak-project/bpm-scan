@@ -137,6 +137,13 @@ eventEmitter.on('presence', async (value) => {
   }
 });
 
+eventEmitter.on('process.exit', async (msg) => {
+  _ERROR = true;
+  await state(4);
+  message.set(msg);
+  await sleep(5000);
+  process.exit(0);
+});
 
 // BOOT
 (async function () {
@@ -152,12 +159,8 @@ eventEmitter.on('presence', async (value) => {
 
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
     if (err) {
-      await setState(4);
       console.log(err);
-      console.log('No bluetooth adapter, will try to get one in 5 seconds...');
-      message.set('No bluetooth adapter, will try to get one in 5 seconds...');
-      await sleep(5000);
-			process.exit(0);
+      EventEmitter.emit('process.exit', 'No bluetooth adapter');
 		}
 	});
 
@@ -171,11 +174,7 @@ eventEmitter.on('presence', async (value) => {
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
 		if (err) {
       console.log(err);
-      await setState(4);
-      console.log('No device, will try to get one in 5 seconds...');
-			message.set('No device, will try to get one in 5 seconds...');
-			await sleep(5000);
-			process.exit(0);
+      EventEmitter.emit('process.exit', 'No device');
 		}
 	});
 
@@ -190,21 +189,14 @@ eventEmitter.on('presence', async (value) => {
 	} catch (err) {
 		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
     message.set(err.text);
-    await setState(4);
-		console.log('Will reboot in 5 seconds...');
-		await sleep(5000);
-		process.exit(0);
+    EventEmitter.emit('process.exit', 'Disconnected');
 	}
 
 	message.set('Connected');
 	console.log('Connected!');
 
-	device.on('disconnect', async function (val) {
-		console.log(`Device disconnected. State: ${val.connected}`);
-    console.log('Will reboot in 5 seconds...');
-    await setState(4);
-		await sleep(5000);
-		process.exit(0);
+  device.on('disconnect', async function () {
+    EventEmitter.emit('process.exit', 'Disconnected');
 	});
 
 	const gattServer = await device.gatt();
