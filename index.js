@@ -248,6 +248,7 @@ async function setLantern(userBpm) {
 }
 
 async function done() {
+  eventEmitter.emit('init');
   message.set('User is done and left! Will restart 5 seconds...');
   await sleep(5000);
   eventEmitter.emit('ready');
