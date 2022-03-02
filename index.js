@@ -15,14 +15,11 @@ const timerInstance = new Timer();
 
 
 let _DONE =false;
-let _USERBPM;
 let _USER;
 let _HEARTRATE;
 let _PRESENCE = false;
 let _READYTOSCAN = false;
-let _SCANNING = false;
 let _POLARBPM;
-let _SCANDONE = false;
 const _TIMERSCAN = 15;
 const {ID, GROUP, IP} = process.env;
 
@@ -120,6 +117,7 @@ eventEmitter.on('presence/true', async () => {
 });
 
 eventEmitter.on('presence/false', async (value) => {
+  if (_POLARBPM == 0) { return }
   timerInstance.stop();
   timer.set(_TIMERSCAN);
   if (_DONE == false) {
@@ -210,9 +208,15 @@ eventEmitter.on('presence', async (value) => {
 	_HEARTRATE = heartrate;
 	_HEARTRATE.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
-		let bpm = Math.max.apply(null, JSON.parse(json).data);
+    let bpm = Math.max.apply(null, JSON.parse(json).data);
+    if (bpm == 0) {
+      bpm = 60;
+    }
 		_POLARBPM = bpm;
-		polarBPM.set(bpm);
+    polarBPM.set(bpm);
+    if (validate()) {
+      await scan();
+    }
   });
   
   eventEmitter.emit('init');
