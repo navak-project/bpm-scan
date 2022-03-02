@@ -116,11 +116,10 @@ eventEmitter.on('presence/true', async () => {
 });
 
 eventEmitter.on('presence/false', async (value) => {
-  if (!_READYTOSCAN){ return }
   if (_POLARBPM == 0) { return }
   timerInstance.stop();
   timer.set(_TIMERSCAN);
-  if (_DONE == false) {
+  if (_DONE == false && _READYTOSCAN) {
     scanFail()
   } else {
     done();
