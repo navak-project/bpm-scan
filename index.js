@@ -40,8 +40,8 @@ const presence = io.metric({
 	default: false
 });
 
-const lantern = io.metric({
-	name: 'Lantern'
+const lanternName = io.metric({
+	name: 'Lantern name'
 });
 
 const timer = io.metric({
@@ -81,7 +81,6 @@ client.on('message', async function (topic, message) {
 eventEmitter.on('init', async () => {
   await init().then(() => {
     console.log('init done!');
-    lantern.set(_USER.data.id);
   }).catch(async (err) => {
     console.log(err);
     await sleep(5000);
@@ -222,10 +221,13 @@ async function init() {
   _READYTOSCAN = false;
   await setState(5);
   console.log('Getting user...');
+  message.set('Getting user...');
   await sleep(3000)
 	return new Promise(async function (resolve, reject) {
 		try {
-			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
+      _USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
+      console.log("🚀 ~ file: index.js ~ line 230 ~ _USER", _USER);
+      lanternName.set(_USER.id);
       eventEmitter.emit('ready');
       _BOOTING = false;
 			resolve();
