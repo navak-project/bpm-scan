@@ -201,7 +201,8 @@ eventEmitter.on('presence', async (value) => {
 
 	device.on('disconnect', async function (val) {
 		console.log(`Device disconnected. State: ${val.connected}`);
-		console.log('Will reboot in 5 seconds...');
+    console.log('Will reboot in 5 seconds...');
+    await setState(4);
 		await sleep(5000);
 		process.exit(0);
 	});
