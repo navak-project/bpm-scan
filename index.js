@@ -14,7 +14,8 @@ const timerInstance = new Timer();
 
 
 
-let _DONE =false;
+let _DONE = false;
+let _BOOTING = false;
 let _USER;
 let _HEARTRATE;
 let _PRESENCE = false;
@@ -66,14 +67,12 @@ client.on('error', function (err) {
 });
 
 client.on('message', async function (topic, message) {
+  if (_BOOTING) {return;}
 	// message is Buffer
 	let buff = message.toString();
 	let value = JSON.parse(buff);
   _PRESENCE = JSON.parse(value.presence.toLowerCase());
   eventEmitter.emit('presence', _PRESENCE);
-  /*if (!_SCANNING) {
-	  checkScan(_PRESENCE);
-  }*/
 });
 
 
@@ -82,6 +81,7 @@ client.on('message', async function (topic, message) {
 eventEmitter.on('init', async () => {
   await init().then(() => {
     console.log('init done!');
+    lantern.set(_USER.data.id);
   }).catch(async (err) => {
     console.log(err);
     await sleep(5000);
@@ -142,7 +142,7 @@ eventEmitter.on('presence', async (value) => {
 (async function () {
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
-
+  _BOOTING = true;
 	await setState(5);
 
 	console.log('booting...');
@@ -216,6 +216,7 @@ eventEmitter.on('presence', async (value) => {
   });
   
   eventEmitter.emit('init');
+  _BOOTING = false;
 })();
 
 async function init() {
@@ -226,8 +227,6 @@ async function init() {
 	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
-			//console.log(`Got User [${_USER.data.id}]`);
-      lantern.set(_USER.data.id);
       eventEmitter.emit('ready');
 			resolve();
 		} catch (error) {
