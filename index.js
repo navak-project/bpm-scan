@@ -99,6 +99,9 @@ eventEmitter.on('ready', async () => {
   message.set('Ready to scan');
   console.log('Ready');
   _READYTOSCAN = true;
+  _DONE = false;
+
+  if (validate()) {eventEmitter.emit('presence/true');}
 });
 
 // listen to the event
@@ -107,26 +110,30 @@ eventEmitter.on('done', async () => {
   await setState(2);
   message.set('Done!');
   timer.set(_TIMERSCAN);
+});
 
+eventEmitter.on('presence/true', async () => {
+  if (validate()) {await scan();}
+});
 
+eventEmitter.on('presence/false', async (value) => {
+  timerInstance.stop();
+  timer.set(_TIMERSCAN);
+  if (_DONE == false) {
+    scanFail()
+  } else {
+    done();
+  }
 });
 
 // listen to the event
 eventEmitter.on('presence', async (value) => {
   presence.set(_PRESENCE);
   if (value == true) {
-    if (_POLARBPM > 0 && _READYTOSCAN) {
-      await scan();
-    }
+    eventEmitter.emit('presence/true');
   }
   if (value == false) {
-    timerInstance.stop();
-    timer.set(_TIMERSCAN);
-    if (_DONE == false) {
-      scanFail()
-    } else {
-      done();
-    }
+    eventEmitter.emit('presence/false');
   }
 });
 
@@ -241,34 +248,15 @@ async function done() {
   _READYTOSCAN = false;
   message.set('User is done and left! Will restart 5 seconds...');
   await sleep(5000);
-  await setState(0);
-  message.set('Ready to scan');
-  _READYTOSCAN = true;
-  _DONE = false;
-
+  eventEmitter.emit('ready');
 }
-
-/*async function checkScan(presence) {
-  if (_READYTOSCAN) {
-    if (presence && _POLARBPM > 0) {
-      _USERBPM = await scan();
-      
-      await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { pulse: _USERBPM });
-      await axios.put(`http://${IP}/api/stations/${ID}`, { state: 2, rgb: _USER.data.rgb });
-      await setState(2);
-      state.set('Done 2');
-      timer.set(_TIMERSCAN);
-      message.set('Done!');
-      _SCANDONE = true;
-      if (presence == false && _SCANNING == false) {
-        message.set('User left, will get a new user in 10 seconds...');
-        await sleep(10000);
-        await init();
-      }
-    } 
-  }
-
-}*/
+async function scanFail() {
+  await setState(4);
+  _READYTOSCAN = false;
+  message.set('User presence is false, will restart in 5 seconds...');
+  await sleep(5000);
+  eventEmitter.emit('ready');
+}
 
 /**
  * `STATE 0` = READY or IDLE
@@ -295,18 +283,7 @@ async function setState(id) {
 	});
 }
 
-async function scanFail() {
-  _READYTOSCAN = false;
-  await setState(4);
-	message.set('User presence is false, will restart in 5 seconds...');
-	await sleep(5000);
-	_READYTOSCAN = true;
-	await setState(0);
-  message.set('Ready to scan');
-  if(_PRESENCE) {
-    await scan();
-  }
-}
+
 
 /**
  * Start the BPM scan. When value is stable we launch the counter and return the last value
@@ -336,6 +313,14 @@ function sleep(ms) {
 		setTimeout(resolve, ms);
 	});
 }
+
+function validate(value) {
+  if (_PRESENCE && _POLARBPM > 0) {
+    return true;
+  } else {
+    return false;
+  }
+ }
 
 function doomsday(command, callback) {
 	exec(command, function (error, stdout, stderr) {
