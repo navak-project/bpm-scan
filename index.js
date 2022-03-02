@@ -113,7 +113,7 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
-  if (validate()) {await scan();}
+  if (validate() && _READYTOSCAN) {await scan();}
 });
 
 eventEmitter.on('presence/false', async (value) => {
