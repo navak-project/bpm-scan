@@ -226,8 +226,8 @@ async function init() {
 	return new Promise(async function (resolve, reject) {
 		try {
       _USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
-      console.log("🚀 ~ file: index.js ~ line 230 ~ _USER", _USER);
-      lanternName.set(_USER.id);
+      console.log("🚀 ~ file: index.js ~ line 230 ~ _USER", _USER.data.id);
+      lanternName.set(_USER.data.id);
       eventEmitter.emit('ready');
       _BOOTING = false;
 			resolve();
