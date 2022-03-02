@@ -116,6 +116,7 @@ eventEmitter.on('presence/true', async () => {
 });
 
 eventEmitter.on('presence/false', async (value) => {
+  if (!_READYTOSCAN){ return }
   if (_POLARBPM == 0) { return }
   timerInstance.stop();
   timer.set(_TIMERSCAN);
@@ -221,13 +222,13 @@ eventEmitter.on('presence', async (value) => {
 async function init() {
   _READYTOSCAN = false;
   await setState(5);
-	console.log('Getting user...');
+  console.log('Getting user...');
+  await sleep(6000)
 	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			//console.log(`Got User [${_USER.data.id}]`);
       lantern.set(_USER.data.id);
-      await sleep(6000);
       eventEmitter.emit('ready');
 			resolve();
 		} catch (error) {
