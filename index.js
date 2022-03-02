@@ -224,8 +224,9 @@ async function init() {
 	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
-			console.log(`Got User [${_USER.data.id}]`);
+			//console.log(`Got User [${_USER.data.id}]`);
       lantern.set(_USER.data.id);
+      await sleep(6000);
       eventEmitter.emit('ready');
 			resolve();
 		} catch (error) {
@@ -248,10 +249,10 @@ async function setLantern(userBpm) {
 }
 
 async function done() {
+  await sleep(3000);
   eventEmitter.emit('init');
   message.set('User is done and left! Will restart 5 seconds...');
-  await sleep(5000);
-  eventEmitter.emit('ready');
+  //eventEmitter.emit('ready');
 }
 async function scanFail() {
   await setState(4);
