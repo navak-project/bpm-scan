@@ -106,7 +106,6 @@ eventEmitter.on('ready', async () => {
 
 // listen to the event
 eventEmitter.on('done', async () => {
-  _DONE = true;
   await setState(2);
   message.set('Done!');
   timer.set(_TIMERSCAN);
@@ -253,6 +252,7 @@ async function setLantern(userBpm) {
 
 async function done() {
   _READYTOSCAN = false;
+  _DONE = true;
   message.set('User is done and left! Will restart 5 seconds...');
   await sleep(5000);
   eventEmitter.emit('ready');
