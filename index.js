@@ -112,6 +112,8 @@ eventEmitter.on('done', async () => {
 
 eventEmitter.on('presence/true', async () => {
 	if (validate() && _READYTOSCAN) {
+		await setState(7);
+		await sleep(1500);
 		await scan();
 	}
 });
@@ -254,16 +256,15 @@ async function setLantern(userBpm) {
 }
 
 async function done() {
-	await sleep(3000);
-	eventEmitter.emit('init');
 	message.set('User is done and left! Will restart 5 seconds...');
-	//eventEmitter.emit('ready');
+	await sleep(5000);
+	eventEmitter.emit('init');
 }
 async function scanFail() {
-	await setState(4);
 	_READYTOSCAN = false;
-	message.set('User presence is false, will restart in 5 seconds...');
-	await sleep(5000);
+	await setState(4);
+	message.set('User presence is false, will restart in 3 seconds...');
+	await sleep(3000);
 	eventEmitter.emit('ready');
 }
 
@@ -304,13 +305,11 @@ async function scan() {
 		console.log(timerInstance.getTimeValues().toString());
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
-		timerInstance.stop();
 		_READYTOSCAN = false;
 		_DONE = true;
+		timerInstance.stop();
 		await setLantern(_POLARBPM);
 	});
-	await setState(7);
-	await sleep(500);
 	await setState(1);
 	message.set('Scanning...');
 	timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
