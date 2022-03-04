@@ -111,9 +111,9 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
+  await setState(7);
+  await sleep(1000);
 	if (validate() && _READYTOSCAN) {
-		await setState(7);
-		await sleep(2000);
 		await scan();
 	}
 });
@@ -302,7 +302,8 @@ async function setState(id) {
 async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
 		timer.set(timerInstance.getTimeValues().toString());
-		console.log(timerInstance.getTimeValues().toString());
+    console.log(timerInstance.getTimeValues().toString());
+    //if (!_PRESENCE) { scanFail(); }
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
 		_READYTOSCAN = false;
