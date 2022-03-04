@@ -310,7 +310,6 @@ async function scan() {
 		timerInstance.stop();
 		await setLantern(_POLARBPM);
   });
-  await sleep(2000);
 	await setState(1);
 	message.set('Scanning...');
 	timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
