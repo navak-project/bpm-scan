@@ -237,7 +237,6 @@ async function init() {
 			await setState(3);
 			message.set('No lantern');
 			console.log('No lantern, will try to get a user in 5 seconds...');
-			await sleep(5000);
       reject();
 		}
 	});
