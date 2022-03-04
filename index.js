@@ -113,7 +113,7 @@ eventEmitter.on('done', async () => {
 eventEmitter.on('presence/true', async () => {
 	if (validate() && _READYTOSCAN) {
 		await setState(7);
-		await sleep(1500);
+		await sleep(2000);
 		await scan();
 	}
 });
@@ -309,7 +309,8 @@ async function scan() {
 		_DONE = true;
 		timerInstance.stop();
 		await setLantern(_POLARBPM);
-	});
+  });
+  await sleep(2000);
 	await setState(1);
 	message.set('Scanning...');
 	timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
