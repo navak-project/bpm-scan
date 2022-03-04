@@ -208,7 +208,7 @@ eventEmitter.on('process.exit', async (msg) => {
 		let json = JSON.stringify(buffer);
     let bpm = Math.max.apply(null, JSON.parse(json).data);
     if (bpm == 0) {
-      bpm = 60;
+      bpm = 70;
     }
 		_POLARBPM = bpm;
     polarBPM.set(bpm);
@@ -219,7 +219,7 @@ eventEmitter.on('process.exit', async (msg) => {
 
 async function init() {
   _READYTOSCAN = false;
-  await setState(5);
+  //await setState(5);
   console.log('Getting user...');
   message.set('Getting user...');
   await sleep(3000)
