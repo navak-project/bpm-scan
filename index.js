@@ -94,7 +94,7 @@ eventEmitter.on('ready', async () => {
 	_READYTOSCAN = true;
 	_DONE = false;
 	if (validate()) {
-		await sleep(2500);
+		//await sleep(2500);
 		eventEmitter.emit('presence/true');
 		return;
 	}
@@ -224,11 +224,12 @@ eventEmitter.on('process.exit', async (msg) => {
 })();
 
 async function init() {
-	_READYTOSCAN = false;
+  _READYTOSCAN = false;
+  _BOOTING = true;
 	//await setState(5);
 	console.log('Getting user...');
 	message.set('Getting user...');
-	await sleep(3000);
+	//await sleep(3000);
 	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
@@ -257,11 +258,12 @@ async function setLantern(userBpm) {
 
 async function done() {
 	message.set('User is done and left! Will restart 5 seconds...');
-	await sleep(5000);
+	await sleep(3000);
 	eventEmitter.emit('init');
 }
 async function scanFail() {
-	_READYTOSCAN = false;
+  _READYTOSCAN = false;
+  _BOOTING = true;
 	await setState(4);
 	message.set('User presence is false, will restart in 3 seconds...');
 	await sleep(3000);
