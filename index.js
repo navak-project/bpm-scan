@@ -19,6 +19,7 @@ let _HEARTRATE;
 let _PRESENCE = false;
 let _READYTOSCAN = false;
 let _POLARBPM;
+let _USERISTHERE = false;
 const _TIMERSCAN = 15;
 const {ID, GROUP, IP} = process.env;
 
@@ -94,9 +95,10 @@ eventEmitter.on('ready', async () => {
 
   _BOOTING = false
 	_READYTOSCAN = true;
-	_DONE = false;
+  _DONE = false;
 	if (validate()) {
 		//await sleep(2500);
+    _USERISTHERE = true
 		eventEmitter.emit('presence/true');
 		return;
 	}
@@ -121,7 +123,7 @@ eventEmitter.on('presence/true', async () => {
 });
 
 eventEmitter.on('presence/false', async (value) => {
-	if (_POLARBPM == 0) {
+  if (_POLARBPM == 0 || _USERISTHERE) {
 		return;
 	}
 	timerInstance.stop();
