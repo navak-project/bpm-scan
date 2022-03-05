@@ -73,6 +73,7 @@ client.on('message', async function (topic, message) {
 	let buff = message.toString();
 	let value = JSON.parse(buff);
 	_PRESENCE = JSON.parse(value.presence.toLowerCase());
+  console.log("🚀 ~ file: index.js ~ line 76 ~ _PRESENCE", _PRESENCE);
 	eventEmitter.emit('presence', _PRESENCE);
 });
 
@@ -98,7 +99,6 @@ eventEmitter.on('ready', async () => {
   _DONE = false;
 	if (validate()) {
 		//await sleep(2500);
-    _USERISTHERE = true
 		eventEmitter.emit('presence/true');
 		return;
 	}
@@ -115,6 +115,8 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
+  _USERISTHERE = true
+  console.log("🚀 ~ file: index.js ~ line 118 ~ eventEmitter.on ~ _USERISTHERE", _USERISTHERE);
   await setState(7);
   await sleep(1000);
 	if (validate() && _READYTOSCAN) {
@@ -125,7 +127,9 @@ eventEmitter.on('presence/true', async () => {
 eventEmitter.on('presence/false', async (value) => {
   if (_POLARBPM == 0 || _USERISTHERE) {
 		return;
-	}
+  }
+  _USERISTHERE = false;
+  console.log("🚀 ~ file: index.js ~ line 131 ~ eventEmitter.on ~ _USERISTHERE", _USERISTHERE);
 	timerInstance.stop();
 	timer.set(_TIMERSCAN);
 	if (_DONE == false && _READYTOSCAN) {
