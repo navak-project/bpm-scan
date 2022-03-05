@@ -91,6 +91,8 @@ eventEmitter.on('init', async () => {
 
 // listen to the event
 eventEmitter.on('ready', async () => {
+
+  _BOOTING = false
 	_READYTOSCAN = true;
 	_DONE = false;
 	if (validate()) {
@@ -225,7 +227,6 @@ eventEmitter.on('process.exit', async (msg) => {
 
 async function init() {
   _READYTOSCAN = false;
-  _BOOTING = true;
 	//await setState(5);
 	console.log('Getting user...');
 	message.set('Getting user...');
@@ -236,7 +237,7 @@ async function init() {
 			console.log('🚀 ~ file: index.js ~ line 230 ~ _USER', _USER.data.id);
 			lanternName.set(_USER.data.id);
 			eventEmitter.emit('ready');
-			_BOOTING = false;
+			//_BOOTING = false;
 			resolve();
 		} catch (error) {
 			console.log(error.response.data);
