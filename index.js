@@ -262,8 +262,11 @@ async function setLantern(userBpm) {
 }
 
 async function done() {
+ 
 	message.set('User is done and left! Will restart 5 seconds...');
-	await sleep(5000);
+  await sleep(5000);
+  await setState(6);
+  await sleep(2000);
 	eventEmitter.emit('init');
 }
 async function scanFail() {
