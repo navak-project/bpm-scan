@@ -7,8 +7,8 @@ import {Timer} from 'easytimer.js';
 import {exec} from 'child_process';
 import {clientConnect} from './mqtt.js';
 const {client} = clientConnect();
-import {EventEmitter} from 'events';
-const eventEmitter = new EventEmitter();
+import {eventEmitter} from 'events';
+const eventEmitter = new eventEmitter();
 
 const timerInstance = new Timer();
 
@@ -150,7 +150,7 @@ eventEmitter.on('presence', async (value) => {
 	}
 });
 
-eventEmitter.on('process.exit', async (msg) => {
+eventEmitter.on('processexit', async (msg) => {
 	_ERROR = true;
 	await state(4);
 	message.set(msg);
@@ -173,7 +173,7 @@ eventEmitter.on('process.exit', async (msg) => {
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
 		if (err) {
 			console.log(err);
-			EventEmitter.emit('process.exit', 'No bluetooth adapter');
+			eventEmitter.emit('processexit', 'No bluetooth adapter');
 		}
 	});
 
@@ -187,7 +187,7 @@ eventEmitter.on('process.exit', async (msg) => {
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
 		if (err) {
 			console.log(err);
-			EventEmitter.emit('process.exit', 'No device');
+			eventEmitter.emit('processexit', 'No device');
 		}
 	});
 
@@ -202,14 +202,14 @@ eventEmitter.on('process.exit', async (msg) => {
 	} catch (err) {
 		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
 		message.set(err.text);
-		EventEmitter.emit('process.exit', 'Disconnected');
+		eventEmitter.emit('processexit', 'Disconnected');
 	}
 
 	message.set('Connected');
 	console.log('Connected!');
 
 	device.on('disconnect', async function () {
-		EventEmitter.emit('process.exit', 'Disconnected');
+		eventEmitter.emit('processexit', 'Disconnected');
 	});
 
 	const gattServer = await device.gatt();
