@@ -150,7 +150,7 @@ eventEmitter.on('presence', async (value) => {
 	}
 });
 
-eventEmitter.on('process.exit', async (msg) => {
+eventEmitter.on('processexit', async (msg) => {
 	_ERROR = true;
 	await state(4);
 	message.set(msg);
