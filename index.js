@@ -151,7 +151,7 @@ eventEmitter.on('presence', async (value) => {
 });
 
 eventEmitter.on('processexit', async (msg) => {
-	await state(4);
+  await setState(4);
 	message.set(msg);
 	await sleep(5000);
 	process.exit(0);
