@@ -242,7 +242,7 @@ async function init() {
 			console.log('🚀 ~ file: index.js ~ line 230 ~ _USER', _USER.data.id);
 			lanternName.set(_USER.data.id);
 			eventEmitter.emit('ready');
-			
+      _NOUSER = false;
 			resolve();
 		} catch (error) {
 			console.log(error.response.data);
