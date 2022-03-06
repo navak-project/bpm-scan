@@ -97,8 +97,8 @@ eventEmitter.on('ready', async () => {
   _DONE = false;
   _SCANFAIL = false;
 	if (validate()) {
-		//await sleep(2500);
-		//eventEmitter.emit('presence/true');
+		await sleep(2500);
+		eventEmitter.emit('presence/true');
 		return;
 	}
 	await setState(0);
