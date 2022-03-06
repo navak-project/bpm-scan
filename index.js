@@ -19,7 +19,7 @@ let _HEARTRATE;
 let _PRESENCE = false;
 let _READYTOSCAN = false;
 let _POLARBPM;
-let _USERISTHERE = false;
+let _GETTINGUSER = false;
 const _TIMERSCAN = 15;
 const {ID, GROUP, IP} = process.env;
 
@@ -73,7 +73,6 @@ client.on('message', async function (topic, message) {
 	let buff = message.toString();
 	let value = JSON.parse(buff);
 	_PRESENCE = JSON.parse(value.presence.toLowerCase());
-  console.log("🚀 ~ file: index.js ~ line 76 ~ _PRESENCE", _PRESENCE);
 	eventEmitter.emit('presence', _PRESENCE);
 });
 
@@ -93,13 +92,12 @@ eventEmitter.on('init', async () => {
 
 // listen to the event
 eventEmitter.on('ready', async () => {
-
-  _BOOTING = false
+  _BOOTING = false;
 	_READYTOSCAN = true;
-  _DONE = false;
+	_DONE = false;
 	if (validate()) {
 		//await sleep(2500);
-		eventEmitter.emit('presence/true');
+		//eventEmitter.emit('presence/true');
 		return;
 	}
 	await setState(0);
@@ -115,8 +113,6 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
-  _USERISTHERE = true
-  console.log("🚀 ~ file: index.js ~ line 118 ~ eventEmitter.on ~ _USERISTHERE", _USERISTHERE);
   await setState(7);
   await sleep(1000);
 	if (validate() && _READYTOSCAN) {
@@ -125,16 +121,15 @@ eventEmitter.on('presence/true', async () => {
 });
 
 eventEmitter.on('presence/false', async (value) => {
-  if (_POLARBPM == 0 || _USERISTHERE) {
-		return;
-  }
-  _USERISTHERE = false;
-  console.log("🚀 ~ file: index.js ~ line 131 ~ eventEmitter.on ~ _USERISTHERE", _USERISTHERE);
+	if (_BOOTING == 0) {
+		//return;
+	}
 	timerInstance.stop();
 	timer.set(_TIMERSCAN);
-	if (_DONE == false && _READYTOSCAN) {
+	if (!_DONE && _READYTOSCAN) {
 		scanFail();
-	} else {
+  }
+  if (_DONE && !_READYTOSCAN){
 		done();
 	}
 });
@@ -227,23 +222,22 @@ eventEmitter.on('process.exit', async (msg) => {
 		_POLARBPM = bpm;
 		polarBPM.set(bpm);
 	});
-	await sleep(5000);
+	//await sleep(5000);
 	eventEmitter.emit('init');
 })();
 
 async function init() {
-  _READYTOSCAN = false;
 	//await setState(5);
 	console.log('Getting user...');
 	message.set('Getting user...');
-	//await sleep(3000);
+	await sleep(3000);
 	return new Promise(async function (resolve, reject) {
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			console.log('🚀 ~ file: index.js ~ line 230 ~ _USER', _USER.data.id);
 			lanternName.set(_USER.data.id);
 			eventEmitter.emit('ready');
-			//_BOOTING = false;
+			
 			resolve();
 		} catch (error) {
 			console.log(error.response.data);
@@ -265,12 +259,11 @@ async function setLantern(userBpm) {
 
 async function done() {
 	message.set('User is done and left! Will restart 5 seconds...');
-	await sleep(3000);
+	await sleep(5000);
 	eventEmitter.emit('init');
 }
 async function scanFail() {
-  _READYTOSCAN = false;
-  _BOOTING = true;
+	_READYTOSCAN = false;
 	await setState(4);
 	message.set('User presence is false, will restart in 3 seconds...');
 	await sleep(3000);
