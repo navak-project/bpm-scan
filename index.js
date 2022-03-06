@@ -151,7 +151,7 @@ eventEmitter.on('presence', async (value) => {
 });
 
 eventEmitter.on('processexit', async (msg) => {
-  await setState(4);
+  await setState(8);
 	message.set(msg);
 	await sleep(5000);
 	process.exit(0);
@@ -172,7 +172,8 @@ eventEmitter.on('processexit', async (msg) => {
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
 		if (err) {
 			console.log(err);
-			eventEmitter.emit('processexit', 'No bluetooth adapter');
+      eventEmitter.emit('processexit', 'No bluetooth adapter');
+      return;
 		}
 	});
 
@@ -186,7 +187,8 @@ eventEmitter.on('processexit', async (msg) => {
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
 		if (err) {
 			console.log(err);
-			eventEmitter.emit('processexit', 'No device');
+      eventEmitter.emit('processexit', 'No device');
+      return;
 		}
 	});
 
@@ -201,14 +203,16 @@ eventEmitter.on('processexit', async (msg) => {
 	} catch (err) {
 		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
 		message.set(err.text);
-		eventEmitter.emit('processexit', 'Disconnected');
+    eventEmitter.emit('processexit', 'Disconnected');
+    return;
 	}
 
 	message.set('Connected');
 	console.log('Connected!');
 
 	device.on('disconnect', async function () {
-		eventEmitter.emit('processexit', 'Disconnected');
+    eventEmitter.emit('processexit', 'Disconnected');
+    return;
 	});
 
 	const gattServer = await device.gatt();
