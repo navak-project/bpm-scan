@@ -19,7 +19,7 @@ let _HEARTRATE;
 let _PRESENCE = false;
 let _READYTOSCAN = false;
 let _POLARBPM;
-let _GETTINGUSER = false;
+let _SCANFAIL = false;
 const _TIMERSCAN = 15;
 const {ID, GROUP, IP} = process.env;
 
@@ -94,7 +94,8 @@ eventEmitter.on('init', async () => {
 eventEmitter.on('ready', async () => {
   _BOOTING = false;
 	_READYTOSCAN = true;
-	_DONE = false;
+  _DONE = false;
+  _SCANFAIL = false;
 	if (validate()) {
 		//await sleep(2500);
 		//eventEmitter.emit('presence/true');
@@ -113,6 +114,9 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
+  if (_SCANFAIL == true) {
+    return;
+  }
   await setState(7);
   await sleep(1000);
 	if (validate() && _READYTOSCAN) {
@@ -121,8 +125,8 @@ eventEmitter.on('presence/true', async () => {
 });
 
 eventEmitter.on('presence/false', async (value) => {
-	if (_BOOTING == 0) {
-		//return;
+  if (_SCANFAIL == true) {
+		return;
 	}
 	timerInstance.stop();
 	timer.set(_TIMERSCAN);
@@ -263,7 +267,8 @@ async function done() {
 	eventEmitter.emit('init');
 }
 async function scanFail() {
-	_READYTOSCAN = false;
+  _READYTOSCAN = false;
+  _SCANFAIL = true;
 	await setState(4);
 	message.set('User presence is false, will restart in 3 seconds...');
 	await sleep(3000);
