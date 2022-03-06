@@ -21,6 +21,7 @@ let _READYTOSCAN = false;
 let _POLARBPM;
 let _SCANFAIL = false;
 const _TIMERSCAN = 15;
+let _NOUSER = false;
 const {ID, GROUP, IP} = process.env;
 
 let firstData = false;
@@ -114,7 +115,7 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
-  if (_SCANFAIL == true) {
+  if (_SCANFAIL == true || _NOUSER == true) {
     return;
   }
   await setState(7);
@@ -248,7 +249,8 @@ async function init() {
 			catchError.set(error.response.data);
 			await setState(3);
 			message.set('No lantern');
-			console.log('No lantern, will try to get a user in 5 seconds...');
+      console.log('No lantern, will try to get a user in 5 seconds...');
+      _NOUSER = true;
 			reject();
 		}
 	});
