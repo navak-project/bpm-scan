@@ -7,8 +7,8 @@ import {Timer} from 'easytimer.js';
 import {exec} from 'child_process';
 import {clientConnect} from './mqtt.js';
 const {client} = clientConnect();
-import {eventEmitter} from 'events';
-const eventEmitter = new eventEmitter();
+import {EventEmitter} from 'events';
+const eventEmitter = new EventEmitter();
 
 const timerInstance = new Timer();
 
@@ -150,7 +150,7 @@ eventEmitter.on('presence', async (value) => {
 	}
 });
 
-eventEmitter.on('processexit', async (msg) => {
+eventEmitter.on('process.exit', async (msg) => {
 	_ERROR = true;
 	await state(4);
 	message.set(msg);
