@@ -19,7 +19,9 @@ let _HEARTRATE;
 let _PRESENCE = false;
 let _READYTOSCAN = false;
 let _POLARBPM;
+let _SCANFAIL = false;
 const _TIMERSCAN = 15;
+let _NOUSER = false;
 const {ID, GROUP, IP} = process.env;
 
 let firstData = false;
@@ -91,8 +93,10 @@ eventEmitter.on('init', async () => {
 
 // listen to the event
 eventEmitter.on('ready', async () => {
+  _BOOTING = false;
 	_READYTOSCAN = true;
-	_DONE = false;
+  _DONE = false;
+  _SCANFAIL = false;
 	if (validate()) {
 		await sleep(2500);
 		eventEmitter.emit('presence/true');
@@ -111,20 +115,26 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
+  if (_SCANFAIL == true || _NOUSER == true) {
+    return;
+  }
+  await setState(7);
+  await sleep(1000);
 	if (validate() && _READYTOSCAN) {
 		await scan();
 	}
 });
 
 eventEmitter.on('presence/false', async (value) => {
-	if (_POLARBPM == 0) {
+  if (_SCANFAIL == true) {
 		return;
 	}
 	timerInstance.stop();
 	timer.set(_TIMERSCAN);
-	if (_DONE == false && _READYTOSCAN) {
+	if (!_DONE && _READYTOSCAN) {
 		scanFail();
-	} else {
+  }
+  if (_DONE && !_READYTOSCAN){
 		done();
 	}
 });
@@ -140,9 +150,8 @@ eventEmitter.on('presence', async (value) => {
 	}
 });
 
-eventEmitter.on('process.exit', async (msg) => {
-	_ERROR = true;
-	await state(4);
+eventEmitter.on('processexit', async (msg) => {
+  await setState(8);
 	message.set(msg);
 	await sleep(5000);
 	process.exit(0);
@@ -163,7 +172,8 @@ eventEmitter.on('process.exit', async (msg) => {
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
 		if (err) {
 			console.log(err);
-			EventEmitter.emit('process.exit', 'No bluetooth adapter');
+      eventEmitter.emit('processexit', 'No bluetooth adapter');
+      return;
 		}
 	});
 
@@ -177,7 +187,8 @@ eventEmitter.on('process.exit', async (msg) => {
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
 		if (err) {
 			console.log(err);
-			EventEmitter.emit('process.exit', 'No device');
+      eventEmitter.emit('processexit', 'No device');
+      return;
 		}
 	});
 
@@ -192,14 +203,16 @@ eventEmitter.on('process.exit', async (msg) => {
 	} catch (err) {
 		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
 		message.set(err.text);
-		EventEmitter.emit('process.exit', 'Disconnected');
+    eventEmitter.emit('processexit', 'Disconnected');
+    return;
 	}
 
 	message.set('Connected');
 	console.log('Connected!');
 
 	device.on('disconnect', async function () {
-		EventEmitter.emit('process.exit', 'Disconnected');
+    eventEmitter.emit('processexit', 'Disconnected');
+    return;
 	});
 
 	const gattServer = await device.gatt();
@@ -217,12 +230,11 @@ eventEmitter.on('process.exit', async (msg) => {
 		_POLARBPM = bpm;
 		polarBPM.set(bpm);
 	});
-	await sleep(5000);
+	//await sleep(5000);
 	eventEmitter.emit('init');
 })();
 
 async function init() {
-	_READYTOSCAN = false;
 	//await setState(5);
 	console.log('Getting user...');
 	message.set('Getting user...');
@@ -233,14 +245,15 @@ async function init() {
 			console.log('🚀 ~ file: index.js ~ line 230 ~ _USER', _USER.data.id);
 			lanternName.set(_USER.data.id);
 			eventEmitter.emit('ready');
-			_BOOTING = false;
+      _NOUSER = false;
 			resolve();
 		} catch (error) {
 			console.log(error.response.data);
 			catchError.set(error.response.data);
 			await setState(3);
 			message.set('No lantern');
-			console.log('No lantern, will try to get a user in 5 seconds...');
+      console.log('No lantern, will try to get a user in 5 seconds...');
+      _NOUSER = true;
 			reject();
 		}
 	});
@@ -254,16 +267,19 @@ async function setLantern(userBpm) {
 }
 
 async function done() {
-	await sleep(3000);
-	eventEmitter.emit('init');
+ 
 	message.set('User is done and left! Will restart 5 seconds...');
-	//eventEmitter.emit('ready');
+  await sleep(5000);
+  await setState(6);
+  await sleep(2000);
+	eventEmitter.emit('init');
 }
 async function scanFail() {
+  _READYTOSCAN = false;
+  _SCANFAIL = true;
 	await setState(4);
-	_READYTOSCAN = false;
-	message.set('User presence is false, will restart in 5 seconds...');
-	await sleep(5000);
+	message.set('User presence is false, will restart in 3 seconds...');
+	await sleep(3000);
 	eventEmitter.emit('ready');
 }
 
@@ -301,16 +317,15 @@ async function setState(id) {
 async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
 		timer.set(timerInstance.getTimeValues().toString());
-		console.log(timerInstance.getTimeValues().toString());
+    console.log(timerInstance.getTimeValues().toString());
+    //if (!_PRESENCE) { scanFail(); }
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
-		timerInstance.stop();
 		_READYTOSCAN = false;
 		_DONE = true;
+		timerInstance.stop();
 		await setLantern(_POLARBPM);
-	});
-	await setState(7);
-	await sleep(500);
+  });
 	await setState(1);
 	message.set('Scanning...');
 	timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
