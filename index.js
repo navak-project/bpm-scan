@@ -238,7 +238,7 @@ eventEmitter.on('processexit', async (msg) => {
     }
 		_POLARBPM = bpm;
     polarBPM.set(bpm);
-    updateStationsMetrics({ 'bpm': _POLARBPM})
+    //updateStationsMetrics({ 'bpm': _POLARBPM})
 	});
 	//await sleep(5000);
 	eventEmitter.emit('init');
