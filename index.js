@@ -228,7 +228,8 @@ eventEmitter.on('processexit', async (msg) => {
       bpm = randomIntFromInterval(70, 90);
     }
 		_POLARBPM = bpm;
-		polarBPM.set(bpm);
+    polarBPM.set(bpm);
+    updateStationsMetrics({ 'bpm': _POLARBPM})
 	});
 	//await sleep(5000);
 	eventEmitter.emit('init');
@@ -358,4 +359,9 @@ function doomsday(command, callback) {
 	exec(command, function (error, stdout, stderr) {
 		callback(stdout);
 	});
+}
+
+function updateStationsMetrics(value) {
+  console.log("🚀 ~ file: index.js ~ line 364 ~ updateStationsMetrics ~ value", value);
+  axios.put(`http://${IP}/api/stations/${ID}`, value);
 }
