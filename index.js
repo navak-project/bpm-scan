@@ -224,15 +224,19 @@ eventEmitter.on('processexit', async (msg) => {
 	_HEARTRATE.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
 		let bpm = Math.max.apply(null, JSON.parse(json).data);
-		if (bpm == 0) {
-			bpm = 70;
-		}
+		if (bpm == 0 || bpm > 255) {
+      bpm = randomIntFromInterval(70, 90);
+    }
 		_POLARBPM = bpm;
 		polarBPM.set(bpm);
 	});
 	//await sleep(5000);
 	eventEmitter.emit('init');
 })();
+
+function randomIntFromInterval(min, max) { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
 
 async function init() {
 	//await setState(5);
