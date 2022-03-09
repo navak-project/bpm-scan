@@ -73,7 +73,8 @@ client.on('message', async function (topic, message) {
 	// message is Buffer
 	let buff = message.toString();
 	let value = JSON.parse(buff);
-	_PRESENCE = JSON.parse(value.presence.toLowerCase());
+  _PRESENCE = JSON.parse(value.presence.toLowerCase());
+  updateStationsMetrics({ 'presence': _PRESENCE })
 	eventEmitter.emit('presence', _PRESENCE);
 });
 
@@ -264,7 +265,7 @@ async function init() {
       _NOUSER = false;
 			resolve();
 		} catch (error) {
-			console.log(error.response.data);
+			//console.log(error.response.data);
       catchError.set(error.response.data);
       updateStationsMetrics({ 'message': error.response.data })
 			await setState(3);
