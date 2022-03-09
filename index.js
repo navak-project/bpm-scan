@@ -363,5 +363,5 @@ function doomsday(command, callback) {
 
 function updateStationsMetrics(value) {
   console.log("🚀 ~ file: index.js ~ line 364 ~ updateStationsMetrics ~ value", value);
-  axios.put(`http://${IP}/api/stations/${ID}`, value);
+  axios.put(`http://${IP}/api/stations/${ID}`, { metrics: { value } });
 }
