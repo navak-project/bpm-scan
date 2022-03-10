@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import 'dotenv/config'
 import io from '@pm2/io';
 import {createBluetooth} from 'node-ble';
 const {bluetooth} = createBluetooth();
@@ -8,6 +8,7 @@ import {exec} from 'child_process';
 import {clientConnect} from './mqtt.js';
 const {client} = clientConnect();
 import {EventEmitter} from 'events';
+import { ProfilingConfig } from '@pm2/io/build/main/features/profiling';
 const eventEmitter = new EventEmitter();
 
 const timerInstance = new Timer();
@@ -22,9 +23,8 @@ let _POLARBPM;
 let _SCANFAIL = false;
 const _TIMERSCAN = 15;
 let _NOUSER = false;
-const {ID, GROUP, IP} = process.env;
-
-let firstData = false;
+let _APIDOWN = false
+const {ID, GROUP, IP, MACHINEIP} = process.env;
 
 const state = io.metric({
 	name: 'Scanning state'
@@ -166,6 +166,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 // BOOT
 (async function () {
+  await pingAPI();
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
 	_BOOTING = true;
@@ -255,7 +256,10 @@ async function init() {
   message.set('Getting user...');
   updateStationsMetrics({ 'message': 'Getting user...' })
 	await sleep(3000);
-	return new Promise(async function (resolve, reject) {
+  return new Promise(async function (resolve, reject) {
+    let api = await pingAPI()
+    console.log("🚀 ~ file: index.js ~ line 261 ~ api", api);
+    if (api == false) { reject(); }
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			console.log('🚀 ~ file: index.js ~ line 230 ~ _USER', _USER.data.id);
@@ -383,4 +387,13 @@ function doomsday(command, callback) {
 function updateStationsMetrics(value) {
   //console.log("🚀 ~ file: index.js ~ line 364 ~ updateStationsMetrics ~ value", value);
   axios.put(`http://${IP}/api/stations/${ID}`, value);
+}
+
+async function pingAPI() {
+    var status = await isReachable(MACHINEIP);
+      if (status) {
+       return true
+      } else {
+       return false
+      }
 }
