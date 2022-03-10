@@ -14,7 +14,7 @@ const timerInstance = new Timer();
 
 let _DONE = false;
 let _BOOTING = false;
-let _USER;
+let _USER = null;
 let _HEARTRATE;
 let _PRESENCE = false;
 let _READYTOSCAN = false;
@@ -292,6 +292,7 @@ async function setLantern(userBpm) {
 async function done() {
   message.set('User is done and left! Will restart 5 seconds...');
   updateStationsMetrics({ 'message': 'User is done and left! Will restart 5 seconds...' })
+  updateStationsMetrics({ 'lantern': '' })
   await sleep(5000);
   await setState(6);
   await sleep(2000);
