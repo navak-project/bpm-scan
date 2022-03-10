@@ -294,8 +294,6 @@ async function done() {
   updateStationsMetrics({ 'message': 'User is done and left! Will restart 5 seconds...' })
   updateStationsMetrics({ 'lantern': '' })
   await sleep(5000);
-  await setState(6);
-  await sleep(2000);
 	eventEmitter.emit('init');
 }
 async function scanFail() {
