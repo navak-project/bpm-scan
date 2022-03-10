@@ -9,7 +9,7 @@ import {clientConnect} from './mqtt.js';
 const {client} = clientConnect();
 import {EventEmitter} from 'events';
 const eventEmitter = new EventEmitter();
-
+const isReachable = require('is-reachable');
 const timerInstance = new Timer();
 
 let _DONE = false;
