@@ -389,7 +389,8 @@ function updateStationsMetrics(value) {
 }
 
 async function pingAPI() {
-    var status = await isReachable(MACHINEIP);
+    var status = await isReachable(IP);
+    console.log("🚀 ~ file: index.js ~ line 393 ~ pingAPI ~ status", status);
       if (status) {
        return true
       } else {
