@@ -114,7 +114,7 @@ eventEmitter.on('done', async () => {
 	await setState(2);
   message.set('Done!');
   updateStationsMetrics({ 'message': 'Done!' })
-  updateStationsMetrics({ 'timer': _TIMERSCAN })
+  updateStationsMetrics({ 'timer': `00:00:${_TIMERSCAN}` })
 	timer.set(_TIMERSCAN);
 });
 
@@ -135,7 +135,7 @@ eventEmitter.on('presence/false', async (value) => {
 	}
 	timerInstance.stop();
   timer.set(_TIMERSCAN);
-  updateStationsMetrics({ 'timer': _TIMERSCAN })
+  updateStationsMetrics({ 'timer': `00:00:${_TIMERSCAN}` })
 	if (!_DONE && _READYTOSCAN) {
 		scanFail();
   }
@@ -340,7 +340,7 @@ async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
 		timer.set(timerInstance.getTimeValues().toString());
     console.log(timerInstance.getTimeValues().toString());
-    //if (!_PRESENCE) { scanFail(); }
+    updateStationsMetrics({ 'timer': timerInstance.getTimeValues().toString() })
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
 		_READYTOSCAN = false;
@@ -381,6 +381,6 @@ function doomsday(command, callback) {
 }
 
 function updateStationsMetrics(value) {
-  console.log("🚀 ~ file: index.js ~ line 364 ~ updateStationsMetrics ~ value", value);
+  //console.log("🚀 ~ file: index.js ~ line 364 ~ updateStationsMetrics ~ value", value);
   axios.put(`http://${IP}/api/stations/${ID}`, value);
 }
