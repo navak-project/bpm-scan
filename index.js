@@ -8,7 +8,6 @@ import {exec} from 'child_process';
 import {clientConnect} from './mqtt.js';
 const {client} = clientConnect();
 import {EventEmitter} from 'events';
-import { ProfilingConfig } from '@pm2/io/build/main/features/profiling';
 const eventEmitter = new EventEmitter();
 
 const timerInstance = new Timer();
