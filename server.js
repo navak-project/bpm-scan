@@ -1,13 +1,16 @@
 import http from 'http';
-const host = 'localhost';
-const port = 8000;
-const requestListener = function (req, res) {
-  res.writeHead(200);
-  res.end("Station running!");
-};
 export function server() {
-  const server = http.createServer(requestListener);
-  server.listen(port, host, () => {
-    console.log(`Server is running on http://${host}:${port}`);
+
+  var server = http.createServer(function (req, res) {
+
+    if (req.url == '/data') { //check the URL of the current request
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.write(JSON.stringify({ message: "Hello World" }));
+      res.end();
+    }
   });
+
+  server.listen(5000);
+
+  console.log('Node.js web server at port 5000 is running..')
 }
