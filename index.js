@@ -11,6 +11,8 @@ import {EventEmitter} from 'events';
 const eventEmitter = new EventEmitter();
 import isReachable from 'is-reachable';
 const timerInstance = new Timer();
+import {server} from './server.js';
+
 
 let _DONE = false;
 let _BOOTING = false;
@@ -165,6 +167,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 // BOOT
 (async function () {
+  await server();
   await pingAPI();
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
