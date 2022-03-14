@@ -176,7 +176,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 	console.log('booting...');
 	message.set('booting...');
-  await updateStationsMetrics({ message: 'Booting...' })
+  await updateStationsMetrics({ "message": 'Booting...' })
 	await sleep(3000);
 
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
@@ -208,7 +208,6 @@ eventEmitter.on('processexit', async (msg) => {
 
 	console.log('Device:', macAdresss, deviceName);
   polarName.set(polarName);
-  //await updateStationsMetrics({ 'polarName': _TIMERSCAN })
 
 	try {
 		await device.connect();
@@ -297,7 +296,7 @@ async function setLantern(userBpm) {
   message.set('Setting lantern...');
   await updateStationsMetrics({ 'message': 'Setting lantern...' })
 	await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: userBpm});
-	await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
+	//await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
 	eventEmitter.emit('done');
 }
 
@@ -335,9 +334,9 @@ async function setState(id) {
 	return new Promise(async (resolve, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
-			.then(async () => {
+			.then(async() => {
         state.set(toString(id));
-        await updateStationsMetrics({ 'state': id })
+        await updateStationsMetrics({ "state": id })
 				resolve();
 			})
 			.catch((err) => {
