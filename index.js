@@ -68,6 +68,7 @@ client.on('error', function (err) {
 });
 
 client.on('message', async function (topic, message) {
+  console.log("🚀 ~ file: index.js ~ line 71 ~ topic", topic);
 	if (_BOOTING) {
 		return;
   }
