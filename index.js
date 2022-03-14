@@ -335,7 +335,7 @@ async function setState(id) {
 	return new Promise(async (resolve, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
-			.then(() => {
+			.then(async () => {
         state.set(toString(id));
         await updateStationsMetrics({ 'state': id })
 				resolve();
