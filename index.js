@@ -176,7 +176,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 	console.log('booting...');
 	message.set('booting...');
-  await updateStationsMetrics({ 'message': 'Booting...' })
+  await updateStationsMetrics({ message: 'Booting...' })
 	await sleep(3000);
 
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
