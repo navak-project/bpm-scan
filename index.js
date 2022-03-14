@@ -163,9 +163,11 @@ eventEmitter.on('presence', async (value) => {
 });
 
 eventEmitter.on('processexit', async (msg) => {
+  
   await setState(8);
   message.set(msg);
   await updateStationsMetrics({ message: msg })
+  await updateStationsMetrics({ status: false })
 	await sleep(5000);
 	process.exit(0);
 });
