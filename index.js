@@ -167,9 +167,10 @@ eventEmitter.on('processexit', async (msg) => {
   await setState(8);
   message.set(msg);
   await updateStationsMetrics({ message: msg })
+  //await sleep(5000);
   await updateStationsMetrics({ status: false })
-	await sleep(5000);
-	process.exit(0);
+  process.exit(0);
+  
 });
 
 // BOOT
