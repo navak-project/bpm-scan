@@ -397,7 +397,7 @@ function doomsday(command, callback) {
 function updateStationsMetrics(value) {
   console.log("🚀 ~ file: index.js ~ line 398 ~ updateStationsMetrics ~ value", value);
   //console.log("🚀 ~ file: index.js ~ line 364 ~ updateStationsMetrics ~ value", value);
-  axios.put(`http://${IP}/api/stations/${ID}`, value);
+  axios.put(`http://${IP}/api/stations/${ID}`, JSON.stringify(value));
 }
 
 async function pingAPI() {
