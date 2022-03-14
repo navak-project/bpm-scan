@@ -70,7 +70,11 @@ client.on('error', function (err) {
 client.on('message', async function (topic, message) {
 	if (_BOOTING) {
 		return;
-	}
+  }
+  
+  if (topic === `/station/${ID}/reboot`) { 
+    eventEmitter.emit('processexit', 'Reboot!');
+  }
 	// message is Buffer
 	let buff = message.toString();
 	let value = JSON.parse(buff);

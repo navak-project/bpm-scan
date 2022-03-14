@@ -11,6 +11,7 @@ export function clientConnect() {
     client.on('connect', function () {
       console.log('🚀 ~ Connected to MQTT broker');
       client.subscribe(`/station/${ID}/presence`);
+      client.subscribe(`/station/${ID}/reboot`);
       //presence.set(_PRESENCE);
     });
 	} catch (err) {
