@@ -237,8 +237,17 @@ eventEmitter.on('processexit', async (msg) => {
 	_HEARTRATE.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
 		let bpm = Math.max.apply(null, JSON.parse(json).data);
-		if (bpm == 0 || bpm > 255) {
+		/*if (bpm == 0 || bpm > 150) {
       bpm = randomIntFromInterval(70, 90);
+    }*/
+    if (bpm < 70 ) {
+      bpm = randomIntFromInterval(30, 50);
+    }
+    if (bpm >= 70 ) {
+      bpm = randomIntFromInterval(50, 60);
+    }
+    if (bpm > 80 ) {
+      bpm = randomIntFromInterval(80, 90);
     }
 		_POLARBPM = bpm;
     polarBPM.set(bpm);
@@ -386,6 +395,7 @@ function doomsday(command, callback) {
 }
 
 function updateStationsMetrics(value) {
+  console.log("🚀 ~ file: index.js ~ line 398 ~ updateStationsMetrics ~ value", value);
   //console.log("🚀 ~ file: index.js ~ line 364 ~ updateStationsMetrics ~ value", value);
   axios.put(`http://${IP}/api/stations/${ID}`, value);
 }
