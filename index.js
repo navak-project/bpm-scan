@@ -75,7 +75,7 @@ client.on('message', async function (topic, message) {
 	let buff = message.toString();
 	let value = JSON.parse(buff);
   _PRESENCE = JSON.parse(value.presence.toLowerCase());
-  updateStationsMetrics({ 'presence': _PRESENCE })
+  await updateStationsMetrics({ 'presence': _PRESENCE })
 	eventEmitter.emit('presence', _PRESENCE);
 });
 
@@ -106,7 +106,7 @@ eventEmitter.on('ready', async () => {
 	}
 	await setState(0);
   message.set('Ready to scan');
-  updateStationsMetrics({ 'message': 'Ready to scan' })
+  await updateStationsMetrics({ 'message': 'Ready to scan' })
 	console.log('Ready');
 });
 
@@ -114,8 +114,8 @@ eventEmitter.on('ready', async () => {
 eventEmitter.on('done', async () => {
 	await setState(2);
   message.set('Done!');
-  updateStationsMetrics({ 'message': 'Done!' })
-  updateStationsMetrics({ 'timer': `00:00:${_TIMERSCAN}` })
+  await updateStationsMetrics({ 'message': 'Done!' })
+  await updateStationsMetrics({ 'timer': `00:00:${_TIMERSCAN}` })
 	timer.set(_TIMERSCAN);
 });
 
@@ -136,7 +136,7 @@ eventEmitter.on('presence/false', async (value) => {
 	}
 	timerInstance.stop();
   timer.set(_TIMERSCAN);
-  updateStationsMetrics({ 'timer': `00:00:${_TIMERSCAN}` })
+  await updateStationsMetrics({ 'timer': `00:00:${_TIMERSCAN}` })
 	if (!_DONE && _READYTOSCAN) {
 		scanFail();
   }
@@ -148,7 +148,7 @@ eventEmitter.on('presence/false', async (value) => {
 // listen to the event
 eventEmitter.on('presence', async (value) => {
   presence.set(_PRESENCE);
-  updateStationsMetrics({ 'presence': _PRESENCE })
+  await updateStationsMetrics({ 'presence': _PRESENCE })
 	if (value == true) {
 		eventEmitter.emit('presence/true');
 	}
@@ -160,7 +160,7 @@ eventEmitter.on('presence', async (value) => {
 eventEmitter.on('processexit', async (msg) => {
   await setState(8);
   message.set(msg);
-  updateStationsMetrics({ 'message': msg })
+  await updateStationsMetrics({ 'message': msg })
 	await sleep(5000);
 	process.exit(0);
 });
@@ -176,7 +176,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 	console.log('booting...');
 	message.set('booting...');
-  updateStationsMetrics({ 'message': 'Booting...' })
+  await updateStationsMetrics({ 'message': 'Booting...' })
 	await sleep(3000);
 
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
@@ -189,7 +189,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 	console.log('Discovering device...');
 	message.set('Discovering device...');
-  updateStationsMetrics({ 'message': 'Discovering device...' })
+  await updateStationsMetrics({ 'message': 'Discovering device...' })
 
 	if (!(await adapter.isDiscovering())) {
 		await adapter.startDiscovery();
@@ -208,21 +208,21 @@ eventEmitter.on('processexit', async (msg) => {
 
 	console.log('Device:', macAdresss, deviceName);
   polarName.set(polarName);
-  //updateStationsMetrics({ 'polarName': _TIMERSCAN })
+  //await updateStationsMetrics({ 'polarName': _TIMERSCAN })
 
 	try {
 		await device.connect();
 	} catch (err) {
 		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
     message.set(err.text);
-    updateStationsMetrics({ 'message': err.text })
+    await updateStationsMetrics({ 'message': err.text })
     eventEmitter.emit('processexit', 'Disconnected');
     return;
 	}
 
 	message.set('Connected');
 	console.log('Connected!');
-  updateStationsMetrics({ 'message': 'Connected' })
+  await updateStationsMetrics({ 'message': 'Connected' })
 	device.on('disconnect', async function () {
     eventEmitter.emit('processexit', 'Disconnected');
     return;
@@ -251,7 +251,7 @@ eventEmitter.on('processexit', async (msg) => {
     }
 		_POLARBPM = bpm;
     polarBPM.set(bpm);
-    updateStationsMetrics({ 'bpm': _POLARBPM})
+    await updateStationsMetrics({ 'bpm': _POLARBPM})
 	});
 	//await sleep(5000);
 	eventEmitter.emit('init');
@@ -265,7 +265,7 @@ async function init() {
 	//await setState(5);
 	console.log('Getting user...');
   message.set('Getting user...');
-  updateStationsMetrics({ 'message': 'Getting user...' })
+  await updateStationsMetrics({ 'message': 'Getting user...' })
 	await sleep(3000);
   return new Promise(async function (resolve, reject) {
     let api = await pingAPI()
@@ -275,17 +275,17 @@ async function init() {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			console.log('🚀 ~ file: index.js ~ line 230 ~ _USER', _USER.data.id);
       lanternName.set(_USER.data.id);
-      updateStationsMetrics({ 'lantern': _USER.data.id })
+      await updateStationsMetrics({ 'lantern': _USER.data.id })
 			eventEmitter.emit('ready');
       _NOUSER = false;
 			resolve();
 		} catch (error) {
 			//console.log(error.response.data);
       catchError.set(error.response.data);
-      updateStationsMetrics({ 'message': error.response.data })
+      await updateStationsMetrics({ 'message': error.response.data })
 			await setState(3);
       message.set('No lantern');
-      updateStationsMetrics({ 'message': 'No lantern' })
+      await updateStationsMetrics({ 'message': 'No lantern' })
       console.log('No lantern, will try to get a user in 5 seconds...');
       _NOUSER = true;
 			reject();
@@ -295,7 +295,7 @@ async function init() {
 
 async function setLantern(userBpm) {
   message.set('Setting lantern...');
-  updateStationsMetrics({ 'message': 'Setting lantern...' })
+  await updateStationsMetrics({ 'message': 'Setting lantern...' })
 	await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: userBpm});
 	await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
 	eventEmitter.emit('done');
@@ -303,8 +303,8 @@ async function setLantern(userBpm) {
 
 async function done() {
   message.set('User is done and left! Will restart 5 seconds...');
-  updateStationsMetrics({ 'message': 'User is done and left! Will restart 5 seconds...' })
-  updateStationsMetrics({ 'lantern': '' })
+  await updateStationsMetrics({ 'message': 'User is done and left! Will restart 5 seconds...' })
+  await updateStationsMetrics({ 'lantern': '' })
   await sleep(5000);
 	eventEmitter.emit('init');
 }
@@ -313,7 +313,7 @@ async function scanFail() {
   _SCANFAIL = true;
 	await setState(4);
   message.set('User presence is false, will restart in 3 seconds...');
-  updateStationsMetrics({ 'message': 'User presence is false, will restart in 3 seconds...' })
+  await updateStationsMetrics({ 'message': 'User presence is false, will restart in 3 seconds...' })
 	await sleep(3000);
 	eventEmitter.emit('ready');
 }
@@ -337,7 +337,7 @@ async function setState(id) {
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
 			.then(() => {
         state.set(toString(id));
-        updateStationsMetrics({ 'state': id })
+        await updateStationsMetrics({ 'state': id })
 				resolve();
 			})
 			.catch((err) => {
@@ -354,7 +354,7 @@ async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
 		timer.set(timerInstance.getTimeValues().toString());
     console.log(timerInstance.getTimeValues().toString());
-    updateStationsMetrics({ 'timer': timerInstance.getTimeValues().toString() })
+    await updateStationsMetrics({ 'timer': timerInstance.getTimeValues().toString() })
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
 		_READYTOSCAN = false;
@@ -364,7 +364,7 @@ async function scan() {
   });
 	await setState(1);
   message.set('Scanning...');
-  updateStationsMetrics({ 'message': 'Scanning...' })
+  await updateStationsMetrics({ 'message': 'Scanning...' })
   timerInstance.start({ countdown: true, startValues: { seconds: _TIMERSCAN } });
   
 }
@@ -394,10 +394,16 @@ function doomsday(command, callback) {
 	});
 }
 
-function updateStationsMetrics(value) {
-  console.log("🚀 ~ file: index.js ~ line 398 ~ updateStationsMetrics ~ value", value);
-  //console.log("🚀 ~ file: index.js ~ line 364 ~ updateStationsMetrics ~ value", value);
-  axios.put(`http://192.168.1.209:8081/api/stations/s001`, value);
+async function updateStationsMetrics(value) {
+  return new Promise(async (resolve, reject) => {
+    await axios.put(`http://192.168.1.209:8081/api/stations/s001`, value)
+      .then(() => {
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 }
 
 async function pingAPI() {
