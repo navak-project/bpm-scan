@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import 'dotenv/config'
 import io from '@pm2/io';
 import {createBluetooth} from 'node-ble';
 const {bluetooth} = createBluetooth();
@@ -9,12 +9,14 @@ import {clientConnect} from './mqtt.js';
 const {client} = clientConnect();
 import {EventEmitter} from 'events';
 const eventEmitter = new EventEmitter();
-
+import isReachable from 'is-reachable';
 const timerInstance = new Timer();
+import {server} from './server.js';
+
 
 let _DONE = false;
 let _BOOTING = false;
-let _USER;
+let _USER = null;
 let _HEARTRATE;
 let _PRESENCE = false;
 let _READYTOSCAN = false;
@@ -22,9 +24,8 @@ let _POLARBPM;
 let _SCANFAIL = false;
 const _TIMERSCAN = 15;
 let _NOUSER = false;
-const {ID, GROUP, IP} = process.env;
-
-let firstData = false;
+let _APIDOWN = false
+const {ID, GROUP, IP, MACHINEIP} = process.env;
 
 const state = io.metric({
 	name: 'Scanning state'
@@ -67,13 +68,19 @@ client.on('error', function (err) {
 });
 
 client.on('message', async function (topic, message) {
+  console.log("🚀 ~ file: index.js ~ line 71 ~ topic", topic);
 	if (_BOOTING) {
 		return;
-	}
+  }
+  
+  if (topic === `/station/${ID}/reboot`) { 
+    eventEmitter.emit('processexit', 'Reboot!');
+  }
 	// message is Buffer
 	let buff = message.toString();
 	let value = JSON.parse(buff);
-	_PRESENCE = JSON.parse(value.presence.toLowerCase());
+  _PRESENCE = JSON.parse(value.presence.toLowerCase());
+  await updateStationsMetrics({presence: _PRESENCE })
 	eventEmitter.emit('presence', _PRESENCE);
 });
 
@@ -103,14 +110,17 @@ eventEmitter.on('ready', async () => {
 		return;
 	}
 	await setState(0);
-	message.set('Ready to scan');
+  message.set('Ready to scan');
+  await updateStationsMetrics({ message: 'Ready to scan' })
 	console.log('Ready');
 });
 
 // listen to the event
 eventEmitter.on('done', async () => {
 	await setState(2);
-	message.set('Done!');
+  message.set('Done!');
+  await updateStationsMetrics({ message: 'Done!' })
+  await updateStationsMetrics({ timer: `00:00:${_TIMERSCAN}` })
 	timer.set(_TIMERSCAN);
 });
 
@@ -130,7 +140,8 @@ eventEmitter.on('presence/false', async (value) => {
 		return;
 	}
 	timerInstance.stop();
-	timer.set(_TIMERSCAN);
+  timer.set(_TIMERSCAN);
+  await updateStationsMetrics({ timer: `00:00:${_TIMERSCAN}` })
 	if (!_DONE && _READYTOSCAN) {
 		scanFail();
   }
@@ -141,7 +152,8 @@ eventEmitter.on('presence/false', async (value) => {
 
 // listen to the event
 eventEmitter.on('presence', async (value) => {
-	presence.set(_PRESENCE);
+  presence.set(_PRESENCE);
+  await updateStationsMetrics({ presence: _PRESENCE })
 	if (value == true) {
 		eventEmitter.emit('presence/true');
 	}
@@ -151,14 +163,20 @@ eventEmitter.on('presence', async (value) => {
 });
 
 eventEmitter.on('processexit', async (msg) => {
+  
   await setState(8);
-	message.set(msg);
-	await sleep(5000);
-	process.exit(0);
+  message.set(msg);
+  await updateStationsMetrics({ message: msg })
+  //await sleep(5000);
+  await updateStationsMetrics({ status: false })
+  process.exit(0);
+  
 });
 
 // BOOT
 (async function () {
+  await server();
+  await pingAPI();
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
 	_BOOTING = true;
@@ -166,7 +184,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 	console.log('booting...');
 	message.set('booting...');
-
+  await updateStationsMetrics({ message: 'Booting...' })
 	await sleep(3000);
 
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
@@ -179,6 +197,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 	console.log('Discovering device...');
 	message.set('Discovering device...');
+  await updateStationsMetrics({ message: 'Discovering device...' })
 
 	if (!(await adapter.isDiscovering())) {
 		await adapter.startDiscovery();
@@ -196,20 +215,21 @@ eventEmitter.on('processexit', async (msg) => {
 	const deviceName = await device.getName();
 
 	console.log('Device:', macAdresss, deviceName);
-	polarName.set(polarName);
+  polarName.set(polarName);
 
 	try {
 		await device.connect();
 	} catch (err) {
 		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
-		message.set(err.text);
+    message.set(err.text);
+    await updateStationsMetrics({ message: err.text })
     eventEmitter.emit('processexit', 'Disconnected');
     return;
 	}
 
 	message.set('Connected');
 	console.log('Connected!');
-
+  await updateStationsMetrics({ message: 'Connected' })
 	device.on('disconnect', async function () {
     eventEmitter.emit('processexit', 'Disconnected');
     return;
@@ -224,34 +244,55 @@ eventEmitter.on('processexit', async (msg) => {
 	_HEARTRATE.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
 		let bpm = Math.max.apply(null, JSON.parse(json).data);
-		if (bpm == 0) {
-			bpm = 70;
-		}
+		/*if (bpm == 0 || bpm > 150) {
+      bpm = randomIntFromInterval(70, 90);
+    }*/
+    if (bpm < 70 ) {
+      bpm = randomIntFromInterval(30, 50);
+    }
+    if (bpm >= 70 ) {
+      bpm = randomIntFromInterval(50, 60);
+    }
+    if (bpm > 80 ) {
+      bpm = randomIntFromInterval(80, 90);
+    }
 		_POLARBPM = bpm;
-		polarBPM.set(bpm);
+    polarBPM.set(bpm);
+    await updateStationsMetrics({ bpm: _POLARBPM})
 	});
 	//await sleep(5000);
 	eventEmitter.emit('init');
 })();
 
+function randomIntFromInterval(min, max) { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
 async function init() {
 	//await setState(5);
 	console.log('Getting user...');
-	message.set('Getting user...');
+  message.set('Getting user...');
+  await updateStationsMetrics({ message: 'Getting user...' })
 	await sleep(3000);
-	return new Promise(async function (resolve, reject) {
+  return new Promise(async function (resolve, reject) {
+    let api = await pingAPI()
+    console.log("🚀 ~ file: index.js ~ line 261 ~ api", api);
+    if (api == false) { reject(); }
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			console.log('🚀 ~ file: index.js ~ line 230 ~ _USER', _USER.data.id);
-			lanternName.set(_USER.data.id);
+      lanternName.set(_USER.data.id);
+      await updateStationsMetrics({ lantern: _USER.data.id })
 			eventEmitter.emit('ready');
       _NOUSER = false;
 			resolve();
 		} catch (error) {
-			console.log(error.response.data);
-			catchError.set(error.response.data);
+			//console.log(error.response.data);
+      catchError.set(error.response.data);
+      await updateStationsMetrics({ message: error.response.data })
 			await setState(3);
-			message.set('No lantern');
+      message.set('No lantern');
+      await updateStationsMetrics({ message: 'No lantern' })
       console.log('No lantern, will try to get a user in 5 seconds...');
       _NOUSER = true;
 			reject();
@@ -260,25 +301,26 @@ async function init() {
 }
 
 async function setLantern(userBpm) {
-	message.set('Setting lantern...');
+  message.set('Setting lantern...');
+  await updateStationsMetrics({ message: 'Setting lantern...' })
 	await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: userBpm});
-	await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
+	//await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
 	eventEmitter.emit('done');
 }
 
 async function done() {
- 
-	message.set('User is done and left! Will restart 5 seconds...');
+  message.set('User is done and left! Will restart 5 seconds...');
+  await updateStationsMetrics({ message: 'User is done and left! Will restart 5 seconds...' })
+  await updateStationsMetrics({ lantern: '' })
   await sleep(5000);
-  await setState(6);
-  await sleep(2000);
 	eventEmitter.emit('init');
 }
 async function scanFail() {
   _READYTOSCAN = false;
   _SCANFAIL = true;
 	await setState(4);
-	message.set('User presence is false, will restart in 3 seconds...');
+  message.set('User presence is false, will restart in 3 seconds...');
+  await updateStationsMetrics({ message: 'User presence is false, will restart in 3 seconds...' })
 	await sleep(3000);
 	eventEmitter.emit('ready');
 }
@@ -300,8 +342,9 @@ async function setState(id) {
 	return new Promise(async (resolve, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
-			.then(() => {
-				state.set(toString(id));
+			.then(async() => {
+        state.set(toString(id));
+        //await updateStationsMetrics({ "state": id })
 				resolve();
 			})
 			.catch((err) => {
@@ -318,7 +361,7 @@ async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
 		timer.set(timerInstance.getTimeValues().toString());
     console.log(timerInstance.getTimeValues().toString());
-    //if (!_PRESENCE) { scanFail(); }
+    await updateStationsMetrics({ timer: timerInstance.getTimeValues().toString() })
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
 		_READYTOSCAN = false;
@@ -327,8 +370,10 @@ async function scan() {
 		await setLantern(_POLARBPM);
   });
 	await setState(1);
-	message.set('Scanning...');
-	timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
+  message.set('Scanning...');
+  await updateStationsMetrics({ message: 'Scanning...' })
+  timerInstance.start({ countdown: true, startValues: { seconds: _TIMERSCAN } });
+  
 }
 
 /**
@@ -354,4 +399,26 @@ function doomsday(command, callback) {
 	exec(command, function (error, stdout, stderr) {
 		callback(stdout);
 	});
+}
+
+async function updateStationsMetrics(value) {
+  return new Promise(async (resolve, reject) => {
+    await axios.put(`http://${IP}/api/stations/${ID}`, value)
+      .then(() => {
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+async function pingAPI() {
+    var status = await isReachable(IP);
+    console.log("🚀 ~ file: index.js ~ line 393 ~ pingAPI ~ status", status);
+      if (status) {
+       return true
+      } else {
+       return false
+      }
 }
