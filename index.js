@@ -32,12 +32,11 @@ client.on('error', function (err) {
 
 client.on('message', async function (topic, message) {
   console.log("🚀 ~ file: index.js ~ line 71 ~ topic", topic);
-	if (_BOOTING) {
-		return;
-  }
-  
   if (topic === `/station/${ID}/reboot`) { 
     eventEmitter.emit('processexit', 'Reboot!');
+  }
+	if (_BOOTING) {
+		return;
   }
 	// message is Buffer
 	let buff = message.toString();
