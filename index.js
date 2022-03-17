@@ -301,7 +301,6 @@ async function setState(id) {
  */
 async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
-		timer.set(timerInstance.getTimeValues().toString());
     console.log(timerInstance.getTimeValues().toString());
     await updateStationsMetrics({ timer: timerInstance.getTimeValues().toString() })
 	});
