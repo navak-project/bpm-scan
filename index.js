@@ -311,7 +311,6 @@ async function scan() {
 		await setLantern(_POLARBPM);
   });
 	await setState(1);
-  message.set('Scanning...');
   await updateStationsMetrics({ message: 'Scanning...' })
   timerInstance.start({ countdown: true, startValues: { seconds: _TIMERSCAN } });
   
