@@ -257,6 +257,7 @@ async function setLantern(userBpm) {
 async function done() {
   await updateStationsMetrics({ message: 'User is done and left! Will restart 5 seconds...' })
   await updateStationsMetrics({ lantern: '' })
+  await setState(8);
   await sleep(5000);
 	eventEmitter.emit('init');
 }
@@ -278,6 +279,7 @@ async function scanFail() {
  * `STATE 5` = Getting new user
  * `STATE 6` = BOOTING
  * `STATE 7` = CLICKED
+ * `STATE 8` = User left
  * Set the state of the station
  * @return {Promise<axios>} return the current bpm value
  * @param {Number} id
