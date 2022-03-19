@@ -279,7 +279,8 @@ async function scanFail() {
  * `STATE 5` = Getting new user
  * `STATE 6` = BOOTING
  * `STATE 7` = CLICKED
- * `STATE 8` = User left
+ * `STATE 8` = REBOOT
+ * `STATE 9` = USER LEFT
  * Set the state of the station
  * @return {Promise<axios>} return the current bpm value
  * @param {Number} id
