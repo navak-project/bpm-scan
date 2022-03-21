@@ -134,6 +134,7 @@ eventEmitter.on('processexit', async (msg) => {
   await server();
   await pingAPI();
   await updateStationsMetrics({ bpm: 0 })
+  await updateStationsMetrics({ lantern: '-' })
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
 	_BOOTING = true;
