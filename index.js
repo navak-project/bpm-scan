@@ -400,15 +400,15 @@ function doomsday(command, callback) {
 }
 
 async function updateStationsMetrics(value) {
-  // return new Promise(async (resolve, reject) => {
-  //   await axios.put(`http://${IP}/api/stations/${ID}`, value)
-  //     .then(() => {
-  //       resolve();
-  //     })
-  //     .catch((err) => {
-  //       reject(err);
-  //     });
-  // });
+  return new Promise(async (resolve, reject) => {
+    await axios.put(`http://${IP}/api/stations/${ID}`, value)
+      .then(() => {
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 }
 
 async function pingAPI() {
