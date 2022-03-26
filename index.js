@@ -360,7 +360,6 @@ async function checkUsers() {
 }
 
 async function scan() {
-  checkUsers();
   const arr = await getStations();
   await updateStationsMetrics({ message: 'Checking if all user is there' })
   _CHECKFORALLUSER = true;
