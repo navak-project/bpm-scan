@@ -237,6 +237,7 @@ function randomIntFromInterval(min, max) { // min and max included
 
 async function init() {
 	//await setState(5);
+  _BOOTING = true;
   console.log('Getting user...');
   _USER = null
   await updateStationsMetrics({ lantern: '-' })
