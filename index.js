@@ -349,7 +349,7 @@ async function setState(id) {
  */
 
 
-let nb_user = 0;
+/*let nb_user = 0;
 async function checkUsers() {
   nb_user += 1;
   console.log("🚀 ~ file: index.js ~ line 355 ~ checkUsers ~ nb_user", nb_user);
@@ -357,10 +357,10 @@ async function checkUsers() {
    return true
   }
   return false
-}
+}*/
 
 async function scan() {
-  const arr = await getStations();
+  /*const arr = await getStations();
   await updateStationsMetrics({ message: 'Checking if all user is there' })
   _CHECKFORALLUSER = true;
   if (!checkUsers()) {
@@ -370,7 +370,7 @@ async function scan() {
       }else{scan()}
     }
   }
-  _CHECKFORALLUSER = false;
+  _CHECKFORALLUSER = false;*/
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     await updateStationsMetrics({ timer: timerInstance.getTimeValues().toString() })
