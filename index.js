@@ -245,7 +245,8 @@ async function boot() {
   /* -------------------------------------------------- */
   /* -------------------------------------------------- */
 	//await sleep(5000);
-  bpm = randomIntFromInterval(30, 80);
+  _POLARBPM = randomIntFromInterval(30, 80);;
+  await updateStationsMetrics({ bpm: _POLARBPM})
 	eventEmitter.emit('init');
 };
 
