@@ -237,12 +237,13 @@ function randomIntFromInterval(min, max) { // min and max included
 
 async function init() {
 	//await setState(5);
-	console.log('Getting user...');
+  console.log('Getting user...');
+  _USER = null
+  await updateStationsMetrics({ lantern: '-' })
   await updateStationsMetrics({ message: 'Getting user...' })
 	await sleep(3000);
   return new Promise(async function (resolve, reject) {
     let api = await pingAPI()
-    console.log("🚀 ~ file: index.js ~ line 261 ~ api", api);
     if (api == false) { reject(); }
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
@@ -273,7 +274,7 @@ async function setLantern(userBpm) {
 async function done() {
   await updateStationsMetrics({ message: 'User is done and left! Will restart 5 seconds...' })
   await updateStationsMetrics({ lantern: '' })
-  await setState(8);
+  await setState(9);
   await sleep(5000);
 	eventEmitter.emit('init');
 }
