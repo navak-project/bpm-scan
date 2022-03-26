@@ -21,7 +21,9 @@ let _PRESENCE = false;
 let _READYTOSCAN = false;
 let _POLARBPM = 0;
 let _SCANFAIL = false;
+let _SCANNING = false;
 const _TIMERSCAN = 15;
+
 let _NOUSER = false;
 const {ID, GROUP, IP, MACHINEIP} = process.env;
 
@@ -95,12 +97,13 @@ eventEmitter.on('presence/true', async () => {
 });
 
 eventEmitter.on('presence/false', async (value) => {
-  if (_SCANFAIL == true) {
+  if (_SCANFAIL == true || _NOUSER == true) {
 		return;
 	}
 	timerInstance.stop();
   await updateStationsMetrics({ timer: `00:00:${_TIMERSCAN}` })
-	if (!_DONE && _READYTOSCAN) {
+  if (!_DONE && _READYTOSCAN) {
+    if (_SCANNING == false){return}
 		scanFail();
   }
   if (_DONE && !_READYTOSCAN){
@@ -301,6 +304,7 @@ async function done() {
 async function scanFail() {
   _READYTOSCAN = false;
   _SCANFAIL = true;
+  _SCANNING = false;
 	await setState(4);
   await updateStationsMetrics({ message: 'User presence is false, will restart in 3 seconds...' })
 	await sleep(3000);
@@ -343,6 +347,7 @@ async function setState(id) {
 
 
 async function scan() {
+  _SCANNING = true;
   const arr = await getStations();
   await updateStationsMetrics({ message: 'Checking if all user is there' })
   for (let i = 0; i < arr.length; i++) {
@@ -358,7 +363,8 @@ async function scan() {
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
 		_READYTOSCAN = false;
-		_DONE = true;
+    _DONE = true;
+    _SCANNING = false
 		timerInstance.stop();
 		await setLantern(_POLARBPM);
   });
