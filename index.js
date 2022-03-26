@@ -346,7 +346,7 @@ async function scan() {
   const arr = await getStations();
   await updateStationsMetrics({ message: 'Checking if all user is there' })
   for (let i = 0; i < arr.length; i++) {
-    if (elm[i].presence === false) {à
+    if (elm[i].presence === false) {
       await updateStationsMetrics({ message: `Missing ${elm[i].id}` })
       return;
     }
