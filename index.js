@@ -139,6 +139,7 @@ async function boot() {
   await updateStationsMetrics({ message: '-' })
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
+  _USER = null
 	_BOOTING = true;
 	await setState(6);
 
@@ -148,8 +149,11 @@ async function boot() {
 
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
 		if (err) {
-			console.log(err);
-      eventEmitter.emit('processexit', 'No bluetooth adapter');
+      console.log(err);
+      await updateStationsMetrics({ message: 'No bluetooth adapter' })
+      sleep(2000);
+      boot();
+     // eventEmitter.emit('processexit', 'No bluetooth adapter');
       return;
 		}
 	});
@@ -164,8 +168,10 @@ async function boot() {
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
 		if (err) {
       console.log(err);
-      boot();
       //eventEmitter.emit('processexit', 'No device');
+      await updateStationsMetrics({ message: 'No device' })
+      sleep(2000);
+      boot();
       return;
 		}
 	});
