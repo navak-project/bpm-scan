@@ -165,91 +165,91 @@ async function boot() {
 
   /* -------------------------------------------------- */
   /* -------------------------------------------------- */
-	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
-		if (err) {
-      console.log(err);
-      await updateStationsMetrics({ message: 'No bluetooth adapter' })
-      sleep(2000);
-      boot();
-     // eventEmitter.emit('processexit', 'No bluetooth adapter');
-      return;
-		}
-	});
+	// const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
+	// 	if (err) {
+  //     console.log(err);
+  //     await updateStationsMetrics({ message: 'No bluetooth adapter' })
+  //     sleep(2000);
+  //     boot();
+  //    // eventEmitter.emit('processexit', 'No bluetooth adapter');
+  //     return;
+	// 	}
+	// });
 
-	console.log('Discovering device...');
-  await updateStationsMetrics({ message: 'Discovering device...' })
+	// console.log('Discovering device...');
+  // await updateStationsMetrics({ message: 'Discovering device...' })
 
-	if (!(await adapter.isDiscovering())) {
-		await adapter.startDiscovery();
-	}
+	// if (!(await adapter.isDiscovering())) {
+	// 	await adapter.startDiscovery();
+	// }
 
-	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
-		if (err) {
-      console.log(err);
-      //eventEmitter.emit('processexit', 'No device');
-      await updateStationsMetrics({ message: 'No device' })
-      sleep(2000);
-      boot();
-      return;
-		}
-	});
+	// const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
+	// 	if (err) {
+  //     console.log(err);
+  //     //eventEmitter.emit('processexit', 'No device');
+  //     await updateStationsMetrics({ message: 'No device' })
+  //     sleep(2000);
+  //     boot();
+  //     return;
+	// 	}
+	// });
 
-	const macAdresss = await device.getAddress();
-	const deviceName = await device.getName();
+	// const macAdresss = await device.getAddress();
+	// const deviceName = await device.getName();
 
-	console.log('Device:', macAdresss, deviceName);
+	// console.log('Device:', macAdresss, deviceName);
 
-	try {
-		await device.connect();
-	} catch (err) {
-		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
-    await updateStationsMetrics({ message: err.text })
-    sleep(2000);
-    boot();
-    //eventEmitter.emit('processexit', 'Disconnected');
-    return;
-	}
+	// try {
+	// 	await device.connect();
+	// } catch (err) {
+	// 	console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
+  //   await updateStationsMetrics({ message: err.text })
+  //   sleep(2000);
+  //   boot();
+  //   //eventEmitter.emit('processexit', 'Disconnected');
+  //   return;
+	// }
 
-	console.log('Connected!');
-  await updateStationsMetrics({ message: 'Connected' })
-  device.on('disconnect', async function () {
+	// console.log('Connected!');
+  // await updateStationsMetrics({ message: 'Connected' })
+  // device.on('disconnect', async function () {
 
-    await updateStationsMetrics({ message: 'Disconnected' })
-    sleep(2000);
-    boot();
-   // eventEmitter.emit('processexit', 'Disconnected');
-    return;
-	});
+  //   await updateStationsMetrics({ message: 'Disconnected' })
+  //   sleep(2000);
+  //   boot();
+  //  // eventEmitter.emit('processexit', 'Disconnected');
+  //   return;
+	// });
 
-	const gattServer = await device.gatt();
-	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
-	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
-	await heartrate.startNotifications();
+	// const gattServer = await device.gatt();
+	// const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
+	// const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
+	// await heartrate.startNotifications();
 
-	_HEARTRATE = heartrate;
-	_HEARTRATE.on('valuechanged', async (buffer) => {
-		let json = JSON.stringify(buffer);
-		let bpm = Math.max.apply(null, JSON.parse(json).data);
-		/*if (bpm == 0 || bpm > 150) {
-      bpm = randomIntFromInterval(70, 90);
-    }*/
-    if (bpm < 70 ) {
-      bpm = randomIntFromInterval(30, 50);
-    }
-    if (bpm >= 70 ) {
-      bpm = randomIntFromInterval(50, 60);
-    }
-    if (bpm > 80 ) {
-      bpm = randomIntFromInterval(80, 90);
-    }
-		_POLARBPM = bpm;
-    await updateStationsMetrics({ bpm: _POLARBPM})
-  });
+	// _HEARTRATE = heartrate;
+	// _HEARTRATE.on('valuechanged', async (buffer) => {
+	// 	let json = JSON.stringify(buffer);
+	// 	let bpm = Math.max.apply(null, JSON.parse(json).data);
+	// 	/*if (bpm == 0 || bpm > 150) {
+  //     bpm = randomIntFromInterval(70, 90);
+  //   }*/
+  //   if (bpm < 70 ) {
+  //     bpm = randomIntFromInterval(30, 50);
+  //   }
+  //   if (bpm >= 70 ) {
+  //     bpm = randomIntFromInterval(50, 60);
+  //   }
+  //   if (bpm > 80 ) {
+  //     bpm = randomIntFromInterval(80, 90);
+  //   }
+	// 	_POLARBPM = bpm;
+  //   await updateStationsMetrics({ bpm: _POLARBPM})
+  // });
   /* -------------------------------------------------- */
   /* -------------------------------------------------- */
 	//await sleep(5000);
-  //_POLARBPM = randomIntFromInterval(30, 80);;
- // await updateStationsMetrics({ bpm: _POLARBPM})
+  _POLARBPM = randomIntFromInterval(30, 80);;
+  await updateStationsMetrics({ bpm: _POLARBPM})
 	eventEmitter.emit('init');
 };
 
