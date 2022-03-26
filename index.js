@@ -130,8 +130,8 @@ eventEmitter.on('processexit', async (msg) => {
 });
 
 // BOOT
-init();
-async function init() {
+boot();
+async function boot() {
   await server();
   await pingAPI();
   await updateStationsMetrics({ bpm: 0 })
@@ -164,7 +164,7 @@ async function init() {
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
 		if (err) {
       console.log(err);
-      init();
+      boot();
       //eventEmitter.emit('processexit', 'No device');
       return;
 		}
@@ -181,7 +181,7 @@ async function init() {
 		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
     await updateStationsMetrics({ message: err.text })
     sleep(2000);
-    init();
+    boot();
     //eventEmitter.emit('processexit', 'Disconnected');
     return;
 	}
@@ -192,7 +192,7 @@ async function init() {
 
     await updateStationsMetrics({ message: 'Disconnected' })
     sleep(2000);
-    init();
+    boot();
    // eventEmitter.emit('processexit', 'Disconnected');
     return;
 	});
