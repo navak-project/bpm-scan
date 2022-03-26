@@ -130,11 +130,13 @@ eventEmitter.on('processexit', async (msg) => {
 });
 
 // BOOT
-(async function () {
+init();
+async function init() {
   await server();
   await pingAPI();
   await updateStationsMetrics({ bpm: 0 })
   await updateStationsMetrics({ lantern: '-' })
+  await updateStationsMetrics({ message: '-' })
 	// doomsday('sudo invoke-rc.d bluetooth restart', function (callback) { })
 	// doomsday('sudo hostname -I', function (callback) { })
 	_BOOTING = true;
@@ -161,8 +163,9 @@ eventEmitter.on('processexit', async (msg) => {
 
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
 		if (err) {
-			console.log(err);
-      eventEmitter.emit('processexit', 'No device');
+      console.log(err);
+      init();
+      //eventEmitter.emit('processexit', 'No device');
       return;
 		}
 	});
@@ -177,14 +180,20 @@ eventEmitter.on('processexit', async (msg) => {
 	} catch (err) {
 		console.log('🚀 ~ file: index.js ~ line 135 ~ init ~ err', err);
     await updateStationsMetrics({ message: err.text })
-    eventEmitter.emit('processexit', 'Disconnected');
+    sleep(2000);
+    init();
+    //eventEmitter.emit('processexit', 'Disconnected');
     return;
 	}
 
 	console.log('Connected!');
   await updateStationsMetrics({ message: 'Connected' })
-	device.on('disconnect', async function () {
-    eventEmitter.emit('processexit', 'Disconnected');
+  device.on('disconnect', async function () {
+
+    await updateStationsMetrics({ message: 'Disconnected' })
+    sleep(2000);
+    init();
+   // eventEmitter.emit('processexit', 'Disconnected');
     return;
 	});
 
@@ -214,7 +223,7 @@ eventEmitter.on('processexit', async (msg) => {
 	});
 	//await sleep(5000);
 	eventEmitter.emit('init');
-})();
+};
 
 function randomIntFromInterval(min, max) { // min and max included 
   return Math.floor(Math.random() * (max - min + 1) + min)
