@@ -22,6 +22,7 @@ let _READYTOSCAN = false;
 let _POLARBPM = 0;
 let _SCANFAIL = false;
 let _SCANNING = false;
+let _CHECKFORALLUSER = false;
 const _TIMERSCAN = 15;
 
 let _NOUSER = false;
@@ -103,6 +104,9 @@ eventEmitter.on('presence/false', async (value) => {
 	timerInstance.stop();
   await updateStationsMetrics({ timer: `00:00:${_TIMERSCAN}` })
   if (!_DONE && _READYTOSCAN) {
+    if (_CHECKFORALLUSER) {
+      eventEmitter.emit('ready');
+    }
     if (_SCANNING == false){return}
 		scanFail();
   }
@@ -345,18 +349,29 @@ async function setState(id) {
  */
 
 
+let nb_user = 0;
+async function checkUsers() {
+  nb_user += 1;
+  console.log("🚀 ~ file: index.js ~ line 355 ~ checkUsers ~ nb_user", nb_user);
+  if (nb_user > 2) {
+   return true
+  }
+  return false
+}
 
 async function scan() {
-  _SCANNING = true;
+  checkUsers();
   const arr = await getStations();
   await updateStationsMetrics({ message: 'Checking if all user is there' })
-  for (let i = 0; i < arr.length; i++) {
-    if (elm[i].presence === false) {
-      await updateStationsMetrics({ message: `Missing ${elm[i].id}` })
-      scan();
+  _CHECKFORALLUSER = true;
+  if (!checkUsers()) {
+    for (let i = 0; i < arr.length; i++) {
+      if (elm[i].presence === true) {
+        checkUsers();
+      }else{scan()}
     }
   }
-
+  _CHECKFORALLUSER = false;
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     await updateStationsMetrics({ timer: timerInstance.getTimeValues().toString() })
@@ -368,7 +383,8 @@ async function scan() {
 		timerInstance.stop();
 		await setLantern(_POLARBPM);
   });
-	await setState(1);
+  await setState(1);
+  _SCANNING = true;
   await updateStationsMetrics({ message: 'Scanning...' })
   timerInstance.start({ countdown: true, startValues: { seconds: _TIMERSCAN } });
   
