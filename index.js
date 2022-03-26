@@ -343,14 +343,14 @@ async function setState(id) {
 
 
 async function scan() {
-  // const arr = await getStations();
-  // await updateStationsMetrics({ message: 'Checking if all user is there' })
-  // for (let i = 0; i < arr.length; i++) {
-  //   if (elm[i].presence === false) {
-  //     await updateStationsMetrics({ message: `Missing ${elm[i].id}` })
-  //     return;
-  //   }
-  // }
+  const arr = await getStations();
+  await updateStationsMetrics({ message: 'Checking if all user is there' })
+  for (let i = 0; i < arr.length; i++) {
+    if (elm[i].presence === false) {
+      await updateStationsMetrics({ message: `Missing ${elm[i].id}` })
+      scan();
+    }
+  }
 
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
