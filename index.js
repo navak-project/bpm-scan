@@ -154,7 +154,7 @@ boot();
 async function boot() {
   await server();
   await pingAPI();
-  await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: '0, 0, 0, 255' });
+  await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: '50, 50, 50, 255' });
   await updateStationsMetrics({ bpm: 0 })
   await updateStationsMetrics({ lantern: '-' })
   await updateStationsMetrics({ message: '-' })
@@ -166,7 +166,7 @@ async function boot() {
 
 	console.log('booting...');
   await updateStationsMetrics({ message: 'Booting...' })
-	await sleep(3000);
+	await sleep(2000);
 
   /* -------------------------------------------------- */
   /* -------------------------------------------------- */
@@ -303,7 +303,7 @@ async function done() {
   await updateStationsMetrics({ message: 'User is done and left! Will restart 5 seconds...' })
   await updateStationsMetrics({ lantern: '' })
   //await setState(9);
-  await sleep(5000);
+  await sleep(8000);
 	eventEmitter.emit('init');
 }
 async function scanFail() {
