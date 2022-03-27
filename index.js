@@ -23,6 +23,8 @@ let _SCANNING = false;
 let _CHECKFORALLUSER = false;
 const _TIMERSCAN = 15;
 
+let _CURENTSTATE;
+
 let _NOUSER = false;
 const {ID, GROUP, IP} = process.env;
 
@@ -86,9 +88,10 @@ eventEmitter.on('presence/true', async () => {
 	if (_SCANFAIL == true || _NOUSER == true) {
 		return;
 	}
-	await setState(7);
-	await sleep(1000);
-	if (validate() && _READYTOSCAN) {
+  
+  if (validate() && _READYTOSCAN) {
+    await setState(7);
+    await sleep(500);
 		await scan();
 	}
 });
@@ -96,11 +99,12 @@ eventEmitter.on('presence/true', async () => {
 eventEmitter.on('presence/false', async (value) => {
 	if (_SCANFAIL == true || _NOUSER == true) {
 		return;
-	}
+  }
+  
 	timerInstance.stop();
 	await updateStationsMetrics({timer: `00:00:${_TIMERSCAN}`});
 	if (!_DONE && _READYTOSCAN) {
-		if (_CHECKFORALLUSER) {
+    if (_CHECKFORALLUSER) {
 			eventEmitter.emit('ready');
 		}
 		if (_SCANNING == false) {
@@ -331,10 +335,12 @@ async function scanFail() {
  * @param {Number} id
  */
 async function setState(id) {
+
 	return new Promise(async (resolve, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id})
-			.then(async () => {
+      .then(async () => {
+        _CURENTSTATE = id;
 				resolve();
 			})
 			.catch((err) => {
