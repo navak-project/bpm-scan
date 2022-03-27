@@ -311,8 +311,8 @@ async function scanFail() {
   _SCANFAIL = true;
   _SCANNING = false;
 	await setState(4);
-  await updateStationsMetrics({ message: 'User presence is false, will restart in 3 seconds...' })
-	await sleep(3000);
+  await updateStationsMetrics({ message: 'User presence is false' })
+	await sleep(1500);
 	eventEmitter.emit('ready');
 }
 
