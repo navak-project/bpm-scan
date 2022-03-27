@@ -264,7 +264,9 @@ async function init() {
 	//console.log('Getting user...');
   _USER = null;
   await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: '50, 50, 50, 255' });
-	await updateStationsMetrics({lantern: '-'});
+  await updateStationsMetrics({ lantern: '-' });
+  _POLARBPM = randomIntFromInterval(70, 90);
+  await updateStationsMetrics({bpm: _POLARBPM});
 	//await updateStationsMetrics({ message: 'Getting user...' })
 	//await sleep(3000);
 	return new Promise(async function (resolve, reject) {
