@@ -274,7 +274,8 @@ async function init() {
     if (api == false) { reject(); }
 		try {
 			_USER = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
-			console.log('🚀 ~ file: index.js ~ line 230 ~ _USER', _USER.data.id);
+      console.log('🚀 ~ file: index.js ~ line 230 ~ _USER', _USER.data.id);
+      await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: _USER.data.rgb});
       await updateStationsMetrics({ lantern: _USER.data.id })
 			eventEmitter.emit('ready');
       _NOUSER = false;
@@ -293,8 +294,8 @@ async function init() {
 
 async function setLantern(userBpm, userColor) {
   await updateStationsMetrics({ message: 'Setting lantern...' })
-  await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { pulse: userBpm, rgb: _USER.data.rgb});
-	await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: _USER.data.rgb});
+  await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { pulse: userBpm });
+
 	eventEmitter.emit('done');
 }
 
