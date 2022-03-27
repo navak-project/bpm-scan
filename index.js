@@ -57,8 +57,7 @@ eventEmitter.on('init', async () => {
 		})
 		.catch(async (err) => {
 			console.log(err);
-			await sleep(5000);
-			console.log('init failed, will try again in 5 seconds...');
+			await sleep(2000);
 			eventEmitter.emit('init');
 		});
 });
@@ -265,10 +264,10 @@ function randomIntFromInterval(min, max) { // min and max included
 async function init() {
 	//await setState(5);
   _BOOTING = true;
-  console.log('Getting user...');
+  //console.log('Getting user...');
   _USER = null
   await updateStationsMetrics({ lantern: '-' })
-  await updateStationsMetrics({ message: 'Getting user...' })
+  //await updateStationsMetrics({ message: 'Getting user...' })
 	//await sleep(3000);
   return new Promise(async function (resolve, reject) {
     let api = await pingAPI()
@@ -286,7 +285,7 @@ async function init() {
       await updateStationsMetrics({ message: error.response.data })
 			await setState(3);
       await updateStationsMetrics({ message: 'No lantern' })
-      console.log('No lantern, will try to get a user in 5 seconds...');
+      //console.log('No lantern, will try to get a user in 5 seconds...');
       _NOUSER = true;
 			reject();
 		}
@@ -300,7 +299,7 @@ async function setLantern(userBpm, userColor) {
 }
 
 async function done() {
-  await updateStationsMetrics({ message: 'User is done and left! Will restart 5 seconds...' })
+  await updateStationsMetrics({ message: 'User is done and left!' })
   await updateStationsMetrics({ lantern: '' })
   //await setState(9);
   await sleep(18000);
