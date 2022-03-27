@@ -295,8 +295,7 @@ async function init() {
 }
 
 async function setLantern(userBpm, userColor) {
-	await updateStationsMetrics({message: 'Setting lantern...'});
-	await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: userBpm});
+  await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { pulse: userBpm });
 	eventEmitter.emit('done');
 }
 
