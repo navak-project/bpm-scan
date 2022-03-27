@@ -66,7 +66,7 @@ eventEmitter.on('ready', async () => {
 	_DONE = false;
 	_SCANFAIL = false;
 	if (validate()) {
-		await sleep(2500);
+		//await sleep(2500);
 		eventEmitter.emit('presence/true');
 		return;
 	}
@@ -302,7 +302,6 @@ async function setLantern(userBpm, userColor) {
 
 async function done() {
 	await updateStationsMetrics({message: 'User is done and left!'});
-	await updateStationsMetrics({lantern: ''});
 	//await setState(9);
 	await sleep(18000);
 	eventEmitter.emit('init');
