@@ -302,7 +302,7 @@ async function setLantern(userBpm, userColor) {
 async function done() {
   await updateStationsMetrics({ message: 'User is done and left! Will restart 5 seconds...' })
   await updateStationsMetrics({ lantern: '' })
-  await setState(9);
+  //await setState(9);
   await sleep(5000);
 	eventEmitter.emit('init');
 }
