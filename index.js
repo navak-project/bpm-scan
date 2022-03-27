@@ -282,7 +282,6 @@ async function init() {
 			resolve();
 		} catch (error) {
 			//console.log(error.response.data);
-      await updateStationsMetrics({ message: error.response.data })
 			await setState(3);
       await updateStationsMetrics({ message: 'No lantern' })
       //console.log('No lantern, will try to get a user in 5 seconds...');
