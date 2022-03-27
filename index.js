@@ -150,7 +150,6 @@ boot();
 async function boot() {
 	await server();
 	await pingAPI();
-	await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255'});
 	await updateStationsMetrics({bpm: 0});
 	await updateStationsMetrics({lantern: '-'});
 	await updateStationsMetrics({message: '-'});
@@ -263,7 +262,8 @@ async function init() {
 	//await setState(5);
 	_BOOTING = true;
 	//console.log('Getting user...');
-	_USER = null;
+  _USER = null;
+  await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: '50, 50, 50, 255' });
 	await updateStationsMetrics({lantern: '-'});
 	//await updateStationsMetrics({ message: 'Getting user...' })
 	//await sleep(3000);
