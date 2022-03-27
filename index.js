@@ -269,7 +269,7 @@ async function init() {
   _USER = null
   await updateStationsMetrics({ lantern: '-' })
   await updateStationsMetrics({ message: 'Getting user...' })
-	await sleep(3000);
+	//await sleep(3000);
   return new Promise(async function (resolve, reject) {
     let api = await pingAPI()
     if (api == false) { reject(); }
@@ -303,7 +303,7 @@ async function done() {
   await updateStationsMetrics({ message: 'User is done and left! Will restart 5 seconds...' })
   await updateStationsMetrics({ lantern: '' })
   //await setState(9);
-  await sleep(8000);
+  await sleep(18000);
 	eventEmitter.emit('init');
 }
 async function scanFail() {
