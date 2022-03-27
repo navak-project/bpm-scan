@@ -252,7 +252,7 @@ async function boot() {
   /* -------------------------------------------------- */
   /* -------------------------------------------------- */
 	//await sleep(5000);
-  _POLARBPM = randomIntFromInterval(30, 80);;
+  _POLARBPM = randomIntFromInterval(70, 90);;
   await updateStationsMetrics({ bpm: _POLARBPM})
 	eventEmitter.emit('init');
 };
@@ -291,9 +291,9 @@ async function init() {
 	});
 }
 
-async function setLantern(userBpm) {
+async function setLantern(userBpm, userColor) {
   await updateStationsMetrics({ message: 'Setting lantern...' })
-	await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, {pulse: userBpm});
+  await axios.put(`http://${IP}/api/lanterns/${_USER.data.id}`, { pulse: userBpm, rgb: _USER.data.rgb});
 	//await axios.put(`http://${IP}/api/stations/${ID}`, {state: 2, rgb: _USER.data.rgb});
 	eventEmitter.emit('done');
 }
