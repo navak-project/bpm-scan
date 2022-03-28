@@ -323,9 +323,9 @@ async function scanFail() {
 	_READYTOSCAN = false;
 	_SCANFAIL = true;
 	_SCANNING = false;
-	await setState(4);
+	//await setState(4);
 	await updateStationsMetrics({message: 'User presence is false'});
-	await sleep(1500);
+	//await sleep(1500);
 	eventEmitter.emit('ready');
 }
 
@@ -398,7 +398,7 @@ async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     await checkUsers();
-    if (_PRESENCE === false || _ALLUSER === false) { eventEmitter.emit('presence/false') }
+    if (_PRESENCE === false || _ALLUSER === false) { scanFail(); }
 		await updateStationsMetrics({timer: timerInstance.getTimeValues().toString()});
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
