@@ -101,8 +101,7 @@ eventEmitter.on('presence/true', async () => {
   if (validate() && _READYTOSCAN) {
     inter = setInterval(() => {
       eventEmitter.emit('checkUser'); 
-    }, 1000);
-    
+    }, 200);
 		//await scan();
 	}
 });
@@ -118,6 +117,7 @@ eventEmitter.on('checkUser', async () => {
     await checkUsers()
   }
 });
+  console.log("🚀 ~ file: index.js ~ line 120 ~ eventEmitter.on ~ checkUser");
 
 
 eventEmitter.on('presence/false', async (value) => {
@@ -398,7 +398,7 @@ async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     await checkUsers();
-    if (_PRESENCE === false || _ALLUSER === false) { scanFail(); }
+    if (_PRESENCE === false || _ALLUSER === false) { eventEmitter.emit('presence/false') }
 		await updateStationsMetrics({timer: timerInstance.getTimeValues().toString()});
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
