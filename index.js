@@ -383,7 +383,7 @@ async function scan() {
   }*/
 
   if(_ALLUSER === false) { 
-    scan()
+    await scan()
     return
   }
   //clearInterval(inter);
