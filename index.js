@@ -357,7 +357,7 @@ async function setState(id) {
 function allAreEqual(obj) {
   return new Set(Object.values(obj)).presence === true;
 }
-function checkUsers() {
+async function checkUsers() {
   await updateStationsMetrics({ message: 'Checking if all user is there' })
   const arr = await getStations();
   console.log(allAreEqual(arr)); // 👉️ true
