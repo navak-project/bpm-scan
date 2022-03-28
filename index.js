@@ -369,7 +369,7 @@ async function checkUsers() {
 }
 
 async function scan() {
-  while (!isAllTrue) {
+  while (!checkUsers()) {
     console.log("🚀 ~ file: index.js ~ line 373 ~ scan ~ isAllTrue", isAllTrue);
     await checkUsers()
     return
