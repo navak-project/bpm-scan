@@ -363,6 +363,10 @@ async function checkUsers() {
 }*/
 
 async function scan() {
+  /*if (_PRESENCE === false) {
+    eventEmitter.emit('presence/false')
+    return
+  }*/
 	/*const arr = await getStations();
   await updateStationsMetrics({ message: 'Checking if all user is there' })
   _CHECKFORALLUSER = true;
@@ -375,7 +379,6 @@ async function scan() {
   }
   _CHECKFORALLUSER = false;*/
 
-  
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
@@ -388,12 +391,9 @@ async function scan() {
 		timerInstance.stop();
 		await setLantern(_POLARBPM);
   });
-  if (_PRESENCE === false) {
-    eventEmitter.emit('presence/false')
-    return
-  }
-  //await sleep(1000)
-	//await setState(1);
+
+  await sleep(1000)
+	await setState(1);
 	_SCANNING = true;
 	await updateStationsMetrics({message: 'Scanning...'});
 	timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
