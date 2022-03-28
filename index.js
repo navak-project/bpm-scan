@@ -25,10 +25,7 @@ let _SCANFAIL = false;
 let _SCANNING = false;
 let _CHECKFORALLUSER = false;
 let _ALLUSER = false;
-let inter = setInterval(async () => {
-  await checkUsers()
-  console.log("🚀 ~ file: index.js ~ line 373 ~ returnnewPromise ~ _ALLUSER", _ALLUSER);
-}, 500);
+//let inter = 
 
 const _TIMERSCAN = 15;
 
@@ -75,7 +72,11 @@ eventEmitter.on('ready', async () => {
 	_BOOTING = false;
 	_READYTOSCAN = true;
 	_DONE = false;
-	_SCANFAIL = false;
+  _SCANFAIL = false;
+  setInterval(async () => {
+    await checkUsers()
+    console.log("🚀 ~ file: index.js ~ line 373 ~ returnnewPromise ~ _ALLUSER", _ALLUSER);
+  }, 500);
 	if (validate()) {
 		//await sleep(1000);
 		eventEmitter.emit('presence/true');
@@ -362,7 +363,6 @@ async function getStations() {
   });
 }
 
-
 async function checkUsers() {
   return new Promise(async (resolve, reject) => {
     let arr = await getStations();
@@ -377,11 +377,15 @@ async function checkUsers() {
 }
 
 async function scan() {
-  if (!_ALLUSER) {
+  /*if (!_ALLUSER) {
     scan()
     return
+  }*/
+
+  while (_ALLUSER === false) { 
+    return
   }
-  clearInterval(inter);
+  //clearInterval(inter);
  // console.log("🚀 ~ file: index.js ~ line 384 ~ scan ~ inter", inter);
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
