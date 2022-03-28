@@ -362,7 +362,7 @@ async function checkUsers() {
     var isAllTrue = Object.keys(arr).every(function (key) {
       return arr[key].presence === true;
     });
-    while (!checkUsers()) {
+    while (!isAllTrue) {
       console.log("🚀 ~ file: index.js ~ line 373 ~ scan ~ isAllTrue", isAllTrue);
       await checkUsers()
       return
