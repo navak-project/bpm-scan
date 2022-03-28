@@ -382,7 +382,8 @@ async function scan() {
     return
   }*/
 
-  while (_ALLUSER === false) { 
+  if(_ALLUSER === false) { 
+    scan()
     return
   }
   //clearInterval(inter);
