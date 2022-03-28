@@ -120,7 +120,6 @@ eventEmitter.on('checkUser', async () => {
 
 
 eventEmitter.on('presence/false', async (value) => {
-  await checkUsers();
 	if (_SCANFAIL == true || _NOUSER == true) {
 		return;
   }
@@ -397,6 +396,7 @@ async function scan() {
  // console.log("🚀 ~ file: index.js ~ line 384 ~ scan ~ inter", inter);
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
+    await checkUsers();
     if (_PRESENCE === false || _ALLUSER === false) { eventEmitter.emit('presence/false') }
 		await updateStationsMetrics({timer: timerInstance.getTimeValues().toString()});
 	});
