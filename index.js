@@ -355,27 +355,32 @@ async function getStations() {
   });
 }
 
+let _ALLUSER = false;
 async function checkUsers() {
   return new Promise(async (resolve, reject) => {
     let arr = await getStations();
     var isAllTrue = Object.keys(arr).every(function (key) {
-      console.log("🚀 ~ file: index.js ~ line 364 ~ isAllTrue ~ arr[key].presence", arr[key].presence);
       return arr[key].presence === true;
     });
+    console.log("🚀 ~ file: index.js ~ line 373 ~ scan ~ isAllTrue", isAllTrue);
     if(!isAllTrue) {
-      console.log("🚀 ~ file: index.js ~ line 373 ~ scan ~ isAllTrue", isAllTrue);
       await checkUsers()
       return;
+    } else {
+      await checkUsers()
+      _ALLUSER = true
+      resolve(isAllTrue)
     }
-    await checkUsers()
-    resolve(isAllTrue)
+
   }).catch((err) => {
     console.log('🚀 ~ file: server.js ~ line 57 ~ checkUsers ~ err', err);
   });
 }
 
 async function scan() {
-  await checkUsers();
+  if (!_ALLUSER) {
+    await checkUsers();
+  }
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
