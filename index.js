@@ -63,6 +63,7 @@ eventEmitter.on('init', async () => {
 
 // listen to the event
 eventEmitter.on('ready', async () => {
+  await setState(0);
 	_BOOTING = false;
 	_READYTOSCAN = true;
 	_DONE = false;
@@ -72,7 +73,6 @@ eventEmitter.on('ready', async () => {
 		eventEmitter.emit('presence/true');
 		return;
 	}
-	await setState(0);
 	await updateStationsMetrics({message: 'Ready to scan'});
 	console.log('Ready');
 });
