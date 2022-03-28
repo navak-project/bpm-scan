@@ -362,6 +362,11 @@ async function checkUsers() {
     var isAllTrue = Object.keys(arr).every(function (key) {
       return arr[key].presence === true;
     });
+    while (!checkUsers()) {
+      console.log("🚀 ~ file: index.js ~ line 373 ~ scan ~ isAllTrue", isAllTrue);
+      await checkUsers()
+      return
+    }
     resolve(isAllTrue)
   }).catch((err) => {
     console.log('🚀 ~ file: server.js ~ line 57 ~ checkUsers ~ err', err);
@@ -369,11 +374,7 @@ async function checkUsers() {
 }
 
 async function scan() {
-  while (!checkUsers()) {
-    console.log("🚀 ~ file: index.js ~ line 373 ~ scan ~ isAllTrue", isAllTrue);
-    await checkUsers()
-    return
-  }
+  await checkUsers();
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
