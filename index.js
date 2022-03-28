@@ -358,7 +358,7 @@ async function getStations() {
 
 async function checkUsers() {
   return new Promise(async (resolve, reject) => {
-    const arr = await getStations();
+    let arr = await getStations();
     var isAllTrue = Object.keys(arr).every(function (key) {
       return arr[key].presence === true;
     });
