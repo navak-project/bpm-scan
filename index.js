@@ -75,7 +75,7 @@ eventEmitter.on('ready', async () => {
  
 	if (validate()) {
 		//await sleep(1000);
-		//eventEmitter.emit('presence/true');
+		eventEmitter.emit('presence/true');
 		return;
 	}
 	await setState(0);
