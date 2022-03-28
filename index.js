@@ -75,7 +75,7 @@ eventEmitter.on('ready', async () => {
  
 	if (validate()) {
 		//await sleep(1000);
-		eventEmitter.emit('presence/true');
+		//eventEmitter.emit('presence/true');
 		return;
 	}
 	await setState(0);
@@ -392,7 +392,7 @@ async function checkUsers() {
 }
 
 async function scan() {
-  if(_ALLUSER === false) { 
+  if (_ALLUSER === false || _DONE === true) { 
     return
   }
   //clearInterval(inter);
