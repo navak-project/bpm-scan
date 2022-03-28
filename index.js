@@ -68,7 +68,7 @@ eventEmitter.on('init', async () => {
 
 // listen to the event
 eventEmitter.on('ready', async () => {
- 
+  await checkUsers()
 	_BOOTING = false;
 	_READYTOSCAN = true;
 	_DONE = false;
@@ -96,6 +96,7 @@ eventEmitter.on('presence/true', async () => {
 		return;
 	}
   await setState(7);
+  await updateStationsMetrics({ message: 'User Ready, waiting' });
   //await sleep(1200);
   if (validate() && _READYTOSCAN) {
     inter = setInterval(() => {
