@@ -120,7 +120,7 @@ eventEmitter.on('checkUser', async () => {
 
 
 eventEmitter.on('presence/false', async (value) => {
-  _ALLUSER = false;
+  await checkUsers();
 	if (_SCANFAIL == true || _NOUSER == true) {
 		return;
   }
