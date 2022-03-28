@@ -374,6 +374,7 @@ async function scan() {
     }
   }
   _CHECKFORALLUSER = false;*/
+  await sleep(1000)
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
