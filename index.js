@@ -89,7 +89,7 @@ eventEmitter.on('presence/true', async () => {
 		return;
 	}
   await setState(7);
-  await sleep(1200);
+  //await sleep(1200);
   if (validate() && _READYTOSCAN) {
 		await scan();
 	}
