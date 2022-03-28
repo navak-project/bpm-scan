@@ -378,10 +378,10 @@ async function checkUsers() {
 
 async function scan() {
   if (!_ALLUSER) {
-    return
+    scan()
   }
   clearInterval(inter);
-  console.log("🚀 ~ file: index.js ~ line 382 ~ scan ~ _ALLUSER", _ALLUSER);
+  console.log("🚀 ~ file: index.js ~ line 384 ~ scan ~ inter", inter);
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
