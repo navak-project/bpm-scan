@@ -150,8 +150,8 @@ eventEmitter.on('presence', async (value) => {
 });
 
 eventEmitter.on('processexit', async (msg) => {
-	await setState(8);
-	await updateStationsMetrics({message: msg});
+	//await setState(8);
+//	await updateStationsMetrics({message: msg});
 	//await sleep(5000);
 	await updateStationsMetrics({status: false});
 	process.exit(0);
@@ -323,10 +323,11 @@ async function scanFail() {
 	_READYTOSCAN = false;
 	_SCANFAIL = true;
 	_SCANNING = false;
-	//await setState(4);
+	await setState(4);
 	await updateStationsMetrics({message: 'User presence is false'});
-	//await sleep(1500);
-	eventEmitter.emit('ready');
+  await sleep(1500);
+  eventEmitter.emit('processexit');
+//	eventEmitter.emit('ready');
 }
 
 /**
