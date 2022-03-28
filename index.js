@@ -36,7 +36,6 @@ client.on('error', function (err) {
 });
 
 client.on('message', async function (topic, message) {
-	console.log('🚀 ~ file: index.js ~ line 71 ~ topic', topic);
 	if (topic === `/station/${ID}/reboot`) {
 		eventEmitter.emit('processexit', 'Reboot!');
 	}
@@ -389,7 +388,7 @@ async function scan() {
 		await setLantern(_POLARBPM);
   });
 
-  await sleep(1000)
+ // await sleep(1000)
 	await setState(1);
 	_SCANNING = true;
 	await updateStationsMetrics({message: 'Scanning...'});
