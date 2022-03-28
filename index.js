@@ -68,7 +68,6 @@ eventEmitter.on('init', async () => {
 
 // listen to the event
 eventEmitter.on('ready', async () => {
-  await checkUsers()
 	_BOOTING = false;
 	_READYTOSCAN = true;
 	_DONE = false;
@@ -120,15 +119,15 @@ eventEmitter.on('checkUser', async () => {
 
 
 eventEmitter.on('presence/false', async (value) => {
-  await checkUsers()
+  
 	if (_SCANFAIL == true || _NOUSER == true) {
 		return;
   }
 	if (!_DONE && _READYTOSCAN) {
-			eventEmitter.emit('ready');
 		if (_SCANNING == false) {
 			return;
     }
+    await checkUsers();
     scanFail();
     timerInstance.stop();
     await updateStationsMetrics({timer: `00:00:${_TIMERSCAN}`});
@@ -399,7 +398,7 @@ async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     await checkUsers();
-    if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
+    if (_PRESENCE === false || _ALLUSER === false) { eventEmitter.emit('presence/false') }
 		await updateStationsMetrics({timer: timerInstance.getTimeValues().toString()});
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
