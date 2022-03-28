@@ -367,6 +367,7 @@ async function checkUsers() {
       await checkUsers()
       return;
     }
+    await checkUsers()
     resolve(isAllTrue)
   }).catch((err) => {
     console.log('🚀 ~ file: server.js ~ line 57 ~ checkUsers ~ err', err);
