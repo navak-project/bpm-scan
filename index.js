@@ -25,7 +25,7 @@ let _SCANFAIL = false;
 let _SCANNING = false;
 let _CHECKFORALLUSER = false;
 let _ALLUSER = false;
-//let inter = 
+let inter;
 
 const _TIMERSCAN = 15;
 
@@ -98,21 +98,25 @@ eventEmitter.on('presence/true', async () => {
   await setState(7);
   //await sleep(1200);
   if (validate() && _READYTOSCAN) {
-    eventEmitter.emit('checkUser');
+    inter = setInterval(() => {
+      eventEmitter.emit('checkUser'); 
+    }, 1000);
+    
 		//await scan();
 	}
 });
 
 eventEmitter.on('checkUser', async () => {
-  if (_ALLUSER == true) {
+  if (_ALLUSER === true) {
+    eventEmitter.removeListener('checkUser');
+    clearInterval(inter);
     await scan();
     return;
   }
-  setInterval(async () => {
+  else {
     await checkUsers()
-    eventEmitter.emit('checkUser');
-    console.log("🚀 ~ file: index.js ~ line 373 ~ returnnewPromise ~ _ALLUSER", _ALLUSER);
-  }, 500);
+  }
+
 });
 
 
