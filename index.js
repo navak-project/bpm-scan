@@ -101,17 +101,16 @@ eventEmitter.on('presence/true', async () => {
   if (validate() && _READYTOSCAN) {
     inter = setInterval(() => {
       eventEmitter.emit('checkUser'); 
-    }, 200);
+    }, 500);
+    
 		//await scan();
 	}
 });
 
 eventEmitter.on('checkUser', async () => {
   if (_ALLUSER === true) {
-    //eventEmitter.removeListener('checkUser');
     clearInterval(inter);
     await scan();
-    return;
   }
   else {
     await checkUsers()
@@ -121,6 +120,7 @@ eventEmitter.on('checkUser', async () => {
 
 
 eventEmitter.on('presence/false', async (value) => {
+  await checkUsers()
 	if (_SCANFAIL == true || _NOUSER == true) {
 		return;
   }
@@ -399,7 +399,7 @@ async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     await checkUsers();
-    if (_PRESENCE === false || _ALLUSER === false) { eventEmitter.emit('presence/false') }
+    if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
 		await updateStationsMetrics({timer: timerInstance.getTimeValues().toString()});
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
