@@ -25,8 +25,9 @@ let _SCANFAIL = false;
 let _SCANNING = false;
 let _CHECKFORALLUSER = false;
 let _ALLUSER = false;
-const inter = setInterval(async () => {
+let inter = setInterval(async () => {
   await checkUsers()
+  console.log("🚀 ~ file: index.js ~ line 373 ~ returnnewPromise ~ _ALLUSER", _ALLUSER);
 }, 500);
 
 const _TIMERSCAN = 15;
@@ -368,9 +369,7 @@ async function checkUsers() {
     var isAllTrue = Object.keys(arr).every(function (key) {
       return arr[key].presence === true;
     });
-    console.log("🚀 ~ file: index.js ~ line 373 ~ scan ~ isAllTrue", isAllTrue);
     _ALLUSER = isAllTrue
-    
     resolve(_ALLUSER)
   }).catch((err) => {
     console.log('🚀 ~ file: server.js ~ line 57 ~ checkUsers ~ err', err);
