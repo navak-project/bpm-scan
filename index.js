@@ -325,8 +325,8 @@ async function scanFail() {
 	await setState(4);
 	await updateStationsMetrics({message: 'User presence is false'});
   await sleep(1500);
-  eventEmitter.emit('processexit');
-//	eventEmitter.emit('ready');
+  //eventEmitter.emit('processexit');
+	eventEmitter.emit('ready');
 }
 
 /**
