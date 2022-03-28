@@ -1,3 +1,6 @@
+// every station is presence -> activate
+
+
 import 'dotenv/config';
 import {createBluetooth} from 'node-ble';
 const {bluetooth} = createBluetooth();
@@ -351,34 +354,27 @@ async function setState(id) {
  * Start the BPM scan. When value is stable we launch the counter and return the last value
  * @return {Promise<number>} Last BPM after a certain time
  */
-
-/*let nb_user = 0;
-async function checkUsers() {
-  nb_user += 1;
-  console.log("🚀 ~ file: index.js ~ line 355 ~ checkUsers ~ nb_user", nb_user);
-  if (nb_user > 2) {
-   return true
-  }
-  return false
-}*/
-
-async function scan() {
-  /*if (_PRESENCE === false) {
-    eventEmitter.emit('presence/false')
-    return
-  }*/
-	/*const arr = await getStations();
+function allAreEqual(obj) {
+  return new Set(Object.values(obj)).presence === true;
+}
+function checkUsers() {
   await updateStationsMetrics({ message: 'Checking if all user is there' })
-  _CHECKFORALLUSER = true;
-  if (!checkUsers()) {
-    for (let i = 0; i < arr.length; i++) {
-      if (elm[i].presence === true) {
-        checkUsers();
-      }else{scan()}
-    }
-  }
-  _CHECKFORALLUSER = false;*/
+  const arr = await getStations();
+  console.log(allAreEqual(arr)); // 👉️ true
 
+  for (let i = 0; i < arr.length; i++) {
+    if (elm[i].presence === true) {
+      
+    }else{ALLTHERE = true}
+  }
+
+/*  while (condition) {
+    // execute code as long as condition is true
+  }*/
+
+}
+async function scan() {
+  checkUsers() 
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
