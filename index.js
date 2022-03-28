@@ -73,10 +73,7 @@ eventEmitter.on('ready', async () => {
 	_READYTOSCAN = true;
 	_DONE = false;
   _SCANFAIL = false;
-  setInterval(async () => {
-    await checkUsers()
-    console.log("🚀 ~ file: index.js ~ line 373 ~ returnnewPromise ~ _ALLUSER", _ALLUSER);
-  }, 500);
+ 
 	if (validate()) {
 		//await sleep(1000);
 		eventEmitter.emit('presence/true');
@@ -101,9 +98,23 @@ eventEmitter.on('presence/true', async () => {
   await setState(7);
   //await sleep(1200);
   if (validate() && _READYTOSCAN) {
-		await scan();
+    eventEmitter.emit('checkUser');
+		//await scan();
 	}
 });
+
+eventEmitter.on('checkUser', async () => {
+  if (_ALLUSER == true) {
+    await scan();
+    return;
+  }
+  setInterval(async () => {
+    await checkUsers()
+    eventEmitter.emit('checkUser');
+    console.log("🚀 ~ file: index.js ~ line 373 ~ returnnewPromise ~ _ALLUSER", _ALLUSER);
+  }, 500);
+});
+
 
 eventEmitter.on('presence/false', async (value) => {
 	if (_SCANFAIL == true || _NOUSER == true) {
@@ -377,13 +388,7 @@ async function checkUsers() {
 }
 
 async function scan() {
-  /*if (!_ALLUSER) {
-    scan()
-    return
-  }*/
-
   if(_ALLUSER === false) { 
-    await scan()
     return
   }
   //clearInterval(inter);
