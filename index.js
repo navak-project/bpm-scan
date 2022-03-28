@@ -68,7 +68,7 @@ eventEmitter.on('ready', async () => {
 	_DONE = false;
 	_SCANFAIL = false;
 	if (validate()) {
-		await sleep(1000);
+		//await sleep(1000);
 		eventEmitter.emit('presence/true');
 		return;
 	}
@@ -99,16 +99,15 @@ eventEmitter.on('presence/false', async (value) => {
 	if (_SCANFAIL == true || _NOUSER == true) {
 		return;
   }
-  
-	timerInstance.stop();
-	await updateStationsMetrics({timer: `00:00:${_TIMERSCAN}`});
 	if (!_DONE && _READYTOSCAN) {
     if (_CHECKFORALLUSER) {
 			eventEmitter.emit('ready');
 		}
 		if (_SCANNING == false) {
 			return;
-		}
+    }
+    timerInstance.stop();
+    await updateStationsMetrics({timer: `00:00:${_TIMERSCAN}`});
 		scanFail();
 	}
 	if (_DONE && !_READYTOSCAN) {
