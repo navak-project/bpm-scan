@@ -108,7 +108,7 @@ eventEmitter.on('presence/true', async () => {
 
 eventEmitter.on('checkUser', async () => {
   if (_ALLUSER === true) {
-    eventEmitter.removeListener('checkUser');
+    //eventEmitter.removeListener('checkUser');
     clearInterval(inter);
     await scan();
     return;
