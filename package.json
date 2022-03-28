@@ -1,6 +1,6 @@
 {
   "name": "bpm-scan",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "nodejs library for heartbeat scanning",
   "main": "index.js",
   "type": "module",

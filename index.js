@@ -374,11 +374,8 @@ async function scan() {
     }
   }
   _CHECKFORALLUSER = false;*/
-  if (_PRESENCE === false) {
-    scanFail();
-    return
-  }
-  await sleep(1000)
+
+  
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
@@ -390,7 +387,12 @@ async function scan() {
 		_SCANNING = false;
 		timerInstance.stop();
 		await setLantern(_POLARBPM);
-	});
+  });
+  if (_PRESENCE === false) {
+    eventEmitter.emit('presence/false')
+    return
+  }
+  await sleep(1000)
 	await setState(1);
 	_SCANNING = true;
 	await updateStationsMetrics({message: 'Scanning...'});
