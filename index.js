@@ -68,7 +68,7 @@ eventEmitter.on('ready', async () => {
 	_DONE = false;
 	_SCANFAIL = false;
 	if (validate()) {
-		//await sleep(2500);
+		await sleep(1000);
 		eventEmitter.emit('presence/true');
 		return;
 	}
@@ -85,7 +85,6 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
-  if (_PRESENCE) { await sleep(1000)}
 	if (_SCANFAIL == true || _NOUSER == true) {
 		return;
 	}
