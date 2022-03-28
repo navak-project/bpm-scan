@@ -65,6 +65,9 @@ eventEmitter.on('init', async () => {
 
 // listen to the event
 eventEmitter.on('ready', async () => {
+  setInterval(async () => {
+    await checkUsers()
+  }, 500);
 	_BOOTING = false;
 	_READYTOSCAN = true;
 	_DONE = false;
@@ -364,7 +367,8 @@ async function checkUsers() {
     });
     console.log("🚀 ~ file: index.js ~ line 373 ~ scan ~ isAllTrue", isAllTrue);
     if(!isAllTrue) {
-      await checkUsers()
+      //await checkUsers()
+      _ALLUSER = false
       return;
     } else {
       //await checkUsers()
@@ -379,7 +383,7 @@ async function checkUsers() {
 
 async function scan() {
   if (!_ALLUSER) {
-    await checkUsers();
+    return
   }
   console.log("🚀 ~ file: index.js ~ line 382 ~ scan ~ _ALLUSER", _ALLUSER);
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
