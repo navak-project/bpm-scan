@@ -360,12 +360,13 @@ async function checkUsers() {
   return new Promise(async (resolve, reject) => {
     let arr = await getStations();
     var isAllTrue = Object.keys(arr).every(function (key) {
+      console.log("🚀 ~ file: index.js ~ line 364 ~ isAllTrue ~ arr[key].presence", arr[key].presence);
       return arr[key].presence === true;
     });
-    while (!isAllTrue) {
+    if(!isAllTrue) {
       console.log("🚀 ~ file: index.js ~ line 373 ~ scan ~ isAllTrue", isAllTrue);
       await checkUsers()
-      return
+      return;
     }
     resolve(isAllTrue)
   }).catch((err) => {
