@@ -381,6 +381,7 @@ async function scan() {
   if (!_ALLUSER) {
     await checkUsers();
   }
+  console.log("🚀 ~ file: index.js ~ line 382 ~ scan ~ _ALLUSER", _ALLUSER);
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
