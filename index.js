@@ -367,7 +367,7 @@ async function checkUsers() {
       await checkUsers()
       return;
     } else {
-      await checkUsers()
+      //await checkUsers()
       _ALLUSER = true
       resolve(isAllTrue)
     }
