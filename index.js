@@ -119,15 +119,17 @@ eventEmitter.on('checkUser', async () => {
 
 
 eventEmitter.on('presence/false', async (value) => {
-  
+  await checkUsers();
 	if (_SCANFAIL == true || _NOUSER == true) {
 		return;
   }
-	if (!_DONE && _READYTOSCAN) {
+  if (!_DONE && _READYTOSCAN) {
+    if (_ALLUSER === false) {
+      eventEmitter.emit('ready');
+    }
 		if (_SCANNING == false) {
 			return;
     }
-    await checkUsers();
     scanFail();
     timerInstance.stop();
     await updateStationsMetrics({timer: `00:00:${_TIMERSCAN}`});
