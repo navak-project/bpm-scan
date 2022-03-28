@@ -117,13 +117,13 @@ eventEmitter.on('presence/false', async (value) => {
 
 // listen to the event
 eventEmitter.on('presence', async (value) => {
-	await updateStationsMetrics({presence: _PRESENCE});
 	if (value == true) {
 		eventEmitter.emit('presence/true');
 	}
 	if (value == false) {
 		eventEmitter.emit('presence/false');
-	}
+  }
+  await updateStationsMetrics({ presence: _PRESENCE });
 });
 
 eventEmitter.on('processexit', async (msg) => {
@@ -375,7 +375,7 @@ async function scan() {
   }
   _CHECKFORALLUSER = false;*/
   if (_PRESENCE === false) {
-    //eventEmitter.emit('presence/false');
+    scanFail();
     return
   }
   await sleep(1000)
