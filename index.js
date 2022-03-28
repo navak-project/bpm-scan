@@ -392,8 +392,8 @@ async function scan() {
     eventEmitter.emit('presence/false')
     return
   }
-  await sleep(1000)
-	await setState(1);
+  //await sleep(1000)
+	//await setState(1);
 	_SCANNING = true;
 	await updateStationsMetrics({message: 'Scanning...'});
 	timerInstance.start({countdown: true, startValues: {seconds: _TIMERSCAN}});
