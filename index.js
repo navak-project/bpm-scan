@@ -137,18 +137,7 @@ eventEmitter.on('processexit', async (msg) => {
 	process.exit(0);
 });
 
-async function getStations() {
-	return new Promise(async (resolve, reject) => {
-		await axios
-			.get(`http://${IP}/api/stations/`)
-			.then((val) => {
-				resolve(val.data);
-			})
-			.catch((err) => {
-				reject(err);
-			});
-	});
-}
+
 
 // BOOT
 boot();
@@ -354,27 +343,37 @@ async function setState(id) {
  * Start the BPM scan. When value is stable we launch the counter and return the last value
  * @return {Promise<number>} Last BPM after a certain time
  */
-function allAreEqual(obj) {
-  return new Set(Object.values(obj)).presence === true;
+async function getStations() {
+  return new Promise(async (resolve, reject) => {
+    await axios
+      .get(`http://192.168.1.209:8081/api/stations/`)
+      .then((val) => {
+        resolve(val.data);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 }
+
 async function checkUsers() {
-  await updateStationsMetrics({ message: 'Checking if all user is there' })
-  const arr = await getStations();
-  console.log(allAreEqual(arr)); // 👉️ true
-
-  for (let i = 0; i < arr.length; i++) {
-    if (elm[i].presence === true) {
-      
-    }else{ALLTHERE = true}
-  }
-
-/*  while (condition) {
-    // execute code as long as condition is true
-  }*/
-
+  return new Promise(async (resolve, reject) => {
+    const arr = await getStations();
+    var isAllTrue = Object.keys(arr).every(function (key) {
+      return arr[key].presence === true;
+    });
+    while (!isAllTrue) {
+      checkUsers()
+      return
+    }
+    resolve(isAllTrue)
+  }).catch((err) => {
+    console.log('🚀 ~ file: server.js ~ line 57 ~ checkUsers ~ err', err);
+  });
 }
+
 async function scan() {
-  checkUsers() 
+  await checkUsers()
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
     if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
