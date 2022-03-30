@@ -401,8 +401,8 @@ async function scan() {
  // console.log("🚀 ~ file: index.js ~ line 384 ~ scan ~ inter", inter);
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
-    await checkUsers();
-    if (_PRESENCE === false || _ALLUSER === false) { eventEmitter.emit('presence/false') }
+    //await checkUsers();
+    //if (_PRESENCE === false || _ALLUSER === false) { eventEmitter.emit('presence/false') }
 		await updateStationsMetrics({timer: timerInstance.getTimeValues().toString()});
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
