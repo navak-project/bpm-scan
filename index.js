@@ -1,4 +1,5 @@
 // every station is presence -> activate
+// add ignite on done 	
 
 
 import 'dotenv/config';
@@ -85,7 +86,8 @@ eventEmitter.on('ready', async () => {
 
 // listen to the event
 eventEmitter.on('done', async () => {
-	await setState(2);
+  await setState(2);
+  client.publish(`/lantern/${_USER.id}/audio/ignite`);
 	await updateStationsMetrics({message: 'Done!'});
 	await updateStationsMetrics({timer: `00:00:${_TIMERSCAN}`});
 });
@@ -119,6 +121,7 @@ eventEmitter.on('checkUser', async () => {
 
 
 eventEmitter.on('presence/false', async (value) => {
+  return;
   await checkUsers();
 	if (_SCANFAIL == true || _NOUSER == true) {
 		return;
