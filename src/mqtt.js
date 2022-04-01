@@ -9,10 +9,9 @@ export function clientConnect() {
 		const port = '1883';
 		client = mqtt.connect(`mqtt://${host}:${port}`);
     client.on('connect', function () {
-      console.log('🚀 ~ Connected to MQTT broker');
+      console.log(`🚀 ~ Connected to MQTT broker: mqtt://${host}:${port}`);
       client.subscribe(`/station/${ID}/presence`);
       client.subscribe(`/station/${ID}/reboot`);
-      //presence.set(_PRESENCE);
     });
 	} catch (err) {
 		console.log('🚀 ~ file: mqtt.js ~ line 39 ~ returnnewpromise ~ err', err);

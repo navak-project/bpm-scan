@@ -1,33 +1,59 @@
-const BusHelper = require('./BusHelper')
-const Adapter = require('./Adapter')
+import { EventEmitter } from 'events';
+const eventEmitter = new EventEmitter();
 
-class Bluetooth {
-  constructor (dbus) {
-    this.dbus = dbus
-    this.helper = new BusHelper(dbus, 'org.bluez', '/org/bluez', 'org.bluez.AgentManager1', { useProps: false })
-  }
+import { createBluetooth } from 'node-ble';
+import { metrics } from './metrics.js';
 
-  async adapters () {
-    return this.helper.children()
-  }
+const bluetooth = createBluetooth();
 
-  async defaultAdapter () {
-    const adapters = await this.adapters()
-    if (!adapters.length) {
-      throw new Error('No available adapters found')
-    }
+export async function connectToDevice() {
+	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
+    if (err) {
+			await metrics({message: 'No bluetooth adapter'});
+			throw err;
+		}
+	});
 
-    return this.getAdapter(adapters[0])
-  }
+	console.log('Discovering device...');
+	await metrics({message: 'Discovering device...'});
 
-  async getAdapter (adapter) {
-    const adapters = await this.adapters()
-    if (!adapters.includes(adapter)) {
-      throw new Error('Adapter not found')
-    }
+	if (!(await adapter.isDiscovering())) {
+		await adapter.startDiscovery();
+	}
 
-    return new Adapter(this.dbus, adapter)
-  }
+	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
+		if (err) {
+			console.log(err);
+			await metrics({message: 'No device'});
+      eventEmitter.emit('disconnected');
+			return;
+		}
+	});
+
+	const macAdresss = await device.getAddress();
+	const deviceName = await device.getName();
+
+	console.log('Device:', macAdresss, deviceName);
+
+	try {
+		await device.connect();
+	} catch (err) {
+		await metrics({message: err.text});
+    eventEmitter.emit('disconnected');
+		return;
+	}
+
+  console.log('Connected!');
+	await metrics({message: 'Connected'});
+  device.on('disc onnect', async function () {
+    await metrics({ message: 'Disconnected' })
+    eventEmitter.emit('disconnected');
+	});
+
+	const gattServer = await device.gatt();
+	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
+	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
+	await heartrate.startNotifications();
+
+	return heartrate;
 }
-
-module.exports = Bluetooth
