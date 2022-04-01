@@ -1,3 +1,7 @@
+// every station is presence -> activate
+// add ignite on done 	
+
+
 import 'dotenv/config';
 import {createBluetooth} from 'node-ble';
 const {bluetooth} = createBluetooth();
@@ -21,6 +25,9 @@ let _POLARBPM = 0;
 let _SCANFAIL = false;
 let _SCANNING = false;
 let _CHECKFORALLUSER = false;
+let _ALLUSER = false;
+let inter;
+
 const _TIMERSCAN = 15;
 
 let _CURENTSTATE;
@@ -33,7 +40,6 @@ client.on('error', function (err) {
 });
 
 client.on('message', async function (topic, message) {
-	console.log('🚀 ~ file: index.js ~ line 71 ~ topic', topic);
 	if (topic === `/station/${ID}/reboot`) {
 		eventEmitter.emit('processexit', 'Reboot!');
 	}
@@ -66,7 +72,8 @@ eventEmitter.on('ready', async () => {
 	_BOOTING = false;
 	_READYTOSCAN = true;
 	_DONE = false;
-	_SCANFAIL = false;
+  _SCANFAIL = false;
+ 
 	if (validate()) {
 		//await sleep(1000);
 		eventEmitter.emit('presence/true');
@@ -79,7 +86,8 @@ eventEmitter.on('ready', async () => {
 
 // listen to the event
 eventEmitter.on('done', async () => {
-	await setState(2);
+  await setState(2);
+  client.publish(`/lantern/${_USER.id}/audio/ignite`);
 	await updateStationsMetrics({message: 'Done!'});
 	await updateStationsMetrics({timer: `00:00:${_TIMERSCAN}`});
 });
@@ -89,23 +97,41 @@ eventEmitter.on('presence/true', async () => {
 		return;
 	}
   await setState(7);
+  await updateStationsMetrics({ message: 'User Ready, waiting' });
   //await sleep(1200);
   if (validate() && _READYTOSCAN) {
-		await scan();
+    inter = setInterval(() => {
+      eventEmitter.emit('checkUser'); 
+    }, 500);
+    
+		//await scan();
 	}
 });
 
+eventEmitter.on('checkUser', async () => {
+  if (_ALLUSER === true) {
+    clearInterval(inter);
+    await scan();
+  }
+  else {
+    await checkUsers()
+  }
+});
+  console.log("🚀 ~ file: index.js ~ line 120 ~ eventEmitter.on ~ checkUser");
+
+
 eventEmitter.on('presence/false', async (value) => {
-	if (_SCANFAIL == true || _NOUSER == true) {
+  await checkUsers();
+  if (_SCANFAIL == true || _NOUSER == true || _SCANNING == true) {
 		return;
   }
-	if (!_DONE && _READYTOSCAN) {
-    if (_CHECKFORALLUSER) {
-			eventEmitter.emit('ready');
-		}
-		if (_SCANNING == false) {
-			return;
+  if (!_DONE && _READYTOSCAN) {
+    if (_ALLUSER === false) {
+      eventEmitter.emit('ready');
     }
+	/*	if (_SCANNING == true) {
+			return;
+    }*/
     scanFail();
     timerInstance.stop();
     await updateStationsMetrics({timer: `00:00:${_TIMERSCAN}`});
@@ -127,25 +153,14 @@ eventEmitter.on('presence', async (value) => {
 });
 
 eventEmitter.on('processexit', async (msg) => {
-	await setState(8);
-	await updateStationsMetrics({message: msg});
+	//await setState(8);
+//	await updateStationsMetrics({message: msg});
 	//await sleep(5000);
 	await updateStationsMetrics({status: false});
 	process.exit(0);
 });
 
-async function getStations() {
-	return new Promise(async (resolve, reject) => {
-		await axios
-			.get(`http://${IP}/api/stations/`)
-			.then((val) => {
-				resolve(val.data);
-			})
-			.catch((err) => {
-				reject(err);
-			});
-	});
-}
+
 
 // BOOT
 boot();
@@ -311,9 +326,10 @@ async function scanFail() {
 	_READYTOSCAN = false;
 	_SCANFAIL = true;
 	_SCANNING = false;
-	await setState(4);
+//	await setState(4);
 	await updateStationsMetrics({message: 'User presence is false'});
-	await sleep(1500);
+  await sleep(500);
+  //eventEmitter.emit('processexit');
 	eventEmitter.emit('ready');
 }
 
@@ -351,37 +367,42 @@ async function setState(id) {
  * Start the BPM scan. When value is stable we launch the counter and return the last value
  * @return {Promise<number>} Last BPM after a certain time
  */
+async function getStations() {
+  return new Promise(async (resolve, reject) => {
+    await axios
+      .get(`http://192.168.1.209:8081/api/stations/`)
+      .then((val) => {
+        resolve(val.data);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
 
-/*let nb_user = 0;
 async function checkUsers() {
-  nb_user += 1;
-  console.log("🚀 ~ file: index.js ~ line 355 ~ checkUsers ~ nb_user", nb_user);
-  if (nb_user > 2) {
-   return true
-  }
-  return false
-}*/
+  return new Promise(async (resolve, reject) => {
+    let arr = await getStations();
+    var isAllTrue = Object.keys(arr).every(function (key) {
+      return arr[key].presence === true;
+    });
+    _ALLUSER = isAllTrue
+    resolve(_ALLUSER)
+  }).catch((err) => {
+    console.log('🚀 ~ file: server.js ~ line 57 ~ checkUsers ~ err', err);
+  });
+}
 
 async function scan() {
-  /*if (_PRESENCE === false) {
-    eventEmitter.emit('presence/false')
+  if (_ALLUSER === false || _DONE === true) { 
     return
-  }*/
-	/*const arr = await getStations();
-  await updateStationsMetrics({ message: 'Checking if all user is there' })
-  _CHECKFORALLUSER = true;
-  if (!checkUsers()) {
-    for (let i = 0; i < arr.length; i++) {
-      if (elm[i].presence === true) {
-        checkUsers();
-      }else{scan()}
-    }
   }
-  _CHECKFORALLUSER = false;*/
-
+  //clearInterval(inter);
+ // console.log("🚀 ~ file: index.js ~ line 384 ~ scan ~ inter", inter);
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     console.log(timerInstance.getTimeValues().toString());
-    if (_PRESENCE === false) { eventEmitter.emit('presence/false') }
+    //await checkUsers();
+    //if (_PRESENCE === false || _ALLUSER === false) { eventEmitter.emit('presence/false') }
 		await updateStationsMetrics({timer: timerInstance.getTimeValues().toString()});
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
@@ -392,7 +413,7 @@ async function scan() {
 		await setLantern(_POLARBPM);
   });
 
-  await sleep(1000)
+ // await sleep(1000)
 	await setState(1);
 	_SCANNING = true;
 	await updateStationsMetrics({message: 'Scanning...'});
