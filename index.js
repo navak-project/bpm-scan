@@ -226,11 +226,6 @@ async function scan() {
 	timerInstance.start({countdown: true, startValues: {seconds: timerScan}});
 }
 
-/**
- * Check the BPM at his current state
- * @return {Promise<number>} return the current bpm value
- * @param {Number} ms
- */
 function sleep(ms) {
 	return new Promise((resolve) => {
 		setTimeout(resolve, ms);
