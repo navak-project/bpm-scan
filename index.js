@@ -58,7 +58,7 @@ client.on('message', async function (topic, message) {
 		let value = JSON.parse(buff);
 		presence = JSON.parse(value.presence.toLowerCase());
 		await metrics({presence: presence});
-		eventEmitter.emit('presence', presence);
+		eventEmitter.emit('presence');
 	}
 });
 
@@ -76,12 +76,15 @@ eventEmitter.on('getLantern', async () => {
 	}
 });
 
+eventEmitter.on('presence', async (value) => {
+  if (presence) { eventEmitter.emit('presence/true'); } else if (!presence) { eventEmitter.emit('presence/false'); }
+});
+
 eventEmitter.on('ready', async () => {
 	if (presence) {
 		eventEmitter.emit('presence/true');
 		return;
   }
-  presence = false
 	await setState(0);
 	await metrics({message: 'Ready to scan'});
 	await metrics({lantern: lantern.data.id});
@@ -100,7 +103,6 @@ eventEmitter.on('presence/true', async () => {
 	if (lantern === null) {
 		return;
   }
-  presence = true;
   if (presence && (await getState()) === 'ready') {
     await setState(7);
     await metrics({message: 'User Ready, waiting'});
