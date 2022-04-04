@@ -14,9 +14,9 @@ import {server} from './src/server.js';
 import {EventEmitter} from 'events';
 const eventEmitter = new EventEmitter();
 
-let lantern = null;
+let lantern = '-';
 let presence = false;
-let alluser = false;
+let canScan = false;
 let heartrate = 0;
 let polarDevice = null;
 let disconnected = false;
@@ -43,7 +43,7 @@ client.on('message', async function (topic, message) {
 		eventEmitter.emit('processexit', 'Reboot!');
     return
   }
-  if (lantern !== null) { 
+  if (lantern !== '-') { 
     if (topic === `/${lantern.data.id}/status`) {
       await metrics({ message: `Lantern ${lantern.data.id} offline` });
       await metrics({ lantern: "-" });
@@ -116,14 +116,14 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
-	if (lantern === null) {
+	if (lantern === '-') {
 		return;
   }
   let state = await getState();
   if (state.name === 'ready') {
     await setState(7);
     await metrics({message: 'User Ready, waiting'});
-		while (!alluser) {
+		while (!canScan) {
 			await checkUsers();
 		}
 		await scan();
@@ -190,7 +190,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 async function getLantern() {
   await setState(5);
-  lantern = null;
+  lantern = '-';
   await metrics({ lantern: "-" });
   await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
 	if (disconnected) {
@@ -237,11 +237,16 @@ async function getStations() {
 async function checkUsers() {
 	return new Promise(async (resolve, reject) => {
 		let arr = await getStations();
-		var isAllTrue = Object.keys(arr).every(function (key) {
+		var isAllPresence = Object.keys(arr).every(function (key) {
 			return arr[key].presence === true;
-		});
-		alluser = isAllTrue;
-		resolve(alluser);
+    });
+    var isAllLantern = Object.keys(arr).every(function (key) {
+      return arr[key].lantern !== '-';
+    });
+    if (isAllPresence && isAllLantern) { 
+      canScan = true;
+      resolve();
+    }
 	}).catch((err) => {
 		reject(err);
 	});
