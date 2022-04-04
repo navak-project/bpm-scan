@@ -132,7 +132,7 @@ eventEmitter.on('presence/true', async () => {
 
 eventEmitter.on('presence/false', async (value) => {
   let state = await getState();
-  if (state.name === 'scan') {
+  if (state.name === 'scan' || state.name == 'outoflantern') {
 		return;
 	}
   if (state.name === 'done') {
