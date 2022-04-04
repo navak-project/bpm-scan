@@ -115,7 +115,8 @@ eventEmitter.on('presence/true', async () => {
 	if (lantern === null) {
 		return;
   }
-  if (presence && (await getState()) === 'ready') {
+  console.lol(await getState())
+  if (presence && await getState() === 'ready') {
     await setState(7);
     await metrics({message: 'User Ready, waiting'});
 		while (!alluser) {
