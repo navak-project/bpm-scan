@@ -80,7 +80,8 @@ eventEmitter.on('ready', async () => {
 	if (presence) {
 		eventEmitter.emit('presence/true');
 		return;
-	}
+  }
+  presence = false
 	await setState(0);
 	await metrics({message: 'Ready to scan'});
 	await metrics({lantern: lantern.data.id});
@@ -98,7 +99,8 @@ eventEmitter.on('done', async () => {
 eventEmitter.on('presence/true', async () => {
 	if (lantern === null) {
 		return;
-	}
+  }
+  presence = true;
   if (presence && (await getState()) === 'ready') {
     await setState(7);
     await metrics({message: 'User Ready, waiting'});
