@@ -59,8 +59,18 @@ client.on('message', async function (topic, message) {
 		let value = JSON.parse(buff);
 		presence = JSON.parse(value.presence.toLowerCase());
     console.log("🚀 ~ file: index.js ~ line 61 ~ presence", presence);
-		await metrics({presence: presence});
-		eventEmitter.emit('presence');
+    await metrics({ presence: presence });
+    switch (presence) {
+      case true:
+        eventEmitter.emit('presence/true');
+        break;
+      case false:
+        eventEmitter.emit('presence/false');
+      break;
+      default:
+        break;
+    }
+		//eventEmitter.emit('presence');
 	}
 });
 
