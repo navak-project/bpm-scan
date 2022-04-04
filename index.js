@@ -121,6 +121,11 @@ eventEmitter.on('presence/false', async (value) => {
 	eventEmitter.emit('ready');
 });
 
+eventEmitter.on('processexit', async (msg) => {
+  await metrics({ status: false });
+  process.exit(0);
+});
+
 (async function () {
 	await metricsReset();
 	await server();
