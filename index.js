@@ -109,7 +109,10 @@ eventEmitter.on('done', async () => {
 	await setState(2);
 	client.publish(`/lantern/${lantern.id}/audio/ignite`);
 	await metrics({message: 'Done!'});
-	await metrics({timer: `00:00:${timerScan}`});
+  await metrics({ timer: `00:00:${timerScan}` });
+  if (!presence) {
+    done();
+  }
 });
 
 eventEmitter.on('presence/true', async () => {
@@ -186,8 +189,10 @@ eventEmitter.on('processexit', async (msg) => {
 /*------------------------------------------------------*/
 
 async function getLantern() {
-	await setState(5); //remove from touch
-	lantern = null;
+  await setState(5);
+  lantern = null;
+  await metrics({ lantern: "-" });
+  await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
 	if (disconnected) {
 		heartrate = randomIntFromInterval(70, 90);
 	}
