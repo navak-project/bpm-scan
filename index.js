@@ -42,14 +42,18 @@ client.on('message', async function (topic, message) {
     console.log("🚀 ~ file: index.js ~ line 41 ~ ID", ID);
 		eventEmitter.emit('processexit', 'Reboot!');
     console.log("🚀 ~ file: index.js ~ line 42 ~ Reboot", "Reboot");
-	}
-	if (topic === `/${lantern.data.id}/status`) {
-		await metrics({message: `Lantern ${lantern.data.id} offline`});
-		console.log(`Lantern ${lantern.data.id} offline`);
-		client.unsubscribe(`/${lantern.data.id}/status`);
-		sleep(2000);
-		eventEmitter.emit('getLantern');
-	}
+    return
+  }
+  if (lantern !== null) { 
+    if (topic === `/${lantern.data.id}/status`) {
+      await metrics({message: `Lantern ${lantern.data.id} offline`});
+      console.log(`Lantern ${lantern.data.id} offline`);
+      client.unsubscribe(`/${lantern.data.id}/status`);
+      sleep(2000);
+      eventEmitter.emit('getLantern');
+    }
+  }
+
 	if (topic === `/station/${ID}/presence`) {
 		let buff = message.toString();
 		let value = JSON.parse(buff);
