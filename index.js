@@ -35,7 +35,7 @@ client.on('error', function (err) {
 
 client.on('message', async function (topic, message) {
   console.log("🚀 ~ file: index.js ~ line 37 ~ topic", topic);
-	if ((await getState()) === 'boot') {
+  if (await getState().name === 'boot') {
 		return;
 	}
 	if (topic === `/station/${ID}/reboot`) {
@@ -116,7 +116,7 @@ eventEmitter.on('presence/true', async () => {
 		return;
   }
   console.log(await getState())
-  if (presence && await getState() === 'ready') {
+  if (presence && await getState().name === 'ready') {
     await setState(7);
     await metrics({message: 'User Ready, waiting'});
 		while (!alluser) {
@@ -127,10 +127,10 @@ eventEmitter.on('presence/true', async () => {
 });
 
 eventEmitter.on('presence/false', async (value) => {
-	if ((await getState()) === 'scan') {
+  if (await getState().name === 'scan') {
 		return;
 	}
-	if ((await getState()) === 'done') {
+  if (await getState().name === 'done') {
 		done();
 		return;
 	}
