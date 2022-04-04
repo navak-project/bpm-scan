@@ -34,7 +34,7 @@ export async function setState(id) {
 			name = 'error';
 			break;
 		case 5:
-			name = 'init';
+			name = 'getlantern';
 			break;
 		case 6:
 			name = 'boot';
@@ -51,7 +51,7 @@ export async function setState(id) {
 		default:
 			break;
   }
-  if (id == 9 || id == 8) { return }
+  if (id == 9 || id == 5) { return }
 	return new Promise(async (resolve, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id, stateName: name})
