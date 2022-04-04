@@ -99,9 +99,9 @@ eventEmitter.on('presence/true', async () => {
 	if (lantern === null) {
 		return;
 	}
-	await setState(7);
-	await metrics({message: 'User Ready, waiting'});
-	if (presence && (await getState()) === 'ready') {
+  if (presence && (await getState()) === 'ready') {
+    await setState(7);
+    await metrics({message: 'User Ready, waiting'});
 		while (!alluser) {
 			await checkUsers();
 		}
