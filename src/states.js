@@ -44,15 +44,14 @@ export async function setState(id) {
 			break;
 		case 8:
       name = 'reboot';
-      return
-			//break;
+			break;
 		case 9:
       name = 'left';
-      return
 			break;
 		default:
 			break;
-	}
+  }
+  if (id == 9 || id == 8) { return }
 	return new Promise(async (resolve, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id, stateName: name})
