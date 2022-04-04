@@ -38,8 +38,10 @@ client.on('message', async function (topic, message) {
 		return;
 	}
 	if (topic === `/station/${ID}/reboot`) {
+    console.log("🚀 ~ file: index.js ~ line 41 ~ topic", topic);
+    console.log("🚀 ~ file: index.js ~ line 41 ~ ID", ID);
 		eventEmitter.emit('processexit', 'Reboot!');
-    console.log("🚀 ~ file: index.js ~ line 42 ~ Reboot", Reboot);
+    console.log("🚀 ~ file: index.js ~ line 42 ~ Reboot", "Reboot");
 	}
 	if (topic === `/${lantern.data.id}/status`) {
 		await metrics({message: `Lantern ${lantern.data.id} offline`});
