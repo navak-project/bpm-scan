@@ -43,10 +43,12 @@ export async function setState(id) {
 			name = 'clicked';
 			break;
 		case 8:
-			name = 'reboot';
-			break;
+      name = 'reboot';
+      return
+			//break;
 		case 9:
-			name = 'left';
+      name = 'left';
+      return
 			break;
 		default:
 			break;
