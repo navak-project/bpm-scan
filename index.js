@@ -38,15 +38,14 @@ client.on('message', async function (topic, message) {
 		return;
 	}
 	if (topic === `/station/${ID}/reboot`) {
-    console.log("🚀 ~ file: index.js ~ line 41 ~ topic", topic);
-    console.log("🚀 ~ file: index.js ~ line 41 ~ ID", ID);
 		eventEmitter.emit('processexit', 'Reboot!');
-    console.log("🚀 ~ file: index.js ~ line 42 ~ Reboot", "Reboot");
     return
   }
   if (lantern !== null) { 
     if (topic === `/${lantern.data.id}/status`) {
-      await metrics({message: `Lantern ${lantern.data.id} offline`});
+      await metrics({ message: `Lantern ${lantern.data.id} offline` });
+      await metrics({ lantern: "-" });
+      await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
       console.log(`Lantern ${lantern.data.id} offline`);
       client.unsubscribe(`/${lantern.data.id}/status`);
       sleep(2000);
