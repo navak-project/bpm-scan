@@ -125,9 +125,12 @@ eventEmitter.on('presence/true', async () => {
     await setState(7);
     await metrics({ message: 'User Ready, waiting' });
 		while (!alluser) {
-      await checkUsers();
+      //await checkUsers();
 
     }
+    setInterval(() => {
+      await checkUsers();
+    }, 100);
     if (alluser) {
       await scan()
     }
