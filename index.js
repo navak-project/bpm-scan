@@ -39,7 +39,7 @@ client.on('message', async function (topic, message) {
   if (state.name === 'boot') {
 		return;
   }
-  if (state.name === 'outoflantern') { return }
+  //if (state.name === 'outoflantern') { return }
 	if (topic === `/station/${ID}/reboot`) {
 		eventEmitter.emit('processexit', 'Reboot!');
     return
