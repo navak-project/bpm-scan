@@ -100,9 +100,6 @@ eventEmitter.on('ready', async () => {
   await metrics({message: 'Ready to scan'});
   await metrics({lantern: lantern.data.id});
   console.log(`${lantern.data.id} / ${heartrate}`);
-  while(!alluser){
-    await checkUsers();
-  }
 	if (presence) {
 		eventEmitter.emit('presence/true');
   }
@@ -128,7 +125,9 @@ eventEmitter.on('presence/true', async () => {
   if (presence && state.name === 'ready') {
     await setState(7);
     await metrics({ message: 'User Ready, waiting' });
-
+    while(!alluser){
+      await checkUsers();
+    }
     if (alluser) {
       await scan()
     }
