@@ -111,7 +111,6 @@ eventEmitter.on('done', async () => {
   await metrics({ timer: `00:00:${timerScan}` });
   await metrics({ lantern: "-" });
   lantern = null;
-  await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
   if (!presence) {
     done();
   }
@@ -202,7 +201,6 @@ async function getLantern() {
 		}
 		try {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
-			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
 			eventEmitter.emit('ready');
 			client.subscribe(`/${lantern.data.id}/status`);
 			resolve(lantern.data.id);
@@ -215,9 +213,10 @@ async function getLantern() {
 }
 
 async function done() {
-	await metrics({message: 'User is done and left!'});
+  await metrics({ message: 'User is done and left!' });
 	await setState(9); //remove from touch
-	await sleep(18000);
+  await sleep(18000);
+  await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
 	eventEmitter.emit('getLantern');
 }
 
