@@ -110,6 +110,9 @@ eventEmitter.on('done', async () => {
 	client.publish(`/lantern/${lantern.id}/audio/ignite`);
 	await metrics({message: 'Done!'});
   await metrics({ timer: `00:00:${timerScan}` });
+  await metrics({ lantern: "-" });
+  lantern = null;
+  await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
   if (!presence) {
     done();
   }
@@ -189,10 +192,8 @@ eventEmitter.on('processexit', async (msg) => {
 /*------------------------------------------------------*/
 
 async function getLantern() {
+  if (lantern === null) { return }
   await setState(5);
-  lantern = null;
-  await metrics({ lantern: "-" });
-  await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
 	if (disconnected) {
 		heartrate = randomIntFromInterval(70, 90);
 	}
