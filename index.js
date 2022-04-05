@@ -36,7 +36,7 @@ client.on('error', function (err) {
 client.on('message', async function (topic, message) {
   console.log("🚀 ~ file: index.js ~ line 37 ~ topic", topic);
   let state = await getState();
-  if (state.name === 'boot' || state.name === 'outoflantern') {
+  if (state.name === 'boot') {
 		return;
   }
   if (state.name === 'outoflantern') { return }
