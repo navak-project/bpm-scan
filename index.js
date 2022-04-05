@@ -52,7 +52,7 @@ client.on('message', async function (topic, message) {
       console.log(`Lantern ${lantern.data.id} offline`);
       client.unsubscribe(`/${lantern.data.id}/status`);
       sleep(2000);
-      eventEmitter.emit('getLantern');
+      eventEmitter.emit('processexit');
     }
   }
 
