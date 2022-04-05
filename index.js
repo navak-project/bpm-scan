@@ -14,9 +14,9 @@ import {server} from './src/server.js';
 import {EventEmitter} from 'events';
 const eventEmitter = new EventEmitter();
 
-let lantern = '-';
+let lantern = null;
 let presence = false;
-let canScan = false;
+let alluser = false;
 let heartrate = 0;
 let polarDevice = null;
 let disconnected = false;
@@ -43,7 +43,7 @@ client.on('message', async function (topic, message) {
 		eventEmitter.emit('processexit', 'Reboot!');
     return
   }
-  if (lantern !== '-') { 
+  if (lantern !== null) { 
     if (topic === `/${lantern.data.id}/status`) {
       await metrics({ message: `Lantern ${lantern.data.id} offline` });
       await metrics({ lantern: "-" });
@@ -55,7 +55,7 @@ client.on('message', async function (topic, message) {
     }
   }
 
-	if (topic === `/station/${ID}/presence`) {
+  if (topic === `/station/${ID}/presence`) {
 		let buff = message.toString();
 		let value = JSON.parse(buff);
 		presence = JSON.parse(value.presence.toLowerCase());
@@ -107,10 +107,7 @@ eventEmitter.on('ready', async () => {
 
 eventEmitter.on('done', async () => {
 	await setState(2);
-  client.publish(`/lantern/${lantern.id}/audio/ignite`);
-  lantern = '-';
-  await metrics({ lantern: "-" });
-  await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
+	client.publish(`/lantern/${lantern.id}/audio/ignite`);
 	await metrics({message: 'Done!'});
   await metrics({ timer: `00:00:${timerScan}` });
   if (!presence) {
@@ -119,16 +116,15 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
-	if (lantern === '-') {
+	if (lantern === null) {
 		return;
   }
   let state = await getState();
   if (state.name === 'ready') {
     await setState(7);
     await metrics({message: 'User Ready, waiting'});
-		while (!canScan) {
-      console.log("🚀 ~ file: index.js ~ line 130 ~ eventEmitter.on ~ canScan", canScan);
-      await checkUsers()
+		while (!alluser) {
+			await checkUsers();
 		}
 		await scan();
 	}
@@ -194,7 +190,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 async function getLantern() {
   await setState(5);
-  lantern = '-';
+  lantern = null;
   await metrics({ lantern: "-" });
   await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
 	if (disconnected) {
@@ -239,21 +235,15 @@ async function getStations() {
 }
 
 async function checkUsers() {
+  let state = await getState();
+  if (state.name === 'outoflantern') { return }
 	return new Promise(async (resolve, reject) => {
 		let arr = await getStations();
-		var isAllPresence = Object.keys(arr).every(function (key) {
+		var isAllTrue = Object.keys(arr).every(function (key) {
 			return arr[key].presence === true;
-    });
-    var isAllLantern = Object.keys(arr).every(function (key) {
-      return arr[key].lantern !== '-';
-    });
-    console.log("🚀 ~ file: index.js ~ line 250 ~ isAllLantern ~ isAllLantern", isAllLantern);
-    console.log("🚀 ~ file: index.js ~ line 251 ~ returnnewPromise ~ canScan", canScan);
-
-    if (isAllPresence && isAllLantern) { 
-      canScan = true;
-      resolve(canScan);
-    }
+		});
+		alluser = isAllTrue;
+		resolve(alluser);
 	}).catch((err) => {
 		reject(err);
 	});
