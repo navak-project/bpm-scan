@@ -124,11 +124,7 @@ eventEmitter.on('presence/true', async () => {
   if (presence && state.name === 'ready') {
     await setState(7);
     await metrics({ message: 'User Ready, waiting' });
-		while (!alluser) {
-      //await checkUsers();
-
-    }
-    setInterval(() => {
+    setInterval(async () => {
       await checkUsers();
     }, 100);
     if (alluser) {
