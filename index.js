@@ -127,7 +127,8 @@ eventEmitter.on('presence/true', async () => {
     await setState(7);
     await metrics({message: 'User Ready, waiting'});
 		while (!canScan) {
-			await checkUsers();
+      console.log("🚀 ~ file: index.js ~ line 130 ~ eventEmitter.on ~ canScan", canScan);
+      await checkUsers()
 		}
 		await scan();
 	}
@@ -246,11 +247,12 @@ async function checkUsers() {
     var isAllLantern = Object.keys(arr).every(function (key) {
       return arr[key].lantern !== '-';
     });
+    console.log("🚀 ~ file: index.js ~ line 250 ~ isAllLantern ~ isAllLantern", isAllLantern);
     console.log("🚀 ~ file: index.js ~ line 251 ~ returnnewPromise ~ canScan", canScan);
 
     if (isAllPresence && isAllLantern) { 
       canScan = true;
-      resolve();
+      resolve(canScan);
     }
 	}).catch((err) => {
 		reject(err);
