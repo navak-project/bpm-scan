@@ -192,7 +192,7 @@ eventEmitter.on('processexit', async (msg) => {
 /*------------------------------------------------------*/
 
 async function getLantern() {
-  if (lantern === null) { return }
+  if (lantern !== null) { return }
   await setState(5);
 	if (disconnected) {
 		heartrate = randomIntFromInterval(70, 90);
