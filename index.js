@@ -94,15 +94,14 @@ eventEmitter.on('presence', async (value) => {
 });
 
 eventEmitter.on('ready', async () => {
+  await setState(0);
+  console.log('Ready!');
   await metrics({message: 'Ready to scan'});
   await metrics({lantern: lantern.data.id});
   console.log(`${lantern.data.id} / ${heartrate}`);
 	if (presence) {
 		eventEmitter.emit('presence/true');
-		return;
   }
-	await setState(0);
-	console.log('Ready!');
 });
 
 eventEmitter.on('done', async () => {
