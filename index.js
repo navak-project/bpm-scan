@@ -95,6 +95,7 @@ eventEmitter.on('presence', async (value) => {
 
 eventEmitter.on('ready', async () => {
   await metrics({ lantern: lantern.data.id });
+  console.log("🚀 ~ file: index.js ~ line 100 ~ eventEmitter.on ~ presence", presence);
   await setState(0);
   if (presence) {
     eventEmitter.emit('presence/true');
