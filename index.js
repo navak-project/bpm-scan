@@ -60,7 +60,6 @@ client.on('message', async function (topic, message) {
 		let buff = message.toString();
 		let value = JSON.parse(buff);
 		presence = JSON.parse(value.presence.toLowerCase());
-    console.log("🚀 ~ file: index.js ~ line 61 ~ presence", presence);
     await metrics({ presence: presence });
     switch (presence) {
       case true:
@@ -95,14 +94,15 @@ eventEmitter.on('presence', async (value) => {
 });
 
 eventEmitter.on('ready', async () => {
+  if (presence) {
+    eventEmitter.emit('presence/true');
+    return
+  }
   await setState(0);
-  console.log('Ready!');
   await metrics({message: 'Ready to scan'});
   await metrics({lantern: lantern.data.id});
-  console.log(`${lantern.data.id} / ${heartrate}`);
-	if (presence) {
-		eventEmitter.emit('presence/true');
-  }
+  console.log('Ready!');
+
 });
 
 eventEmitter.on('done', async () => {
@@ -118,9 +118,6 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
-	/*if (lantern === null) {
-		return;
-  }*/
   let state = await getState();
   if (presence && state.name === 'ready') {
     await setState(7);
