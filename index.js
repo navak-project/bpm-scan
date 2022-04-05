@@ -118,9 +118,9 @@ eventEmitter.on('done', async () => {
 });
 
 eventEmitter.on('presence/true', async () => {
-	if (lantern === null) {
+	/*if (lantern === null) {
 		return;
-  }
+  }*/
   let state = await getState();
   if (presence && state.name === 'ready') {
     await setState(7);
@@ -131,7 +131,6 @@ eventEmitter.on('presence/true', async () => {
     if (alluser) {
       await scan()
     }
-
 	}
 });
 
