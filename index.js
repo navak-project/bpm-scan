@@ -36,9 +36,10 @@ client.on('error', function (err) {
 client.on('message', async function (topic, message) {
   console.log("🚀 ~ file: index.js ~ line 37 ~ topic", topic);
   let state = await getState();
-  if (state.name === 'boot') {
+  if (state.name === 'boot' || state.name === 'outoflantern') {
 		return;
-	}
+  }
+  if (state.name === 'outoflantern') { return }
 	if (topic === `/station/${ID}/reboot`) {
 		eventEmitter.emit('processexit', 'Reboot!');
     return
@@ -105,12 +106,12 @@ eventEmitter.on('ready', async () => {
 });
 
 eventEmitter.on('done', async () => {
-	await setState(2);
+  await setState(2);
+  lantern = null;
 	client.publish(`/lantern/${lantern.id}/audio/ignite`);
 	await metrics({message: 'Done!'});
   await metrics({ timer: `00:00:${timerScan}` });
   await metrics({ lantern: "-" });
-  lantern = null;
   if (!presence) {
     done();
   }
@@ -126,7 +127,7 @@ eventEmitter.on('presence/true', async () => {
     await metrics({ message: 'User Ready, waiting' });
     setInterval(async () => {
       await checkUsers();
-    }, 100);
+    }, 1000);
     if (alluser) {
       await scan()
     }
@@ -238,8 +239,6 @@ async function getStations() {
 }
 
 async function checkUsers() {
-  let state = await getState();
-  if (state.name === 'outoflantern') { return }
 	return new Promise(async (resolve, reject) => {
 		let arr = await getStations();
 		var isAllTrue = Object.keys(arr).every(function (key) {
