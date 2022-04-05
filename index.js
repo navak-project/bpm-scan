@@ -107,7 +107,10 @@ eventEmitter.on('ready', async () => {
 
 eventEmitter.on('done', async () => {
 	await setState(2);
-	client.publish(`/lantern/${lantern.id}/audio/ignite`);
+  client.publish(`/lantern/${lantern.id}/audio/ignite`);
+  lantern = '-';
+  await metrics({ lantern: "-" });
+  await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
 	await metrics({message: 'Done!'});
   await metrics({ timer: `00:00:${timerScan}` });
   if (!presence) {
@@ -243,6 +246,8 @@ async function checkUsers() {
     var isAllLantern = Object.keys(arr).every(function (key) {
       return arr[key].lantern !== '-';
     });
+    console.log("🚀 ~ file: index.js ~ line 251 ~ returnnewPromise ~ canScan", canScan);
+
     if (isAllPresence && isAllLantern) { 
       canScan = true;
       resolve();
