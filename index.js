@@ -47,7 +47,7 @@ client.on('message', async function (topic, message) {
   if (lantern !== null) { 
     if (topic === `/${lantern.data.id}/status`) {
       await metrics({ message: `Lantern ${lantern.data.id} offline` });
-      await metrics({ lantern: "-" });
+      await metrics({ lantern: null });
       await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255", lantern: null });
       console.log(`Lantern ${lantern.data.id} offline`);
       client.unsubscribe(`/${lantern.data.id}/status`);
@@ -113,7 +113,7 @@ eventEmitter.on('done', async () => {
 	client.publish(`/lantern/${lantern.id}/audio/ignite`);
 	await metrics({message: 'Done!'});
   await metrics({ timer: `00:00:${timerScan}` });
-  await metrics({ lantern: "-" });
+  await metrics({ lantern: null });
   if (!presence) {
     done();
   }

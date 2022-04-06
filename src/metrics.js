@@ -20,7 +20,7 @@ export async function metricsReset(value) {
     const data = {
       "message": "-",
       "status": false,
-      "lantern": "-",
+      "lantern": null,
       "timer": "00:00:15",
       "presence": "false",
       "state": parseInt('01101010 00101011 01101110', 24)
