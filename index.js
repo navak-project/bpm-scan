@@ -239,16 +239,16 @@ async function getStations() {
 
 async function checkUsers() {
 	return new Promise(async (resolve, reject) => {
-		let arr = await getStations();
-    var isAllTrue = Object.keys(arr).every(function (key) {
-      if (arr[key].presence === true && arr[key].lantern === null)
-			return arr[key].presence === true;
-		});
-		alluser = isAllTrue;
-		resolve(alluser);
-	}).catch((err) => {
-		reject(err);
-	});
+   let arr = await getStations();
+   var isAllTrue = Object.keys(arr).every(function (key) {
+     if (arr[key].presence === true && arr[key].lantern != null)
+       return true;
+   });
+   alluser = isAllTrue;
+   resolve(alluser);
+ }).catch((err) => {
+   reject(err);
+ });
 }
 
 async function scan() {
