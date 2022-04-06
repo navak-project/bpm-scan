@@ -1,7 +1,10 @@
 module.exports = {
   apps : [{
     name   : "index",
-    script : "./index.js"
+    script: "./index.js",
+    env_production : {
+        NODE_ENV : "production"
+    }
   }],
   deploy : {
     production : {
@@ -10,7 +13,7 @@ module.exports = {
        "ref"  : "origin/refactor",
       "repo":   "git@github.com:navak-project/bpm-scan.git",
        "path" : "./test",
-       "post-deploy" : "npm install"
+       "post-deploy" : "git pull && pm2 resart 0"
     }
   }
 }
