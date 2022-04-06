@@ -71,7 +71,6 @@ client.on('message', async function (topic, message) {
       default:
         break;
     }
-		//eventEmitter.emit('presence');
 	}
 });
 
@@ -89,13 +88,8 @@ eventEmitter.on('getLantern', async () => {
 	}
 });
 
-eventEmitter.on('presence', async (value) => {
-  if (presence) { eventEmitter.emit('presence/true'); } else if (!presence) { eventEmitter.emit('presence/false'); }
-});
-
 eventEmitter.on('ready', async () => {
   await metrics({ lantern: lantern.data.id });
-  console.log("🚀 ~ file: index.js ~ line 100 ~ eventEmitter.on ~ presence", presence);
   await setState(0);
   if (presence) {
     eventEmitter.emit('presence/true');
@@ -111,12 +105,13 @@ eventEmitter.on('done', async () => {
 	await metrics({message: 'Done!'});
   await metrics({ timer: `00:00:${timerScan}` });
   await setState(2);
-  lantern = null;
-  await metrics({ lantern: null });
   client.publish(`/lantern/${lantern.id}/audio/ignite`);
+  await metrics({ lantern: null });
+  lantern = null;
   if (!presence) {
     done();
   }
+
 });
 
 eventEmitter.on('presence/true', async () => {
@@ -217,6 +212,7 @@ async function getLantern() {
 }
 
 async function done() {
+  
   await metrics({ message: 'User is done and left!' });
 	await setState(9); //remove from touch
   await sleep(18000);
