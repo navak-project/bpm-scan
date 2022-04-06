@@ -102,16 +102,15 @@ eventEmitter.on('ready', async () => {
 });
 
 eventEmitter.on('done', async () => {
-	await metrics({message: 'Done!'});
-  await metrics({ timer: `00:00:${timerScan}` });
   await setState(2);
   client.publish(`/lantern/${lantern.id}/audio/ignite`);
   await metrics({ lantern: null });
   lantern = null;
   if (!presence) {
     done();
+    return
   }
-
+  await metrics({message: 'Done!'});
 });
 
 eventEmitter.on('presence/true', async () => {
@@ -212,8 +211,8 @@ async function getLantern() {
 }
 
 async function done() {
-  
   await metrics({ message: 'User is done and left!' });
+  await metrics({ timer: `00:00:${timerScan}` });
 	await setState(9); //remove from touch
   await sleep(18000);
   await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
