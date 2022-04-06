@@ -11,7 +11,7 @@ module.exports = {
        "user" : "pi",
        "host" : ["192.168.1.224"],
        "ref"  : "origin/refactor",
-      "repo":   "git@github.com:navak-project/bpm-scan.git",
+      "repo":   "https://github.com/navak-project/bpm-scan.git",
        "path" : "../bpm-scan-prod",
        "post-deploy" : "git pull && pm2 resart 0"
     }
