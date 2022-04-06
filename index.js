@@ -48,7 +48,7 @@ client.on('message', async function (topic, message) {
     if (topic === `/${lantern.data.id}/status`) {
       await metrics({ message: `Lantern ${lantern.data.id} offline` });
       await metrics({ lantern: "-" });
-      await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255" });
+      await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255", lantern: null });
       console.log(`Lantern ${lantern.data.id} offline`);
       client.unsubscribe(`/${lantern.data.id}/status`);
       sleep(2000);
@@ -124,7 +124,7 @@ eventEmitter.on('presence/true', async () => {
   if (presence && state.name === 'ready') {
     await setState(7);
     await metrics({ message: 'User Ready, waiting' });
-    while(!alluser){
+    while (!alluser){
       await checkUsers();
     }
     if (alluser) {
@@ -240,7 +240,8 @@ async function getStations() {
 async function checkUsers() {
 	return new Promise(async (resolve, reject) => {
 		let arr = await getStations();
-		var isAllTrue = Object.keys(arr).every(function (key) {
+    var isAllTrue = Object.keys(arr).every(function (key) {
+      if (arr[key].presence === true && arr[key].lantern === null)
 			return arr[key].presence === true;
 		});
 		alluser = isAllTrue;
