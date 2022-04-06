@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    name   : "station",
+    name   : "index",
     script : "./index.js"
   }],
   deploy : {
