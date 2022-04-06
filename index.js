@@ -108,12 +108,12 @@ eventEmitter.on('ready', async () => {
 });
 
 eventEmitter.on('done', async () => {
-  await setState(2);
-  lantern = null;
-	client.publish(`/lantern/${lantern.id}/audio/ignite`);
 	await metrics({message: 'Done!'});
   await metrics({ timer: `00:00:${timerScan}` });
+  await setState(2);
+  lantern = null;
   await metrics({ lantern: null });
+  client.publish(`/lantern/${lantern.id}/audio/ignite`);
   if (!presence) {
     done();
   }
