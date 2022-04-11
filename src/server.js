@@ -1,6 +1,4 @@
 import http from 'http';
-import axios from 'axios';
-const { ID, GROUP, IP } = process.env;
 
 export function server() {
 	return new Promise((resolve, reject) => {
