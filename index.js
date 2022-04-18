@@ -45,7 +45,7 @@ client.on('message', async function (topic, message) {
     return
   }
   if (lantern !== null) { 
-    if (topic === `/${lantern.data.id}/status`) {
+    if (topic === `/${lantern.data.id}/status` || topic === `/lanterns/${lantern.data.id}/reset` ) {
       await metrics({ message: `Lantern ${lantern.data.id} offline` });
       await metrics({ lantern: null });
       await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255", lantern: null });
