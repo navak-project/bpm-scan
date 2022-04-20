@@ -73,13 +73,13 @@ client.on('message', async function (topic, message) {
 });
 
 eventEmitter.on('disconnected', async () => {
+  await sleep(3000);
+  polarDevice = await connectToDevice();
 
   if (polarDevice === undefined || polarDevice === null) {
 		polarDevice = null;
 		heartrate = randomIntFromInterval(70, 90);
     await metrics({ bpm: heartrate });
-    await sleep(3000);
-    polarDevice = await connectToDevice();
 		return;
   }
 	polarDevice.on('valuechanged', async (buffer) => {
