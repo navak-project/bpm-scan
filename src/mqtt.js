@@ -12,7 +12,6 @@ export function clientConnect() {
       console.log(`🚀 ~ Connected to MQTT broker: mqtt://${host}:${port}`);
       client.subscribe(`/station/${ID}/presence`);
       client.subscribe(`/station/${ID}/reboot`);
-      client.subscribe(`/station/${ID}/reset`);
     });
 	} catch (err) {
 		console.log('🚀 ~ file: mqtt.js ~ line 39 ~ returnnewpromise ~ err', err);

@@ -51,6 +51,7 @@ client.on('message', async function (topic, message) {
       await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: "50, 50, 50, 255", lantern: null });
       console.log(`Lantern ${lantern.data.id} offline`);
       client.unsubscribe(`/${lantern.data.id}/status`);
+      client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
       sleep(2000);
       eventEmitter.emit('processexit');
     }
@@ -199,7 +200,8 @@ async function getLantern() {
 		try {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
-			eventEmitter.emit('ready');
+      eventEmitter.emit('ready');
+      client.subscribe(`/lanterns/${lantern.data.id}/reset`);
 			client.subscribe(`/${lantern.data.id}/status`);
 			resolve(lantern.data.id);
 		} catch (error) {
