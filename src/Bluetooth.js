@@ -1,10 +1,14 @@
 import { EventEmitter } from 'events';
 const eventEmitter = new EventEmitter();
 
-import { createBluetooth } from 'node-ble';
+//import { createBluetooth } from 'node-ble';
+
+const { createBluetooth } = require('node-ble')
+const { bluetooth, destroy } = createBluetooth()
+
 import { metrics } from './metrics.js';
 
-const bluetooth = createBluetooth();
+//const bluetooth = createBluetooth();
 
 export async function connectToDevice() {
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {

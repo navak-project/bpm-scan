@@ -23,10 +23,11 @@ let disconnected = false;
 const timerScan = 15;
 const {ID, GROUP, IP} = process.env;
 
-const dontUseDevice = true;
+const dontUseDevice = false;
 
 if (!dontUseDevice) {
-	import('./src/bluetooth.js');
+  //import('./src/Bluetooth.js');
+  await import('./src/Bluetooth.js');
 }
 
 client.on('error', function (err) {
