@@ -78,8 +78,8 @@ eventEmitter.on('disconnected', async () => {
   heartrate = randomIntFromInterval(70, 90);
   await sleep(3000);
   polarDevice = await connectToDevice();
-  if (polarDevice !== null) {
-    console.log("GOT DEVICE!");
+  if (polarDevice === undefined) { return }
+    console.log("Device up");
     polarDevice.on('valuechanged', async (buffer) => {
       let json = JSON.stringify(buffer);
       let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
@@ -91,7 +91,7 @@ eventEmitter.on('disconnected', async () => {
         heartrate = deviceHeartrate;
       }
     });
-  }
+  
 });
 
 eventEmitter.on('getLantern', async () => {
