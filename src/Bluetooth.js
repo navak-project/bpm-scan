@@ -40,16 +40,15 @@ export async function connectToDevice() {
 	console.log('Device:', macAdresss, deviceName);
 
 	try {
-		await device.connect();
+    await device.connect();
+    await metrics({ message: 'Connecting to device...' });
 	} catch (err) {
 		await metrics({message: err.text});
 		eventEmitter.emit('disconnected');
 		return;
 	}
 
-  console.log('Connected!');
-  await metrics({ message: 'Connected' });
-  await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: true });
+
   device.on('disconnect', async function () {
     await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: false });
     eventEmitter.emit('disconnected');
@@ -58,6 +57,11 @@ export async function connectToDevice() {
 	const gattServer = await device.gatt();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
-	await heartrate.startNotifications();
+  await heartrate.startNotifications();
+  
+  console.log('Connected!');
+  await metrics({ message: 'Connected' });
+  await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: true });
+
 	return heartrate;
 }

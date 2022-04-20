@@ -77,6 +77,7 @@ eventEmitter.on('disconnected', async () => {
   polarDevice = null
   heartrate = randomIntFromInterval(70, 90);
   console.log("🚀 ~ file: index.js ~ line 87 ~ eventEmitter.on ~ disconnected");
+  await sleep(3000);
   polarDevice = await connectToDevice();
 });
 
