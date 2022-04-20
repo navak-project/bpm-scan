@@ -76,7 +76,6 @@ eventEmitter.on('disconnected', async () => {
   //disconnected = true;
   polarDevice = null
   heartrate = randomIntFromInterval(70, 90);
-  console.log("🚀 ~ file: index.js ~ line 87 ~ eventEmitter.on ~ disconnected");
   await sleep(3000);
   polarDevice = await connectToDevice();
 });
@@ -87,7 +86,7 @@ eventEmitter.on('getLantern', async () => {
 	} catch (error) {
 		//console.log(error);
 		await sleep(2000);
-		eventEmitter.emit('getLantern');
+    eventEmitter.emit('getLantern');
 	}
 });
 
@@ -157,8 +156,10 @@ eventEmitter.on('processexit', async (msg) => {
 	await setState(6);
 	await metrics({message: 'Booting...'});
 
-	if (!dontUseDevice) {
-    polarDevice = await connectToDevice();
+  if (!dontUseDevice) {
+    eventEmitter.emit('disconnected');
+
+    //polarDevice = await connectToDevice();
     await sleep(3000);
 
 		polarDevice.on('valuechanged', async (buffer) => {
