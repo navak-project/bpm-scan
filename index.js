@@ -26,11 +26,6 @@ const {ID, GROUP, IP} = process.env;
 
 const dontUseDevice = false;
 
-if (!dontUseDevice) {
-  //import('./src/Bluetooth.js');
- // await import('./src/Bluetooth.js');
-}
-
 client.on('error', function (err) {
 	console.dir(err);
 });
@@ -82,9 +77,7 @@ eventEmitter.on('disconnected', async () => {
   polarDevice = null
   heartrate = randomIntFromInterval(70, 90);
   console.log("🚀 ~ file: index.js ~ line 87 ~ eventEmitter.on ~ disconnected");
-  while(polarDevice === null) {
-    polarDevice = await connectToDevice();
-  }
+  polarDevice = await connectToDevice();
 });
 
 eventEmitter.on('getLantern', async () => {
@@ -164,13 +157,12 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
 
 	if (!dontUseDevice) {
-		while (polarDevice === null) {
 			try {
 				polarDevice = await connectToDevice();
 			} catch (err) {
-				console.log('🚀 ~ file: index.js ~ line 187 ~ boot ~ err', err);
+        console.log('🚀 ~ file: index.js ~ line 187 ~ boot ~ err', err);
+        eventEmitter.emit('processexit');
       }
-    }
     await sleep(3000);
 
 		polarDevice.on('valuechanged', async (buffer) => {
@@ -192,7 +184,6 @@ eventEmitter.on('processexit', async (msg) => {
 /*------------------------------------------------------*/
 
 async function getLantern() {
-  console.log("🚀 ~ file: index.js ~ line 194 ~ getLantern ~ getLantern");
   if (lantern !== null) { return }
   await setState(5);
 	return new Promise(async function (resolve, reject) {
