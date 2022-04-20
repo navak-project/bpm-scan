@@ -72,34 +72,36 @@ client.on('message', async function (topic, message) {
 	}
 });
 
+eventEmitter.on('connected', async () => {
+  polarDevice.on('valuechanged', async (buffer) => {
+    let json = JSON.stringify(buffer);
+    let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
+    console.log("bpm:", deviceHeartrate);
+    if (deviceHeartrate < 30 || deviceHeartrate > 180) {
+      heartrate = randomIntFromInterval(70, 90);
+      await metrics({bpm: heartrate});
+      return;
+    }
+    heartrate = deviceHeartrate;
+    await metrics({bpm: heartrate});
+  });
+});
+
 eventEmitter.on('disconnected', async () => {
   await sleep(3000);
   try {
     polarDevice = await connectToDevice();
+    eventEmitter.emit('connected');
   } catch (error) {
     console.log("🚀 ~ file: index.js ~ line 80 ~ eventEmitter.on ~ error", error);
     return
   }
-  console.log("🚀 ~ file: index.js ~ line 79 ~ eventEmitter.on ~ polarDevice", polarDevice);
-
   if (polarDevice === undefined || polarDevice === null) {
 		polarDevice = null;
 		heartrate = randomIntFromInterval(70, 90);
     await metrics({ bpm: heartrate });
 		return;
   }
-	polarDevice.on('valuechanged', async (buffer) => {
-		let json = JSON.stringify(buffer);
-		let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
-    console.log("bpm:", deviceHeartrate);
-		if (deviceHeartrate < 30 || deviceHeartrate > 180) {
-			heartrate = randomIntFromInterval(70, 90);
-			await metrics({bpm: heartrate});
-			return;
-		}
-		heartrate = deviceHeartrate;
-		await metrics({bpm: heartrate});
-	});
 });
 
 eventEmitter.on('getLantern', async () => {
