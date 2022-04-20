@@ -85,7 +85,7 @@ eventEmitter.on('disconnected', async () => {
 	polarDevice.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
 		let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
-		//heartrate = randomIntFromInterval(70, 76);
+    console.log("bpm:", deviceHeartrate);
 		if (deviceHeartrate < 30 || deviceHeartrate > 180) {
 			heartrate = randomIntFromInterval(70, 90);
 			await metrics({bpm: heartrate});
