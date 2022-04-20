@@ -46,11 +46,12 @@ export async function connectToDevice() {
 		return;
 	}
 
-	console.log('Connected!');
+  console.log('Connected!');
+  await metrics({ message: 'Connected' });
   await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: true });
   device.on('disconnect', async function () {
     await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: false });
-		eventEmitter.emit('disconnected');
+    eventEmitter.emit('disconnected');
 	});
 
 	const gattServer = await device.gatt();

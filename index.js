@@ -155,6 +155,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 (async function () {
   polarDevice = null;
+  console.log("🚀 ~ file: index.js ~ line 158 ~ polarDevice", polarDevice);
 	await metricsReset();
 	await server();
 
@@ -190,6 +191,7 @@ eventEmitter.on('processexit', async (msg) => {
 /*------------------------------------------------------*/
 
 async function getLantern() {
+  console.log("🚀 ~ file: index.js ~ line 158 ~ polarDevice", polarDevice);
   if (lantern !== null) { return }
   await setState(5);
 	if (polarDevice === null) {
