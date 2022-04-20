@@ -156,16 +156,18 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
 
 	if (!dontUseDevice) {
-	
+		while (polarDevice === null) {
 			try {
 				polarDevice = await connectToDevice();
 			} catch (err) {
 				console.log('🚀 ~ file: index.js ~ line 187 ~ boot ~ err', err);
       }
      // console.log("🚀 ~ file: index.js ~ line 162 ~ polarDevice", polarDevice);
-			await sleep(3000);
+		
+		//	return;
+    }
+    await sleep(3000);
 
-    console.log("🚀 ~ file: index.js ~ line 162 ~ polarDevice", polarDevice);
 		polarDevice.on('valuechanged', async (buffer) => {
 			let json = JSON.stringify(buffer);
 			let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
