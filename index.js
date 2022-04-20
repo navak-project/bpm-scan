@@ -158,13 +158,7 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
 
 	if (!dontUseDevice) {
-			try {
-				polarDevice = await connectToDevice();
-        return
-			} catch (err) {
-        console.log('🚀 ~ file: index.js ~ line 187 ~ boot ~ err', err);
-        eventEmitter.emit('processexit');
-      }
+    polarDevice = await connectToDevice();
     await sleep(3000);
 
 		polarDevice.on('valuechanged', async (buffer) => {
