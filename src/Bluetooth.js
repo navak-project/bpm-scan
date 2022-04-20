@@ -66,7 +66,7 @@ export async function connectToDevice() {
   device.on('disconnect', async function () {
     await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: false });
     eventEmitter.emit('disconnected');
-   //await heartrate.stopNotifications();
+    await heartrate.stopNotifications();
   });
 
 	return heartrate;
