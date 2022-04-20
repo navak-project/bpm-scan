@@ -74,13 +74,19 @@ client.on('message', async function (topic, message) {
 
 eventEmitter.on('disconnected', async () => {
   await sleep(3000);
-  polarDevice = await connectToDevice();
+  try {
+    polarDevice = await connectToDevice();
+  } catch (error) {
+    console.log("🚀 ~ file: index.js ~ line 80 ~ eventEmitter.on ~ error", error);
+    return
+  }
+  console.log("🚀 ~ file: index.js ~ line 79 ~ eventEmitter.on ~ polarDevice", polarDevice);
 
   if (polarDevice === undefined || polarDevice === null) {
 		polarDevice = null;
 		heartrate = randomIntFromInterval(70, 90);
     await metrics({ bpm: heartrate });
-		//return;
+		return;
   }
 	polarDevice.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
