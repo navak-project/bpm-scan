@@ -13,7 +13,8 @@ const timerInstance = new Timer();
 import {server} from './src/server.js';
 import {EventEmitter} from 'events';
 const eventEmitter = new EventEmitter();
-
+import { connectToDevice } from './src/Bluetooth.js'
+ 
 let lantern = null;
 let presence = false;
 let alluser = false;
@@ -27,7 +28,7 @@ const dontUseDevice = false;
 
 if (!dontUseDevice) {
   //import('./src/Bluetooth.js');
-  await import('./src/Bluetooth.js');
+ // await import('./src/Bluetooth.js');
 }
 
 client.on('error', function (err) {
