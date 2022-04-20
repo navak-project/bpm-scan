@@ -49,7 +49,7 @@ export async function connectToDevice() {
 
   console.log('Connected!');
 	await metrics({message: 'Connected'});
-  device.on('disc onnect', async function () {
+  device.on('disconnect', async function () {
     await metrics({ message: 'Disconnected' })
     eventEmitter.emit('disconnected');
 	});
@@ -58,6 +58,7 @@ export async function connectToDevice() {
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
 	await heartrate.startNotifications();
-
+  console.log('Polar is ready!');
+  await metrics({ message: 'Polar is ready!'});
 	return heartrate;
 }
