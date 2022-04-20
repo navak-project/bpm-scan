@@ -196,7 +196,11 @@ async function getLantern() {
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
       eventEmitter.emit('ready');
       client.subscribe(`/lanterns/${lantern.data.id}/reset`);
-			client.subscribe(`/${lantern.data.id}/status`);
+      client.subscribe(`/${lantern.data.id}/status`);
+      if (heartrate < 50) {
+        heartrate = randomIntFromInterval(70, 90);
+        await metrics({bpm: heartrate});
+      }
 			resolve(lantern.data.id);
 		} catch (error) {
 			await setState(3);
