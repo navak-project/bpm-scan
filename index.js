@@ -13,7 +13,7 @@ const timerInstance = new Timer();
 import {server} from './src/server.js';
 import {EventEmitter} from 'events';
 const eventEmitter = new EventEmitter();
-import { connectToDevice } from './src/Bluetooth.js'
+import { connectToDevice } from './src/bluetooth.js'
  
 let lantern = null;
 let presence = false;
@@ -162,16 +162,13 @@ eventEmitter.on('processexit', async (msg) => {
 			} catch (err) {
 				console.log('🚀 ~ file: index.js ~ line 187 ~ boot ~ err', err);
       }
-     // console.log("🚀 ~ file: index.js ~ line 162 ~ polarDevice", polarDevice);
-		
-		//	return;
     }
     await sleep(3000);
 
 		polarDevice.on('valuechanged', async (buffer) => {
 			let json = JSON.stringify(buffer);
 			let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
-			if (deviceHeartrate < 70) {
+			/*if (deviceHeartrate < 70) {
 				heartrate = randomIntFromInterval(30, 50);
 			}
 			if (deviceHeartrate >= 70) {
@@ -179,13 +176,15 @@ eventEmitter.on('processexit', async (msg) => {
 			}
 			if (deviceHeartrate > 80) {
 				heartrate = randomIntFromInterval(80, 90);
-			}
+			}*/
 			heartrate = deviceHeartrate;
 			await metrics({bpm: heartrate});
 		});
-	}
-	heartrate = randomIntFromInterval(70, 90);
-	await metrics({bpm: heartrate});
+  } else {
+      heartrate = randomIntFromInterval(70, 90);
+      await metrics({bpm: heartrate});
+  }
+
 	eventEmitter.emit('getLantern');
 })();
 
