@@ -169,11 +169,14 @@ eventEmitter.on('processexit', async (msg) => {
 		polarDevice.on('valuechanged', async (buffer) => {
 			let json = JSON.stringify(buffer);
       let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
+      console.log("🚀 ~ file: index.js ~ line 172 ~ polarDevice.on ~ deviceHeartrate", deviceHeartrate);
       if (deviceHeartrate < 60) {
         heartrate = randomIntFromInterval(70, 76);
+        await metrics({ bpm: heartrate });
+        return
+      } else {
+        heartrate = deviceHeartrate;
       }
-			heartrate = deviceHeartrate;
-			await metrics({bpm: heartrate});
 		});
   } else {
       heartrate = randomIntFromInterval(70, 90);
