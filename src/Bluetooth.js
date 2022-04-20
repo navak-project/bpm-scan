@@ -47,10 +47,9 @@ export async function connectToDevice() {
 	}
 
 	console.log('Connected!');
-  await metrics({ message: 'Connected' });
   await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: true });
-	device.on('disconnect', async function () {
-		await metrics({message: 'Disconnected'});
+  device.on('disconnect', async function () {
+    await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: false });
 		eventEmitter.emit('disconnected');
 	});
 
@@ -58,7 +57,5 @@ export async function connectToDevice() {
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
 	await heartrate.startNotifications();
-	console.log('Polar is ready!');
-	await metrics({message: 'Polar is ready!'});
 	return heartrate;
 }

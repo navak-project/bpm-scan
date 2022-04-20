@@ -79,9 +79,8 @@ client.on('message', async function (topic, message) {
 
 eventEmitter.on('disconnected', async () => {
   //disconnected = true;
+  polarDevice = null
   console.log("🚀 ~ file: index.js ~ line 87 ~ eventEmitter.on ~ disconnected");
-
-  await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: false });
   while(polarDevice === null) {
     polarDevice = await connectToDevice();
   }
@@ -155,6 +154,7 @@ eventEmitter.on('processexit', async (msg) => {
 });
 
 (async function () {
+  polarDevice = null;
 	await metricsReset();
 	await server();
 
