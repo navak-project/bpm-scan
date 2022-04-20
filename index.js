@@ -160,6 +160,7 @@ eventEmitter.on('processexit', async (msg) => {
 	if (!dontUseDevice) {
 			try {
 				polarDevice = await connectToDevice();
+        return
 			} catch (err) {
         console.log('🚀 ~ file: index.js ~ line 187 ~ boot ~ err', err);
         eventEmitter.emit('processexit');
