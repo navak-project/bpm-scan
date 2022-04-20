@@ -1,14 +1,13 @@
-import {EventEmitter} from 'events';
+import 'dotenv/config';
+import { EventEmitter } from 'events';
+import axios from 'axios';
 const eventEmitter = new EventEmitter();
-
+const { ID, IP } = process.env;
 import {createBluetooth} from 'node-ble';
 
-//const { createBluetooth } = require('node-ble')
 const {bluetooth, destroy} = createBluetooth();
 
 import {metrics} from './metrics.js';
-
-//const bluetooth = createBluetooth();
 
 export async function connectToDevice() {
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
@@ -48,7 +47,8 @@ export async function connectToDevice() {
 	}
 
 	console.log('Connected!');
-	await metrics({message: 'Connected'});
+  await metrics({ message: 'Connected' });
+  await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: true });
 	device.on('disconnect', async function () {
 		await metrics({message: 'Disconnected'});
 		eventEmitter.emit('disconnected');

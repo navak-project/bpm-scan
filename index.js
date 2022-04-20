@@ -78,7 +78,11 @@ client.on('message', async function (topic, message) {
 });
 
 eventEmitter.on('disconnected', async () => {
-	disconnected = true;
+  //disconnected = true;
+  await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: false });
+  while(polarDevice === null) {
+    polarDevice = await connectToDevice();
+  }
 });
 
 eventEmitter.on('getLantern', async () => {
@@ -167,16 +171,10 @@ eventEmitter.on('processexit', async (msg) => {
 
 		polarDevice.on('valuechanged', async (buffer) => {
 			let json = JSON.stringify(buffer);
-			let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
-			/*if (deviceHeartrate < 70) {
-				heartrate = randomIntFromInterval(30, 50);
-			}
-			if (deviceHeartrate >= 70) {
-				heartrate = randomIntFromInterval(50, 60);
-			}
-			if (deviceHeartrate > 80) {
-				heartrate = randomIntFromInterval(80, 90);
-			}*/
+      let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
+      if (deviceHeartrate < 60) {
+        heartrate = randomIntFromInterval(70, 76);
+      }
 			heartrate = deviceHeartrate;
 			await metrics({bpm: heartrate});
 		});
@@ -184,7 +182,6 @@ eventEmitter.on('processexit', async (msg) => {
       heartrate = randomIntFromInterval(70, 90);
       await metrics({bpm: heartrate});
   }
-
 	eventEmitter.emit('getLantern');
 })();
 
@@ -193,7 +190,7 @@ eventEmitter.on('processexit', async (msg) => {
 async function getLantern() {
   if (lantern !== null) { return }
   await setState(5);
-	if (disconnected) {
+	if (polarDevice === null) {
 		heartrate = randomIntFromInterval(70, 90);
 	}
 	return new Promise(async function (resolve, reject) {
