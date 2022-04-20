@@ -155,7 +155,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 (async function () {
   polarDevice = null;
-  console.log("🚀 ~ file: index.js ~ line 158 ~ polarDevice", polarDevice);
+  //console.log("🚀 ~ file: index.js ~ line 158 ~ polarDevice", polarDevice);
 	await metricsReset();
 	await server();
 
@@ -191,10 +191,11 @@ eventEmitter.on('processexit', async (msg) => {
 /*------------------------------------------------------*/
 
 async function getLantern() {
-  console.log("🚀 ~ file: index.js ~ line 158 ~ polarDevice", polarDevice);
+  console.log("🚀 ~ file: index.js ~ line 194 ~ getLantern ~ getLantern");
   if (lantern !== null) { return }
   await setState(5);
 	if (polarDevice === null) {
+    console.log("🚀 ~ file: index.js ~ line 198 ~ getLantern ~ polarDevice");
 		heartrate = randomIntFromInterval(70, 90);
 	}
 	return new Promise(async function (resolve, reject) {
