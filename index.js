@@ -80,7 +80,7 @@ eventEmitter.on('disconnected', async () => {
 		polarDevice = null;
 		heartrate = randomIntFromInterval(70, 90);
     await metrics({ bpm: heartrate });
-		return;
+		//return;
   }
 	polarDevice.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
