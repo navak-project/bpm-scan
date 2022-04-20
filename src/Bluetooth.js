@@ -1,18 +1,18 @@
-import { EventEmitter } from 'events';
+import {EventEmitter} from 'events';
 const eventEmitter = new EventEmitter();
 
-import { createBluetooth } from 'node-ble';
+import {createBluetooth} from 'node-ble';
 
 //const { createBluetooth } = require('node-ble')
-const { bluetooth, destroy } = createBluetooth()
+const {bluetooth, destroy} = createBluetooth();
 
-import { metrics } from './metrics.js';
+import {metrics} from './metrics.js';
 
 //const bluetooth = createBluetooth();
 
 export async function connectToDevice() {
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
-    if (err) {
+		if (err) {
 			await metrics({message: 'No bluetooth adapter'});
 			throw err;
 		}
@@ -29,7 +29,7 @@ export async function connectToDevice() {
 		if (err) {
 			console.log(err);
 			await metrics({message: 'No device'});
-      eventEmitter.emit('disconnected');
+			eventEmitter.emit('disconnected');
 			return;
 		}
 	});
@@ -43,22 +43,22 @@ export async function connectToDevice() {
 		await device.connect();
 	} catch (err) {
 		await metrics({message: err.text});
-    eventEmitter.emit('disconnected');
+		eventEmitter.emit('disconnected');
 		return;
 	}
 
-  console.log('Connected!');
+	console.log('Connected!');
 	await metrics({message: 'Connected'});
-  device.on('disconnect', async function () {
-    await metrics({ message: 'Disconnected' })
-    eventEmitter.emit('disconnected');
+	device.on('disconnect', async function () {
+		await metrics({message: 'Disconnected'});
+		eventEmitter.emit('disconnected');
 	});
 
 	const gattServer = await device.gatt();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
 	await heartrate.startNotifications();
-  console.log('Polar is ready!');
-  await metrics({ message: 'Polar is ready!'});
+	console.log('Polar is ready!');
+	await metrics({message: 'Polar is ready!'});
 	return heartrate;
 }
