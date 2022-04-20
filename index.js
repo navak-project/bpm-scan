@@ -12,7 +12,7 @@ import {Timer} from 'easytimer.js';
 const timerInstance = new Timer();
 import {server} from './src/server.js';
 import {EventEmitter} from 'events';
-const eventEmitter = new EventEmitter();
+export const eventEmitter = new EventEmitter();
 import { connectToDevice } from './src/Bluetooth.js'
  
 let lantern = null;
@@ -80,6 +80,7 @@ client.on('message', async function (topic, message) {
 eventEmitter.on('disconnected', async () => {
   //disconnected = true;
   polarDevice = null
+  heartrate = randomIntFromInterval(70, 90);
   console.log("🚀 ~ file: index.js ~ line 87 ~ eventEmitter.on ~ disconnected");
   while(polarDevice === null) {
     polarDevice = await connectToDevice();
@@ -194,10 +195,6 @@ async function getLantern() {
   console.log("🚀 ~ file: index.js ~ line 194 ~ getLantern ~ getLantern");
   if (lantern !== null) { return }
   await setState(5);
-	if (polarDevice === null) {
-    console.log("🚀 ~ file: index.js ~ line 198 ~ getLantern ~ polarDevice");
-		heartrate = randomIntFromInterval(70, 90);
-	}
 	return new Promise(async function (resolve, reject) {
 		if (!(await pingAPI())) {
 			reject();
