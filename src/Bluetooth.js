@@ -24,8 +24,8 @@ export async function connectToDevice() {
 	if (!(await adapter.isDiscovering())) {
 		await adapter.startDiscovery();
   } else {
-    eventEmitter.emit('disconnected');
-    return
+   // eventEmitter.emit('disconnected');
+    //return
   }
 
 	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
