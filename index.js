@@ -79,6 +79,8 @@ client.on('message', async function (topic, message) {
 
 eventEmitter.on('disconnected', async () => {
   //disconnected = true;
+  console.log("🚀 ~ file: index.js ~ line 87 ~ eventEmitter.on ~ disconnected");
+
   await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: false });
   while(polarDevice === null) {
     polarDevice = await connectToDevice();
@@ -89,7 +91,7 @@ eventEmitter.on('getLantern', async () => {
 	try {
 		await getLantern();
 	} catch (error) {
-		console.log(error);
+		//console.log(error);
 		await sleep(2000);
 		eventEmitter.emit('getLantern');
 	}
