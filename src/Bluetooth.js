@@ -1,9 +1,7 @@
 import 'dotenv/config';
-import { EventEmitter } from 'events';
 import axios from 'axios';
-//const eventEmitter = new EventEmitter();
 import { eventEmitter } from '../index.js'
-const { ID, IP } = process.env;
+const { ID, IP,  MACADDRESS } = process.env;
 import {createBluetooth} from 'node-ble';
 
 const {bluetooth, destroy} = createBluetooth();
@@ -25,7 +23,7 @@ export async function connectToDevice() {
 		await adapter.startDiscovery();
   }
 
-	const device = await adapter.waitDevice('A0:9E:1A:9F:0E:B4').catch(async (err) => {
+	const device = await adapter.waitDevice(MACADDRESS).catch(async (err) => {
 		if (err) {
 			console.log(err);
       await metrics({ polarStatus: 'No device'});
