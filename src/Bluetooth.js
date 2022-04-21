@@ -11,13 +11,15 @@ import {metrics} from './metrics.js';
 export async function connectToDevice() {
 	const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
 		if (err) {
-      await metrics({ polarStatus: 'No bluetooth adapter'});
+      await metrics({ polarStatus: 'No bluetooth adapter' });
+      await metrics({ polarState: 4 });
 			throw err;
 		}
 	});
 
 	console.log('Discovering device...');
-  await metrics({ polarStatus: 'Discovering device...'});
+  await metrics({ polarStatus: 'Discovering device...' });
+  await metrics({ polarState: 1 });
 
 	if (!(await adapter.isDiscovering())) {
 		await adapter.startDiscovery();
@@ -26,7 +28,8 @@ export async function connectToDevice() {
 	const device = await adapter.waitDevice(MACADDRESS).catch(async (err) => {
 		if (err) {
 			console.log(err);
-      await metrics({ polarStatus: 'No device'});
+      await metrics({ polarStatus: 'No device' });
+      await metrics({ polarState: 4 });
 			eventEmitter.emit('disconnected');
 			return;
 		}
@@ -40,6 +43,7 @@ export async function connectToDevice() {
 	try {
     await device.connect();
     await metrics({ polarStatus: 'Connecting to device...' });
+    await metrics({ polarState: 2 });
 	} catch (err) {
     await metrics({ polarStatus: err.text});
 		eventEmitter.emit('disconnected');
@@ -55,11 +59,12 @@ export async function connectToDevice() {
   await heartrate.startNotifications();
   
   console.log('Connected!');
-  await metrics({ polarStatus: 'Connected' });
-  await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: true });
+  await metrics({ polarStatus: `Connected: ${deviceName}:${macAdresss}` });
+  await metrics({ polarState: 3 });
+ // await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: true });
 
   device.on('disconnect', async function () {
-    await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: false });
+  //  await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: false });
     eventEmitter.emit('disconnected');
     await heartrate.stopNotifications();
   });
