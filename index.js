@@ -215,7 +215,7 @@ async function done() {
 	await metrics({timer: `00:00:${timerScan}`});
 	await setState(9); //remove from touch
 	await sleep(18000);
-	await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255'});
+	//await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255'});
 	eventEmitter.emit('getLantern');
 }
 
