@@ -98,7 +98,8 @@ eventEmitter.on('disconnected', async () => {
   }
   if (polarDevice === undefined || polarDevice === null) {
 		polarDevice = null;
-		heartrate = randomIntFromInterval(70, 90);
+    heartrate = randomIntFromInterval(70, 90);
+    console.log("🚀 ~ file: index.js ~ line 103 ~ eventEmitter.on ~ heartrate", heartrate);
     await metrics({ bpm: heartrate });
 		return;
   }
@@ -172,7 +173,6 @@ eventEmitter.on('processexit', async (msg) => {
 
 (async function () {
 	polarDevice = null;
-	//console.log("🚀 ~ file: index.js ~ line 158 ~ polarDevice", polarDevice);
 	await metricsReset();
 	await server();
 
@@ -181,8 +181,6 @@ eventEmitter.on('processexit', async (msg) => {
 
 	if (!dontUseDevice) {
 		eventEmitter.emit('disconnected');
-
-		//polarDevice = await connectToDevice();
 		await sleep(3000);
 	} else {
 		heartrate = randomIntFromInterval(70, 90);
@@ -257,7 +255,8 @@ async function scan() {
 		await metrics({timer: timerInstance.getTimeValues().toString()});
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
-		timerInstance.stop();
+    timerInstance.stop();
+    console.log("🚀 ~ file: index.js ~ line 262 ~ heartrate", heartrate);
 		await axios.put(`http://${IP}/api/lanterns/${lantern.data.id}`, {pulse: heartrate});
 		eventEmitter.emit('done');
 	});
