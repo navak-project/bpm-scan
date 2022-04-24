@@ -18,7 +18,7 @@ import {connectToDevice} from './src/Bluetooth.js';
 let lantern = null;
 let presence = false;
 let alluser = false;
-let heartrate = 0;
+let heartrate;
 let polarDevice = null;
 let disconnected = false;
 const timerScan = 15;
@@ -73,6 +73,7 @@ client.on('message', async function (topic, message) {
 });
 
 eventEmitter.on('connected', async () => {
+  if (polarDevice === undefined){return}
   polarDevice.on('valuechanged', async (buffer) => {
     let json = JSON.stringify(buffer);
     let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
