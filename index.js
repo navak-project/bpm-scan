@@ -73,6 +73,7 @@ client.on('message', async function (topic, message) {
 });
 
 eventEmitter.on('connected', async () => {
+  if (polarDevice === null || polarDevice === undefined) { return } 
   polarDevice.on('valuechanged', async (buffer) => {
     let json = JSON.stringify(buffer);
     let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
@@ -261,7 +262,6 @@ async function scan() {
     polarDevice = null;
     heartrate = randomIntFromInterval(70, 90);
     await metrics({ bpm: heartrate });
-    return;
   }
 	timerInstance.start({countdown: true, startValues: {seconds: timerScan}});
 }

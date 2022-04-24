@@ -50,9 +50,6 @@ export async function connectToDevice() {
 		return;
 	}
 
-
- 
-
 	const gattServer = await device.gatt();
 	const service = await gattServer.getPrimaryService('0000180d-0000-1000-8000-00805f9b34fb');
 	const heartrate = await service.getCharacteristic('00002a37-0000-1000-8000-00805f9b34fb');
