@@ -247,7 +247,12 @@ async function checkUsers() {
 
 async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
-		await metrics({timer: timerInstance.getTimeValues().toString()});
+    await metrics({ timer: timerInstance.getTimeValues().toString() });
+    if (polarDevice === undefined || polarDevice === null) {
+      polarDevice = null;
+      heartrate = randomIntFromInterval(70, 90);
+      await metrics({ bpm: heartrate });
+    }
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
     timerInstance.stop();
@@ -256,11 +261,7 @@ async function scan() {
 	});
 	await setState(1);
   await metrics({ message: 'Scanning...' });
-  if (polarDevice === undefined || polarDevice === null) {
-    polarDevice = null;
-    heartrate = randomIntFromInterval(70, 90);
-    await metrics({ bpm: heartrate });
-  }
+  
 	timerInstance.start({countdown: true, startValues: {seconds: timerScan}});
 }
 
