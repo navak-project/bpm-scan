@@ -38,13 +38,15 @@ export async function connectToDevice() {
 	const macAdresss = await device.getAddress();
 	const deviceName = await device.getName();
 
-	console.log('Device:', macAdresss, deviceName);
 
-	try {
+
+  try {
+    console.log('Device:', macAdresss, deviceName);
     await device.connect();
     await metrics({ polarStatus: 'Connecting to device...' });
     await metrics({ polarState: 2 });
-	} catch (err) {
+  } catch (err) {
+    console.log('Device:', err.text);
     await metrics({ polarStatus: err.text});
 		eventEmitter.emit('disconnected');
 		return;

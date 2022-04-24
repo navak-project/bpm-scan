@@ -18,7 +18,7 @@ import {connectToDevice} from './src/Bluetooth.js';
 let lantern = null;
 let presence = false;
 let alluser = false;
-let heartrate;
+let heartrate = 0;
 let polarDevice = null;
 let disconnected = false;
 const timerScan = 15;
@@ -172,14 +172,15 @@ eventEmitter.on('processexit', async (msg) => {
 
 	await setState(6);
 	await metrics({message: 'Booting...'});
-
-	if (!dontUseDevice) {
+  await metrics({ bpm: heartrate });
+	/*if (!dontUseDevice) {
 		eventEmitter.emit('disconnected');
 		await sleep(3000);
 	} else {
 		heartrate = randomIntFromInterval(70, 90);
 		await metrics({bpm: heartrate});
-	}
+	}*/
+  await sleep(3000);
 	eventEmitter.emit('getLantern');
 })();
 
@@ -250,14 +251,11 @@ async function scan() {
 	});
 	timerInstance.addEventListener('targetAchieved', async function (e) {
     timerInstance.stop();
-    console.log("🚀 ~ file: index.js ~ line 262 ~ heartrate", heartrate);
 		await axios.put(`http://${IP}/api/lanterns/${lantern.data.id}`, {pulse: heartrate});
 		eventEmitter.emit('done');
 	});
 	await setState(1);
   await metrics({ message: 'Scanning...' });
-
-  console.log("🚀 ~ file: index.js ~ line 260 ~ scan ~ polarDevice", polarDevice);
   if (polarDevice === undefined || polarDevice === null) {
     polarDevice = null;
     heartrate = randomIntFromInterval(70, 90);
