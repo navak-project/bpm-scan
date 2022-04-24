@@ -173,10 +173,10 @@ eventEmitter.on('processexit', async (msg) => {
 	await setState(6);
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
-	/*if (!dontUseDevice) {
+	if (!dontUseDevice) {
 		eventEmitter.emit('disconnected');
 		await sleep(3000);
-	} else {
+	} /*else {
 		heartrate = randomIntFromInterval(70, 90);
 		await metrics({bpm: heartrate});
 	}*/
