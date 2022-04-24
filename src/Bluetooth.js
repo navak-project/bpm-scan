@@ -59,6 +59,7 @@ export async function connectToDevice() {
   await heartrate.startNotifications();
   
   console.log('Connected!');
+  eventEmitter.emit('connected');
   await metrics({ polarStatus: `Connected: ${deviceName}:${macAdresss}` });
   await metrics({ polarState: 3 });
  // await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: true });
