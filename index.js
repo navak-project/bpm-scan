@@ -46,11 +46,12 @@ client.on('message', async function (topic, message) {
 			await metrics({message: `Lantern ${lantern.data.id} offline`});
 			await metrics({lantern: null});
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
-			console.log(`Lantern ${lantern.data.id} offline`);
+			//console.log(`Lantern ${lantern.data.id} offline`);
 			client.unsubscribe(`/${lantern.data.id}/status`);
 			client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 			sleep(2000);
-			eventEmitter.emit('processexit');
+      lantern = null;
+      eventEmitter.emit('getLantern');
 		}
 	}
 
