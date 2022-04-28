@@ -12,7 +12,10 @@ let presence = false;
   //send monitoring data to server for monitor on site
 });
 gpiop.setup(4, gpiop.DIR_IN, gpiop.EDGE_BOTH, alert);*/
-
+button.read((err, value) => {
+  console.log("🚀 ~ file: presence.cjs ~ line 16 ~ button.button ~ value", value);
+  
+});
 button.watch((err, value) => {
   console.log("🚀 ~ file: presence.js ~ line 5 ~ button.watch ~ value", value);
  // eventEmitter.emit('presence/test', value);
