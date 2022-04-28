@@ -29,7 +29,14 @@ var receiver2 = dmxnet.newReceiver({
 
 
 
-const channel = ws281x(512, options);
+const channel = ws281x(512, {
+  dma: 10,
+  freq: 800000,
+  gpio: 18,
+  invert: false,
+  brightness: 255,
+  stripType: ws281x.stripType.WS2812
+});
 const colors = channel.array;
 
 	receiver.on('data', function (data) {
