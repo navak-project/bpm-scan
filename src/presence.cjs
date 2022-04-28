@@ -1,20 +1,13 @@
-//import { eventEmitter } from '../index.js'
-//const eventEmitter = require('../index.js')
-const Gpio = require('onoff').Gpio;
-//var gpiop = require('rpi-gpio').promise;
-const button = new Gpio(4, 'in', 'both');
-let presence = false;
+const { Gpio } = require('onoff');
 
+// set BCM 4 pin as 'output'
+const ledOut = new Gpio('4', 'out');
 
-/*gpiop.on('change', function (channel, value) {
-  console.log("🚀 ~ file: presence.cjs ~ line 17 ~ value", value);
-  console.log("🚀 ~ file: presence.cjs ~ line 17 ~ channel", channel);
-  //send monitoring data to server for monitor on site
-});
-gpiop.setup(4, gpiop.DIR_IN, gpiop.EDGE_BOTH, alert);*/
-const ll = button.activeLow()
-console.log("🚀 ~ file: presence.cjs ~ line 16 ~ ll", ll);
-button.watch((err, value) => {
-  console.log("🚀 ~ file: presence.js ~ line 5 ~ button.watch ~ value", value);
- // eventEmitter.emit('presence/test', value);
-});
+// current LED state
+let isLedOn = false;
+
+// run a infinite interval
+setInterval(() => {
+  ledOut.writeSync(isLedOn ? 0 : 1); // provide 1 or 0 
+  isLedOn = !isLedOn; // toggle state
+}, 3000); // 3s

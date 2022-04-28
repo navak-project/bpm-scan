@@ -101,7 +101,8 @@ eventEmitter.on('disconnected', async () => {
     polarDevice = await connectToDevice();
     eventEmitter.emit('connected');
   } catch (error) {
-    console.log("🚀 ~ file: index.js ~ line 80 ~ eventEmitter.on ~ error", error);
+    console.log("No devices found!");
+    await metrics({ message: 'No devices found' });
     return
   }
 });
@@ -124,7 +125,6 @@ eventEmitter.on('ready', async () => {
 		return;
 	}
 	await metrics({message: 'Ready to scan'});
-
 	console.log('Ready!');
 });
 
