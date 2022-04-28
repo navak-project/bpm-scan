@@ -2,7 +2,7 @@
 //const eventEmitter = require('../index.js')
 const Gpio = require('onoff').Gpio;
 //var gpiop = require('rpi-gpio').promise;
-const button = new Gpio(4, 'in', 'both');
+const button = new Gpio(4, 'out', 'both');
 let presence = false;
 
 
