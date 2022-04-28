@@ -9,6 +9,7 @@ const ledOut = new Gpio('4', 'out');
 // listen for pin voltage change
 
 switchIn.watch((err, value) => {
+  console.log("🚀 ~ file: presence.cjs ~ line 12 ~ switchIn.watch ~ value", value);
   if (err) {
     console.log('Error', err);
   }
@@ -18,7 +19,7 @@ switchIn.watch((err, value) => {
 
 const blinkLed = _ => {
  
-  detection = false;
+  //detection = false;
   setTimeout(blinkLed, 1200);
   console.log("detection: " + detection);
 };
