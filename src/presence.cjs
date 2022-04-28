@@ -5,6 +5,7 @@ const switchIn = new Gpio('17', 'in', 'both');
 const ledOut = new Gpio('4', 'out');
 // listen for pin voltage change
 switchIn.watch((err, value) => {
+  console.log("🚀 ~ file: presence.cjs ~ line 8 ~ switchIn.watch ~ value", value);
   if (err) {
     console.log('Error', err);
   }
