@@ -14,6 +14,7 @@ import {server} from './src/server.js';
 import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
 import {connectToDevice} from './src/Bluetooth.js';
+import { artnetInit } from './src/artnet.js';
 
 let lantern = null;
 let presence = false;
@@ -166,21 +167,21 @@ eventEmitter.on('processexit', async (msg) => {
 	process.exit(0);
 });
 
+
+/*------------------------------------------------------*/
+
 (async function () {
-	polarDevice = null;
+  polarDevice = null;
+  await artnetInit();
 	await metricsReset();
 	await server();
-
 	await setState(6);
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 	if (!dontUseDevice) {
 		eventEmitter.emit('disconnected');
 		await sleep(3000);
-	} /*else {
-		heartrate = randomIntFromInterval(70, 90);
-		await metrics({bpm: heartrate});
-	}*/
+	}
   await sleep(3000);
 	eventEmitter.emit('getLantern');
 })();
