@@ -13,7 +13,12 @@ switchIn.watch((err, value) => {
   if (err) {
     console.log('Error', err);
   }
-  detection = true;
+  if (value === 0) { 
+    detection = true;
+  } else {
+    detection = false;
+  }
+
   return
 });
 
