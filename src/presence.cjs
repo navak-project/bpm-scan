@@ -12,12 +12,6 @@ const blinkLed = _ => {
     if (err) {
       throw err;
     }
-
-    switchIn.write(value ^ 1, err => { // Asynchronous write
-      if (err) {
-        throw err;
-      }
-    });
   });
 
   setTimeout(blinkLed, 1200);
