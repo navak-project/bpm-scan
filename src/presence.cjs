@@ -1,14 +1,14 @@
 const { Gpio } = require('onoff');
 
-// set BCM 4 pin as 'output'
-const ledOut = new Gpio('4', 'in');
+// set BCM 17 pin as 'input'
+const switchIn = new Gpio('17', 'in', 'both');
 
-// current LED state
-let isLedOn = false;
+// listen for pin voltage change
+switchIn.watch((err, value) => {
+  if (err) {
+    console.log('Error', err);
+  }
 
-// run a infinite interval
-setInterval(() => {
-console.log("🚀 ~ file: presence.cjs ~ line 5 ~ ledOut", ledOut);
-  //ledOut.writeSync(isLedOn ? 0 : 1); // provide 1 or 0 
-  //isLedOn = !isLedOn; // toggle state
-}, 3000); // 3s
+  // log pin value (0 or 1)
+  console.log('Pin value', value);
+});
