@@ -7,7 +7,7 @@ console.log("🚀 ~ file: presence.cjs ~ line 5 ~ button", button);
 let presence = false;
 gpiop.setup(4, gpiop.DIR_OUT)
 .then(() => {
-    return gpiop.write(7, true)
+    return gpiop.write(4, true)
 })
 .catch((err) => {
     console.log('Error: ', err.toString())
