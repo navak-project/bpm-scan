@@ -15,7 +15,7 @@ import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
 import {connectToDevice} from './src/Bluetooth.js';
 import pkg from './src/artnet.cjs';
-const { artnetInit } = pkg;
+//const { artnetInit } = pkg;
 let lantern = null;
 let presence = false;
 let alluser = false;
@@ -172,7 +172,7 @@ eventEmitter.on('processexit', async (msg) => {
 
 (async function () {
   polarDevice = null;
-  await artnetInit();
+  //await artnetInit();
 	await metricsReset();
 	await server();
 	await setState(6);
