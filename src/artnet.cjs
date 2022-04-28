@@ -31,7 +31,6 @@ const options = {
 const channel = ws281x(512, options);
 const colors = channel.array;
 
-async function artnetInit() {
 	receiver.on('data', function (data) {
 		for (let i = 0; i < data.length / 3; i++) {
 			colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
@@ -47,7 +46,7 @@ async function artnetInit() {
 	setInterval(function () {
 		ws281x.render();
 	}, 1000 / 144);
-}
+
 
 function rgb2Int(r, g, b) {
 	return ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
