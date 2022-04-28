@@ -7,23 +7,23 @@ const switchIn = new Gpio('17', 'in', 'both', { debounceTimeout: 10 });
 const ledOut = new Gpio('4', 'out');
 // listen for pin voltage change
 
+switchIn.watch((err, value) => {
+  if (err) {
+    console.log('Error', err);
+  }
+  detection = true;
+  console.log("detection: " + detection);
+});
+
 const blinkLed = _ => {
   console.log(" ~ blinkLed");
+  detection = false;
   switchIn.read((err, value) => { // Asynchronous read
     console.log("🚀 ~ file: presence.cjs ~ line 13 ~ switchIn.read ~ value", value);
     if (err) {
       throw err;
     }
   });
-
   setTimeout(blinkLed, 1200);
 };
 blinkLed();
-switchIn.watch((err, value) => {
-  detection = true;
-  console.log("detection: " + detection);
-  if (err) {
-    console.log('Error', err);
-  }
-});
-detection = false;
