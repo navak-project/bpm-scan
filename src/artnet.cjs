@@ -4,7 +4,15 @@ var dmxlib = require('dmxnet');
 const ws281x = require('@gbkwiatt/node-rpi-ws281x-native');
 //import ws281x from '@gbkwiatt/node-rpi-ws281x-native';
 // Create new dmxnet instance
-var dmxnet = new dmxlib.dmxnet(options);
+
+var dmxnet = new dmxlib.dmxnet({
+  dma: 10,
+  freq: 800000,
+  gpio: 18,
+  invert: false,
+  brightness: 255,
+  stripType: ws281x.stripType.WS2812
+});
 
 // Create a new receiver instance, listening for universe 5 on net 0 subnet 0
 var receiver = dmxnet.newReceiver({
@@ -19,14 +27,7 @@ var receiver2 = dmxnet.newReceiver({
 	net: 0
 });
 
-const options = {
-	dma: 10,
-	freq: 800000,
-	gpio: 18,
-	invert: false,
-	brightness: 255,
-	stripType: ws281x.stripType.WS2812
-};
+
 
 const channel = ws281x(512, options);
 const colors = channel.array;
