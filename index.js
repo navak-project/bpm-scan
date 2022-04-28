@@ -74,6 +74,10 @@ client.on('message', async function (topic, message) {
 	}
 });
 
+eventEmitter.on('presence/test', async (data) => {
+  console.log("🚀 ~ file: index.js ~ line 77 ~ eventEmitter.on ~ data", data);
+});
+
 eventEmitter.on('connected', async () => {
   if (polarDevice === null || polarDevice === undefined) { return } 
   polarDevice.on('valuechanged', async (buffer) => {

@@ -6,6 +6,7 @@ let presence = false;
 export function getPresence() {
     button.watch((err, value) => {
       console.log("🚀 ~ file: presence.js ~ line 5 ~ button.watch ~ value", value);
+      eventEmitter.emit('presence/test', value);
     });
   
   return presence
