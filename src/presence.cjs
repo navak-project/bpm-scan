@@ -17,4 +17,5 @@ switchIn.watch((err, value) => {
     console.log('Error', err);
   }
 });
+console.log("🚀 ~ file: presence.cjs ~ line 20 ~ detection", detection);
 detection = false;
