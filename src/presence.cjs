@@ -3,7 +3,6 @@
 const Gpio = require('onoff').Gpio;
 var gpiop = require('rpi-gpio').promise;
 //const button = new Gpio(4, 'in', 'rising');
-console.log("🚀 ~ file: presence.cjs ~ line 5 ~ button", button);
 let presence = false;
 
 function alert() {
