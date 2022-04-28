@@ -1,19 +1,19 @@
-'use strict';
+
 // Load dmxnet as libary
-var dmxlib = require('../lib/dmxnet.js);');
+import { dmxnet } from '../lib/dmxnet.cjs';
 const ws281x = require('@gbkwiatt/node-rpi-ws281x-native');
 
 // Create new dmxnet instance
-var dmxnet = new dmxlib.dmxnet({});
+var dmxnetObject = new dmxnet({});
 
 // Create a new receiver instance, listening for universe 5 on net 0 subnet 0
-var receiver = dmxnet.newReceiver({
+var receiver = dmxnetObject.newReceiver({
 	subnet: 15,
 	universe: 10,
 	net: 0
 });
 
-var receiver2 = dmxnet.newReceiver({
+var receiver2 = dmxnetObject.newReceiver({
 	subnet: 15,
 	universe: 11,
 	net: 0

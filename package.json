@@ -7,7 +7,6 @@
   "scripts": {
     "test": "jest"
   },
-  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/navak-project/bpm-scan.git"
@@ -21,6 +20,7 @@
   "dependencies": {
     "babel-jest": "^27.5.1",
     "cron": "^1.8.2",
+    "dmxnet": "^0.8.0",
     "dotenv": "^10.0.0",
     "easytimer.js": "^4.5.1",
     "is-reachable": "^5.1.1",
