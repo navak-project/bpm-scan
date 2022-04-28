@@ -1,8 +1,8 @@
 
 // Load dmxnet as libary
 import { dmxnet } from '../lib/dmxnet.cjs';
-const ws281x = require('@gbkwiatt/node-rpi-ws281x-native');
-
+//const ws281x = require('@gbkwiatt/node-rpi-ws281x-native.cjs');
+import ws281x from '@gbkwiatt/node-rpi-ws281x-native.cjs';
 // Create new dmxnet instance
 var dmxnetObject = new dmxnet({});
 
