@@ -3,12 +3,14 @@ const { Gpio } = require('onoff');
 let detection = false;
 // set BCM 17 pin as 'input'
 const switchIn = new Gpio('17', 'in', 'both', { debounceTimeout: 10 });
-console.log("🚀 ~ file: presence.cjs ~ line 6 ~ switchIn", switchIn);
+
 const ledOut = new Gpio('4', 'out');
 // listen for pin voltage change
 
 const blinkLed = _ => {
+  console.log(" ~ blinkLed");
   switchIn.read((err, value) => { // Asynchronous read
+    console.log("🚀 ~ file: presence.cjs ~ line 13 ~ switchIn.read ~ value", value);
     if (err) {
       throw err;
     }
