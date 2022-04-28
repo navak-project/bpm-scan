@@ -1,7 +1,7 @@
 const { Gpio } = require('onoff');
 
 // set BCM 17 pin as 'input'
-const switchIn = new Gpio('17', 'in', 'rising', { debounceTimeout: 10 });
+const switchIn = new Gpio('17', 'in', 'falling', { debounceTimeout: 10 });
 const ledOut = new Gpio('4', 'out');
 // listen for pin voltage change
 switchIn.read()
