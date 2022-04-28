@@ -1,7 +1,7 @@
 //import { eventEmitter } from '../index.js'
 //const eventEmitter = require('../index.js')
 const Gpio = require('onoff').Gpio;
-const button = new Gpio(4, 'in', 'rising', { debounceTimeout: 10 });
+const button = new Gpio(4, 'in', 'rising');
 console.log("🚀 ~ file: presence.cjs ~ line 5 ~ button", button);
 let presence = false;
 console.log("🚀 ~ file: presence.cjs ~ line 6 ~ presence", presence);
