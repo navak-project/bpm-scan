@@ -15,6 +15,7 @@ import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
 import {connectToDevice} from './src/Bluetooth.js';
 import pkg from './src/artnet.cjs';
+import tt from './src/presence.cjs';
 //const { artnetInit } = pkg;
 let lantern = null;
 let presence = false;
