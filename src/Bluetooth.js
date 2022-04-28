@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import axios from 'axios';
 import { eventEmitter } from '../index.js'
-const { ID, IP,  MACADDRESS } = process.env;
+const { MACADDRESS } = process.env;
 import {createBluetooth} from 'node-ble';
 
 const {bluetooth, destroy} = createBluetooth();
