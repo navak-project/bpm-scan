@@ -1,10 +1,9 @@
 import 'dotenv/config';
-import axios from 'axios';
 import { eventEmitter } from '../index.js'
-const { ID, IP,  MACADDRESS } = process.env;
+const { MACADDRESS } = process.env;
 import {createBluetooth} from 'node-ble';
 
-const {bluetooth, destroy} = createBluetooth();
+const {bluetooth} = createBluetooth();
 
 import {metrics} from './metrics.js';
 
@@ -30,7 +29,7 @@ export async function connectToDevice() {
 			console.log(err);
       await metrics({ polarStatus: 'No device' });
       await metrics({ polarState: 4 });
-			eventEmitter.emit('disconnected');
+      eventEmitter.emit('setDevice');
 			return;
 		}
 	});
@@ -48,7 +47,7 @@ export async function connectToDevice() {
   } catch (err) {
     console.log('Device:', err.text);
     await metrics({ polarStatus: err.text});
-		eventEmitter.emit('disconnected');
+    eventEmitter.emit('setDevice');
 		return;
 	}
 
@@ -59,13 +58,13 @@ export async function connectToDevice() {
   
   console.log('Connected!');
   eventEmitter.emit('connected');
-  await metrics({ polarStatus: `Connected: ${deviceName}:${macAdresss}` });
+  await metrics({ polarStatus: `Connected: ${deviceName} : ${macAdresss}` });
   await metrics({ polarState: 3 });
  // await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: true });
 
   device.on('disconnect', async function () {
   //  await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: false });
-    eventEmitter.emit('disconnected');
+    eventEmitter.emit('setDevice');
     await heartrate.stopNotifications();
   });
 	return heartrate;

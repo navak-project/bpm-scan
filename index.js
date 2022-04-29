@@ -15,16 +15,15 @@ import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
 import {connectToDevice} from './src/Bluetooth.js';
 import pkg from './src/artnet.cjs';
+import tt from './src/presence.cjs';
 //const { artnetInit } = pkg;
 let lantern = null;
 let presence = false;
 let alluser = false;
 let heartrate = 0;
 let polarDevice = null;
-let disconnected = false;
 const timerScan = 15;
 const {ID, GROUP, IP} = process.env;
-
 const dontUseDevice = false;
 
 client.on('error', function (err) {
@@ -90,13 +89,14 @@ eventEmitter.on('connected', async () => {
   });
 });
 
-eventEmitter.on('disconnected', async () => {
+eventEmitter.on('setDevice', async () => {
   await sleep(3000);
   try {
     polarDevice = await connectToDevice();
     eventEmitter.emit('connected');
   } catch (error) {
-    console.log("🚀 ~ file: index.js ~ line 80 ~ eventEmitter.on ~ error", error);
+    console.log("No devices found!");
+    await metrics({ message: 'No devices found' });
     return
   }
 });
@@ -119,7 +119,6 @@ eventEmitter.on('ready', async () => {
 		return;
 	}
 	await metrics({message: 'Ready to scan'});
-
 	console.log('Ready!');
 });
 
@@ -172,14 +171,13 @@ eventEmitter.on('processexit', async (msg) => {
 
 (async function () {
   polarDevice = null;
-  //await artnetInit();
 	await metricsReset();
 	await server();
 	await setState(6);
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 	if (!dontUseDevice) {
-		eventEmitter.emit('disconnected');
+		eventEmitter.emit('setDevice');
 		await sleep(3000);
 	}
   await sleep(3000);
@@ -218,7 +216,6 @@ async function done() {
 	await metrics({timer: `00:00:${timerScan}`});
 	await setState(9); //remove from touch
 	await sleep(18000);
-	//await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255'});
 	eventEmitter.emit('getLantern');
 }
 
@@ -275,7 +272,6 @@ function sleep(ms) {
 }
 
 function randomIntFromInterval(min, max) {
-	// min and max included
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
