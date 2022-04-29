@@ -94,7 +94,8 @@ eventEmitter.on('setDevice', async () => {
     eventEmitter.emit('connected');
   } catch (error) {
     console.log("No devices found!");
-    await metrics({ message: 'No devices found' });
+    await metrics({ polarStatus: 'No device' });
+    await metrics({ polarState: 4 });
     return
   }
 });
