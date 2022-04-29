@@ -22,10 +22,8 @@ let presence = false;
 let alluser = false;
 let heartrate = 0;
 let polarDevice = null;
-let disconnected = false;
 const timerScan = 15;
 const {ID, GROUP, IP} = process.env;
-
 const dontUseDevice = false;
 
 client.on('error', function (err) {
@@ -75,10 +73,6 @@ client.on('message', async function (topic, message) {
 	}
 });
 
-eventEmitter.on('presence/test', async (data) => {
-  console.log("🚀 ~ file: index.js ~ line 77 ~ eventEmitter.on ~ data", data);
-});
-
 eventEmitter.on('connected', async () => {
   if (polarDevice === null || polarDevice === undefined) { return } 
   polarDevice.on('valuechanged', async (buffer) => {
@@ -95,7 +89,7 @@ eventEmitter.on('connected', async () => {
   });
 });
 
-eventEmitter.on('disconnected', async () => {
+eventEmitter.on('setDevice', async () => {
   await sleep(3000);
   try {
     polarDevice = await connectToDevice();
@@ -177,14 +171,13 @@ eventEmitter.on('processexit', async (msg) => {
 
 (async function () {
   polarDevice = null;
-  //await artnetInit();
 	await metricsReset();
 	await server();
 	await setState(6);
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 	if (!dontUseDevice) {
-		eventEmitter.emit('disconnected');
+		eventEmitter.emit('setDevice');
 		await sleep(3000);
 	}
   await sleep(3000);
@@ -223,7 +216,6 @@ async function done() {
 	await metrics({timer: `00:00:${timerScan}`});
 	await setState(9); //remove from touch
 	await sleep(18000);
-	//await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255'});
 	eventEmitter.emit('getLantern');
 }
 
