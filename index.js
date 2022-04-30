@@ -57,6 +57,7 @@ client.on('message', async function (topic, message) {
 		let buff = message.toString();
 		let value = JSON.parse(buff);
 		presence = JSON.parse(value.presence.toLowerCase());
+    console.log("🚀 ~ file: index.js ~ line 60 ~ presence", presence);
 		await metrics({presence: presence});
 		switch (presence) {
 			case true:

@@ -5,7 +5,7 @@ const {MQTTIP, ID} = process.env;
 export function clientConnect() {
 	let client;
 	try {
-		const host = MQTTIP;
+		const host = '127.0.0.1';
 		const port = '1883';
 		client = mqtt.connect(`mqtt://${host}:${port}`);
     client.on('connect', function () {
