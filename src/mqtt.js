@@ -18,5 +18,5 @@ export function clientConnect() {
 	} catch (err) {
 		console.log('🚀 ~ file: mqtt.js ~ line 39 ~ returnnewpromise ~ err', err);
 	}
-	return {client};
+	return client;
 }
