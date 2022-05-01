@@ -14,7 +14,7 @@ export function server() {
 
 			server.listen(5000);
 			resolve('Server running');
-			console.log('Node.js web server at port 5000 is running..');
+      console.log('⌨️ ~ Node.js web server at port 5000 is running..');
 		} catch (e) {
 			reject(e);
 		}

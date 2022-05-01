@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "watch": "nodemon index.js",
     "test": "jest"
   },
   "repository": {
@@ -18,6 +19,7 @@
   },
   "homepage": "https://github.com/navak-project/bpm-scan#readme",
   "dependencies": {
+    "@gbkwiatt/node-rpi-ws281x-native": "^1.0.1",
     "babel-jest": "^27.5.1",
     "cron": "^1.8.2",
     "dmxnet": "^0.8.0",
@@ -26,6 +28,7 @@
     "is-reachable": "^5.1.1",
     "mqtt": "^4.2.8",
     "node-ble": "^1.7.0",
+    "nodemon": "^2.0.16",
     "pm2": "^5.1.2",
     "ts-jest": "^27.1.4"
   },

@@ -6,8 +6,7 @@ import {metrics, metricsReset} from './src/metrics.js';
 import {setState, getState} from './src/states.js';
 import axios from 'axios';
 import {clientConnect} from './src/mqtt.js';
-const client = clientConnect();
-console.log("🚀 ~ file: index.js ~ line 10 ~ client", client);
+let client = clientConnect();
 import isReachable from 'is-reachable';
 import {Timer} from 'easytimer.js';
 const timerInstance = new Timer();
@@ -22,7 +21,7 @@ let alluser = false;
 let heartrate = 0;
 let polarDevice = null;
 const timerScan = 15;
-const {ID, GROUP, IP} = process.env;
+const {ID, GROUP, IP, MQTTIP} = process.env;
 const dontUseDevice = false;
 
 client.on('error', function (err) {
@@ -30,7 +29,7 @@ client.on('error', function (err) {
 });
 
 client.on('message', async function (topic, message) {
-	console.log('🚀 ~ file: index.js ~ line 37 ~ topic', topic);
+	console.log(topic);
 	let state = await getState();
 	if (state.name === 'boot') {
 		return;
@@ -45,7 +44,6 @@ client.on('message', async function (topic, message) {
 			await metrics({message: `Lantern ${lantern.data.id} offline`});
 			await metrics({lantern: null});
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
-			//console.log(`Lantern ${lantern.data.id} offline`);
 			client.unsubscribe(`/${lantern.data.id}/status`);
 			client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 			sleep(2000);
@@ -78,7 +76,6 @@ eventEmitter.on('connected', async () => {
   polarDevice.on('valuechanged', async (buffer) => {
     let json = JSON.stringify(buffer);
     let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
-    console.log("bpm:", deviceHeartrate);
     if (deviceHeartrate < 30 || deviceHeartrate > 180) {
       heartrate = randomIntFromInterval(70, 90);
       await metrics({bpm: heartrate});

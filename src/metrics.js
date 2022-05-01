@@ -6,7 +6,6 @@ export async function metrics(value) {
     await axios
       .put(`http://${IP}/api/stations/${ID}`, value)
       .then(() => {
-      console.log("🚀 ~ file: metrics.js ~ line 8 ~ returnnewPromise ~ value", value);
         resolve();
       })
       .catch((err) => {
