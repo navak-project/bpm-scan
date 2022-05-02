@@ -10,8 +10,8 @@ export function clientConnect() {
     Bclient = mqtt.connect(`mqtt://${host}:${port}`);
     Bclient.on('connect', function () {
       console.log(`🚀 ~ Connected to MQTT broker: mqtt://${host}:${port}`);
-      Bclient.subscribe(`/station/+/presence`);
-      Bclient.subscribe(`/station/+/reboot`);
+      Bclient.subscribe(`/station/${ID}/presence`);
+      Bclient.subscribe(`/station/${ID}/reboot`);
     });
     Bclient.on('message', function (topic, payload) {
       console.log(topic)
