@@ -6,7 +6,7 @@ import {metrics, metricsReset} from './src/metrics.js';
 import {setState, getState} from './src/states.js';
 import axios from 'axios';
 import {clientConnect} from './src/mqtt.js';
-let client = clientConnect();
+
 import isReachable from 'is-reachable';
 import {Timer} from 'easytimer.js';
 const timerInstance = new Timer();
@@ -15,6 +15,8 @@ import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
 import {connectToDevice} from './src/Bluetooth.js';
 import './src/artnet.cjs';
+
+const client = await clientConnect();
 let lantern = null;
 let presence = false;
 let alluser = false;
@@ -169,8 +171,8 @@ eventEmitter.on('processexit', async (msg) => {
 
 (async function () {
   polarDevice = null;
+  await server();
 	await metricsReset();
-	await server();
 	await setState(6);
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });

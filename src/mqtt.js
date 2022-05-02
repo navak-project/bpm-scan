@@ -2,7 +2,7 @@ import 'dotenv/config';
 import mqtt from 'mqtt';
 const {MQTTIP, ID} = process.env;
 
-export function clientConnect() {
+export async function clientConnect() {
 	let client;
 	try {
     const host = MQTTIP;
@@ -10,8 +10,8 @@ export function clientConnect() {
     client = mqtt.connect(`mqtt://${host}:${port}`);
     client.on('connect', function () {
       console.log(`🚀 ~ Connected to MQTT broker: mqtt://${host}:${port}`);
-      client.subscribe(`/station/${ID}/presence`);
-      client.subscribe(`/station/${ID}/reboot`);
+      await client.subscribe(`/station/${ID}/presence`);
+      await client.subscribe(`/station/${ID}/reboot`);
     });
     client.on('message', function (topic, payload) {
       console.log(topic)
