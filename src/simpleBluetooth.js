@@ -1,7 +1,7 @@
 import { createBluetooth } from 'node-ble';
 const { bluetooth } = createBluetooth();
 
-
+connectToDevice();
 export async function connectToDevice() {
   const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
     if (err) {
