@@ -1,37 +1,28 @@
-"use strict";
+var ads1x15 = require('node-ads1x15');
+var chip = 0; //0 for ads1015, 1 for ads1115  
 
-const Raspi = require('raspi');
-const I2C = require('raspi-i2c').I2C;
-const ADS1x15 = require('raspi-kit-ads1x15');
+//Simple usage (default ADS address on pi 2b or 3):
+var adc = new ads1x15(chip);
 
-// Init Raspi
-Raspi.init(() => {
+// Optionally i2c address as (chip, address) or (chip, address, i2c_dev)
+// So to use  /dev/i2c-0 use the line below instead...:
 
-  // Init Raspi-I2c
-  const i2c = new I2C();
+//    var adc = new ads1x15(chip, 0x48, 'dev/i2c-0');
 
-  // Init the ADC
-  const adc = new ADS1x15({
-    i2c,                                    // i2c interface
-    chip: ADS1x15.chips.IC_ADS1015,         // chip model
-    address: ADS1x15.address.ADDRESS_0x48,  // i2c address on the bus
+var channel = 0; //channel 0, 1, 2, or 3...  
+var samplesPerSecond = '250'; // see index.js for allowed values for your chip  
+var progGainAmp = '4096'; // see index.js for allowed values for your chip  
 
-    // Defaults for future readings
-    pga: ADS1x15.pga.PGA_4_096V,            // power-gain-amplifier range
-    sps: ADS1x15.spsADS1015.SPS_250         // data rate (samples per second)
-  });
-
-  // Get a single-ended reading from channel-0 and display the results
-  adc.readChannel(ADS1x15.channel.CHANNEL_0, (err, value, volts) => {
+//somewhere to store our reading   
+var reading = 0;
+if (!adc.busy) {
+  adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function (err, data) {
     if (err) {
-      console.error('Failed to fetch value from ADC', err);
-      process.exit(1);
-    } else {
-      console.log('Channel 0');
-      console.log(' * Value:', value);    // will be a 11 or 15 bit integer depending on chip
-      console.log(' * Volts:', volts);    // voltage reading factoring in the PGA
-      process.exit(0);
+      //logging / troubleshooting code goes here...  
+      throw err;
     }
-  });
-
-});
+    // if you made it here, then the data object contains your reading!  
+    reading = data;
+    // any other data processing code goes here...  
+  );
+}  
