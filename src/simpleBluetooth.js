@@ -9,11 +9,12 @@ export async function connectToDevice() {
     }
   });
 
-  console.log('Discovering device...');
 
   if (!(await adapter.isDiscovering())) {
     await adapter.startDiscovery();
   }
+
+  console.log('Discovering device...');
 
   const device = await adapter.waitDevice('34:94:54:39:18:A6').catch(async (err) => {
     if (err) {
