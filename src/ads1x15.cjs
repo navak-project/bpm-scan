@@ -22,16 +22,16 @@ Raspi.init(() => {
   });
 
   // Get a single-ended reading from channel-0 and display the results
-
+  setInterval(() => {
   adc.readChannel(ADS1x15.channel.CHANNEL_0, (err, value, volts) => {
     if (err) {
       console.error('Failed to fetch value from ADC', err);
      // process.exit(1);
     } else {
       console.log('Channel 0');
-      console.log(' * Value:', value);    // will be a 11 or 15 bit integer depending on chip
-     process.exit(0);
+      console.log(' * volts:', volts);    // will be a 11 or 15 bit integer depending on chip
+     // process.exit(0);
     }
   });
-
+  }, 200);
 });
