@@ -22,12 +22,9 @@ export async function connectToDevice() {
       return;
     }
   });
-  console.log("🚀 ~ file: simpleBluetooth.js ~ line 25 ~ connectToDevice ~ device", device);
-  return
+
   const macAdresss = await device.getAddress();
   const deviceName = await device.getName();
-
-
 
   try {
     console.log('Device:', macAdresss, deviceName);
