@@ -47,7 +47,7 @@ export async function connectToDevice() {
   });
 
   device.on('disconnect', async function () {
-    console.log("🚀 ~ file: simpleBluetooth.js ~ line 52 ~ disconnect", disconnect);
+    console.log("🚀 ~ file: simpleBluetooth.js ~ line 52 ~ disconnect");
   });
   return heartrate;
 }
