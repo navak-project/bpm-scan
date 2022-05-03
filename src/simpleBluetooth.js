@@ -40,10 +40,14 @@ export async function connectToDevice() {
   await heartrate.startNotifications();
 
   console.log('Connected!');
+  heartrate.on('valuechanged', async (buffer) => {
+    let json = JSON.stringify(buffer);
+    let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
+    console.log("🚀 ~ file: simpleBluetooth.js ~ line 46 ~ heartrate.on ~ deviceHeartrate", deviceHeartrate);
+  });
 
   device.on('disconnect', async function () {
-    //  await axios.put(`http://${IP}/api/stations/${ID}`, { polarStatus: false });
+    console.log("🚀 ~ file: simpleBluetooth.js ~ line 52 ~ disconnect", disconnect);
   });
-    console.log("🚀 ~ file: simpleBluetooth.js ~ line 48 ~ disconnect");
   return heartrate;
 }
