@@ -1,38 +1,7 @@
-var i2c = require('@abandonware/i2c');
-var address = 0x18;
-var wire = new i2c(address, { device: '/dev/i2c-1' }); // point to your i2c address, debug provides REPL interface
+import { init } from 'raspi';
+import { I2C } from 'raspi-i2c';
 
-wire.scan(function (err, data) {
-  console.log("🚀 ~ file: ads1x15.cjs ~ line 6 ~ data", data);
-  // result contains an array of addresses
+init(() => {
+  const i2c = new I2C();
+  console.log(i2c.readByteSync(0x18)); // Read one byte from the device at address 18
 });
-
-wire.writeByte(byte, function (err) { });
-
-wire.writeBytes(command, [byte0, byte1], function (err) { });
-
-wire.readByte(function (err, res) { 
-console.log("🚀 ~ file: ads1x15.cjs ~ line 15 ~ res", res);
-  
-})
-
-  wire.readBytes(command, length, function (err, res) {
-    // result contains a buffer of bytes
-  });
-
-wire.on('data', function (data) {
-    console.log("🚀 ~ file: ads1x15.cjs ~ line 26 ~ data", data);
-
-    // result for continuous stream contains data buffer, address, length, timestamp
-  });
-
-  wire.stream(command, length, delay); // continuous stream, delay in ms
-
-
-  // plain read/write
-
-  wire.write([byte0, byte1], function (err) { });
-
-  wire.read(length, function (err, res) {
-    // result contains a buffer of bytes
-  });
