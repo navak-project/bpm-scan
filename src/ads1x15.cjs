@@ -22,9 +22,7 @@ Raspi.init(() => {
   });
 
   // Get a single-ended reading from channel-0 and display the results
-  setInterval(() => {
-    
- 
+  //setInterval(() => {
   adc.readChannel(ADS1x15.channel.CHANNEL_0, (err, value, volts) => {
     if (err) {
       console.error('Failed to fetch value from ADC', err);
@@ -33,8 +31,8 @@ Raspi.init(() => {
       console.log('Channel 0');
       console.log(' * Value:', value);    // will be a 11 or 15 bit integer depending on chip
       console.log(' * Volts:', volts);    // voltage reading factoring in the PGA
-     // process.exit(0);
+      process.exit(0);
     }
   });
-  }, 1000);
+ // }, 1000);
 });
