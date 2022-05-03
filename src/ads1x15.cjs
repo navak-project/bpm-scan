@@ -30,7 +30,7 @@ Raspi.init(() => {
       console.log('Channel 0');
       console.log(' * Value:', value);    // will be a 11 or 15 bit integer depending on chip
       console.log(' * Volts:', volts);    // voltage reading factoring in the PGA
-      process.exit(0);
+     // process.exit(0);
     }
   });
 
