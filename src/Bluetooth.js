@@ -24,7 +24,7 @@ export async function connectToDevice() {
 		await adapter.startDiscovery();
   }
 
-	const device = await adapter.waitDevice('MACADDRESS').catch(async (err) => {
+	const device = await adapter.waitDevice(MACADDRESS).catch(async (err) => {
 		if (err) {
 			console.log(err);
       await metrics({ polarStatus: 'No device' });
