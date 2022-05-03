@@ -17,8 +17,8 @@ Raspi.init(() => {
     address: ADS1x15.address.ADDRESS_0x48,  // i2c address on the bus
 
     // Defaults for future readings
-    pga: ADS1x15.pga.PGA_4_096V,            // power-gain-amplifier range
-    sps: ADS1x15.spsADS1015.SPS_250         // data rate (samples per second)
+    pga: ADS1x15.pga.PGA_6_144V,            // power-gain-amplifier range
+    sps: ADS1x15.spsADS1015.SPS_1600         // data rate (samples per second)
   });
 
   // Get a single-ended reading from channel-0 and display the results
