@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
-import { setState, getState } from './src/states.js';
-import { metrics } from './src/metrics.js';
+import { setState, getState } from './states.js';
+import { metrics } from './metrics.js';
 
 eventEmitter.on('test', async () => {
 	console.log('🚀 ~ file: events.js ~ line 6 ~ eventEmitter.on ~ test');
