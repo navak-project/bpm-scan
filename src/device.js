@@ -13,8 +13,14 @@ export class ConnectionToDevice {
 		this.gattService = gattService;
 		this.gattService = gattService;
 		this.gattCharacteristic = gattCharacteristic;
-		this._device = null;
+    this._device = null;
+    this._gattServer = null;
 	}
+
+
+  get gattServer() {
+    return this._gattServer;
+  }
 
 	get device() {
     return this._device;
@@ -82,6 +88,7 @@ export class ConnectionToDevice {
 		});
 
 		// assign _self to the class in order to read it in the future
+    this._gattServer = device;
     this._device = _self;
 	}
 }
