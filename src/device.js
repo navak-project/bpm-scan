@@ -86,7 +86,7 @@ export class ConnectionToDevice {
     
     device.on('disconnect', async function () {
       await _self.stopNotifications();
-      _device.device = null;
+      this.device = null;
       eventEmitter.emit(this.resetEmitter);
       console.log('Disconnect!');
     });

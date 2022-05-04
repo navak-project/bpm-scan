@@ -79,9 +79,9 @@ client.on('message', async function (topic, message) {
 });
 
 eventEmitter.on('connected', async () => {
- /* if (polar.device === null) {
+  if (polar.device === null) {
     return;
-  }*/
+  }
   //_GATTSERVER =   await polar.gattServer;
   _POLARDEVICE = await polar.device;
 
