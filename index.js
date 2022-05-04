@@ -84,6 +84,8 @@ eventEmitter.on('connected', async () => {
   _POLARDEVICE = await polar.device;
 
   _POLARDEVICE.on('disconnect', async function () {
+    await polar.device.stopNotifications();
+    polar.device = null;
     eventEmitter.emit('connectToPolar');
     console.log('Disconnect!');
   });

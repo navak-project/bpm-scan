@@ -18,7 +18,11 @@ export class ConnectionToDevice {
 
 	get device() {
     return this._device;
-	}
+  }
+  
+  set device(value) {
+    this._device = value;
+  }
   
 
 	async connect() {
@@ -73,8 +77,8 @@ export class ConnectionToDevice {
 		await metrics({[this.metricsState]: 3});
 
 		device.on('disconnect', async function () {
-      await _self.stopNotifications();
-      this._device = null;
+     // await _self.stopNotifications();
+      //this._device = null;
 		});
 
 		// assign _self to the class in order to read it in the future
