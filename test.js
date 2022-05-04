@@ -1,7 +1,6 @@
 import { createBluetooth } from 'node-ble';
 const { bluetooth } = createBluetooth();
 import { metrics } from './src/metrics.js';
-import { eventEmitter } from './src/events.js'
 import { ConnectionToDevice } from './src/device.js';
 
 const polar = new ConnectionToDevice(
@@ -38,6 +37,12 @@ async function coTest() {
   await polar.connect();
   const POLAR = polar.device
   console.log("🚀 ~ file: test.js ~ line 40 ~ coTest ~ POLAR", POLAR);
+
+  POLAR.on('valuechanged', async (buffer) => {
+    let json = JSON.stringify(buffer);
+    let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
+    console.log("🚀 ~ file: test.js ~ line 44 ~ POLAR.on ~ deviceHeartrate", deviceHeartrate);
+  });
 
   await esp32.connect();
   const ESP32 = polar.device
