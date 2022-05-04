@@ -70,7 +70,7 @@ client.on('message', async function (topic, message) {
 		}
 	}
 
-	/*if (topic === `/station/${ID}/presence`) {
+	if (topic === `/station/${ID}/presence`) {
 		let buff = message.toString();
 		let value = JSON.parse(buff);
 		presence = JSON.parse(value.presence.toLowerCase());
@@ -86,7 +86,7 @@ client.on('message', async function (topic, message) {
 			default:
 				break;
 		}
-	}*/
+	}
 });
 
 eventEmitter.on('connected', async () => {
@@ -245,8 +245,37 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 
-  eventEmitter.emit('connectToPresence');
+  //eventEmitter.emit('connectToPresence');
   //eventEmitter.emit('connectToPolar');
+
+  try {
+    await presenceDevice.connect();
+    if (presenceDevice.device === null) {
+      return;
+    }
+    _PRESENCEDEVICE = await polar.device;
+    _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
+      let json = JSON.stringify(buffer);
+      let deviceValue = Math.max.apply(null, JSON.parse(json).data);
+      if (deviceValue < 38) {
+        presence = true;
+        eventEmitter.emit('presence/true');
+      }
+      if (deviceValue < 45) {
+        presence = false;
+        eventEmitter.emit('presence/false');
+      }
+
+    });
+  } catch (error) {
+    console.log("🚀 ~ file: events.js ~ line 33 ~ eventEmitter.on ~ error", error);
+    // console.log('No devices found!');
+    // await metrics({polarStatus: 'No device'});
+    // await metrics({polarState: 4});
+    return;
+  }
+
+
   
   await sleep(3000);
 	eventEmitter.emit('getLantern');
