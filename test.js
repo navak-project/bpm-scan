@@ -17,6 +17,7 @@ await connectToDevice(
   '0000180d-0000-1000-8000-00805f9b34fb',
   '00002a37-0000-1000-8000-00805f9b34fb');
 async function connectToDevice(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
+  eventEmitter.emit('test');
   const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
     if (err) {
       await metrics({ [metricsStatus]: 'No bluetooth adapter' });
