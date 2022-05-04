@@ -1,6 +1,7 @@
 import { createBluetooth } from 'node-ble';
 const { bluetooth } = createBluetooth();
-async function POLAR(deviceToConnect, metricsStatus, metricsState) {
+test('34:94:54:39:18:A6')
+async function test(deviceToConnect, metricsStatus, metricsState) {
   const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
     if (err) {
       throw err;
