@@ -116,7 +116,7 @@ eventEmitter.on('connectToPresence', async () => {
     if (presenceDevice.device === null) {
       return;
     }
-    _PRESENCEDEVICE = await polar.device;
+    _PRESENCEDEVICE = await presenceDevice.device;
     _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
       let json = JSON.stringify(buffer);
       let deviceValue = Math.max.apply(null, JSON.parse(json).data);
