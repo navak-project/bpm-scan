@@ -5,29 +5,31 @@ import { eventEmitter } from './src/events.js'
 import { Polar } from './src/devices/polar.js';
 
 
-await connectToDevice(
-  '34:94:54:39:18:A6',
-  'presenceStatus',
-  'presenceState',
-  '4fafc201-1fb5-459e-8fcc-c5c9c331914b',
-  'beb5483e-36e1-4688-b7f5-ea07361b26a8'
-);
-await connectToDevice(
-  'A0:9E:1A:9F:0E:B4',
-  'polarStatus',
-  'polarState',
-  '0000180d-0000-1000-8000-00805f9b34fb',
-  '00002a37-0000-1000-8000-00805f9b34fb');
-
-async function connectToDevice(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
+// await connectToDevice(
+//   '34:94:54:39:18:A6',
+//   'presenceStatus',
+//   'presenceState',
+//   '4fafc201-1fb5-459e-8fcc-c5c9c331914b',
+//   'beb5483e-36e1-4688-b7f5-ea07361b26a8'
+// );
+// await connectToDevice(
+//   'A0:9E:1A:9F:0E:B4',
+//   'polarStatus',
+//   'polarState',
+//   '0000180d-0000-1000-8000-00805f9b34fb',
+//   '00002a37-0000-1000-8000-00805f9b34fb');
+async function coTest() {
   const polar = new Polar('A0:9E:1A:9F:0E:B4',
   'polarStatus',
   'polarState',
   '0000180d-0000-1000-8000-00805f9b34fb',
   '00002a37-0000-1000-8000-00805f9b34fb')
-  polar.connect();
+  await polar.connect();
   console.log("🚀 ~ file: test.js ~ line 29 ~ connectToDevice ~ polar", polar);
-  eventEmitter.emit('test');
+}
+coTest();
+async function connectToDevice(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
+
   return
   const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
     if (err) {
