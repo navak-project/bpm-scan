@@ -29,5 +29,6 @@ async function POLAR(deviceToConnect, metricsStatus, metricsState) {
     console.log('Device:', err.text);
     return;
   }
+  console.log('Connected!')
 }
 
