@@ -13,7 +13,7 @@ const timerInstance = new Timer();
 import {server} from './src/server.js';
 import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
-import {connectToDevice} from './src/Bluetooth.js';
+import {connectToDevice} from './src/bluethoothDevice.js';
 import './src/artnet.cjs';
 
 const client = await clientConnect();

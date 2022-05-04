@@ -1,37 +1,33 @@
-import axios from 'axios';
-async function getStations() {
-  return new Promise(async (resolve, reject) => {
-    await axios
-      .get(`http://192.168.1.209:8081/api/stations/`)
-      .then((val) => {
-        resolve(val.data);
-      })
-      .catch((err) => {
-        reject(err);
-      });
+import { createBluetooth } from 'node-ble';
+const { bluetooth } = createBluetooth();
+async function POLAR(deviceToConnect, metricsStatus, metricsState) {
+  const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
+    if (err) {
+      throw err;
+    }
   });
-}
 
-async function checkUsers() {
-  return new Promise(async (resolve, reject) => {
-    let arr = await getStations();
-    var isAllTrue = Object.keys(arr).every(function (key) {
-      if (arr[key].presence === true && arr[key].lantern != null)
-        return true;
-    });
-    alluser = isAllTrue;
-    resolve(alluser);
-  }).catch((err) => {
-    reject(err);
+  if (!(await adapter.isDiscovering())) {
+    await adapter.startDiscovery();
+  }
+  console.log('Discovering device...');
+
+  const device = await adapter.waitDevice(deviceToConnect).catch(async (err) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
   });
+
+  const macAdresss = await device.getAddress();
+  const deviceName = await device.getName();
+
+  try {
+    console.log('Device:', macAdresss, deviceName);
+    await device.connect();
+  } catch (err) {
+    console.log('Device:', err.text);
+    return;
+  }
 }
 
-
-let alluser = false;
-
-(function () {
-
-})
-while (!alluser) {
-  await checkUsers();
-}
