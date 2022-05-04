@@ -11,7 +11,7 @@ export class Polar {
     this.gattService = gattService;
     this.gattService = gattService;
     this.gattCharacteristic = gattCharacteristic;
-
+    this._self = null;
   }
 
   set device(val) {
@@ -78,8 +78,7 @@ export class Polar {
         await _self.stopNotifications();
       });
     
-    // assign _self to the class variable in order to use it in the class methods
-
+    // assign _self to the class in order to read it in the future
     this._self = _self;
     
     // return _self;;
