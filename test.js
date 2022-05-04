@@ -37,6 +37,7 @@ async function coTest() {
 
   await polar.connect();
   const POLAR = polar.device
+  console.log("🚀 ~ file: test.js ~ line 40 ~ coTest ~ POLAR", POLAR);
 
   await esp32.connect();
   const ESP32 = polar.device
