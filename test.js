@@ -2,9 +2,23 @@ import { createBluetooth } from 'node-ble';
 const { bluetooth } = createBluetooth();
 import { metrics } from './src/metrics.js';
 import { eventEmitter } from './src/events.js'
-import { Polar } from './src/devices/polar.js';
+import { ConnectionToDevice } from './src/device.js';
 
+const polar = new ConnectionToDevice(
+  'A0:9E:1A:9F:0E:B4',
+  'polarStatus',
+  'polarState',
+  '0000180d-0000-1000-8000-00805f9b34fb',
+  '00002a37-0000-1000-8000-00805f9b34fb'
+)
 
+const esp32 = new ConnectionToDevice(
+  '34:94:54:39:18:A6',
+  'presenceStatus',
+  'presenceState',
+  '4fafc201-1fb5-459e-8fcc-c5c9c331914b',
+  'beb5483e-36e1-4688-b7f5-ea07361b26a8'
+)
 // await connectToDevice(
 //   '34:94:54:39:18:A6',
 //   'presenceStatus',
@@ -19,14 +33,11 @@ import { Polar } from './src/devices/polar.js';
 //   '0000180d-0000-1000-8000-00805f9b34fb',
 //   '00002a37-0000-1000-8000-00805f9b34fb');
 async function coTest() {
-  const polar = await new Polar('A0:9E:1A:9F:0E:B4',
-  'polarStatus',
-  'polarState',
-  '0000180d-0000-1000-8000-00805f9b34fb',
-    '00002a37-0000-1000-8000-00805f9b34fb')
   await polar.connect();
-  console.log('polar', polar.device);
-  console.log("🚀 ~ file: test.js ~ line 29 ~ coTest ~ polar", polar);
+  const POLAR = polar.device
+
+  await esp32.connect();
+  const ESP32 = polar.device
 }
 coTest();
 async function connectToDevice(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
