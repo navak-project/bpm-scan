@@ -25,10 +25,10 @@ const polar = new ConnectionToDevice(
   'polarStatus',
   'polarState',
   '0000180d-0000-1000-8000-00805f9b34fb',
-  '00002a37-0000-1000-8000-00805f9b34fb'
+  '00002a37-0000-1000-8000-00805f9b34fb',
+  'connectToPolar'
 );
 let _POLARDEVICE = null;
-let _GATTSERVER = null;
 const timerScan = 15;
 const {ID, GROUP, IP} = process.env;
 
@@ -82,15 +82,15 @@ eventEmitter.on('connected', async () => {
  /* if (polar.device === null) {
     return;
   }*/
-  _GATTSERVER =   await polar.gattServer;
+  //_GATTSERVER =   await polar.gattServer;
   _POLARDEVICE = await polar.device;
 
-  _GATTSERVER.on('disconnect', async function () {
-    await polar.device.stopNotifications();
-    polar.device = null;
-    eventEmitter.emit('connectToPolar');
-    console.log('Disconnect!');
-  });
+  // _POLARDEVICE.on('disconnect', async function () {
+  //   await polar.device.stopNotifications();
+  //   polar.device = null;
+  //   eventEmitter.emit('connectToPolar');
+  //   console.log('Disconnect!');
+  // });
 
   _POLARDEVICE.on('valuechanged', async (buffer) => {
     let json = JSON.stringify(buffer);
