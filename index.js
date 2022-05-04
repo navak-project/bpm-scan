@@ -121,13 +121,13 @@ eventEmitter.on('connectToPresence', async () => {
       let json = JSON.stringify(buffer);
       let deviceValue = Math.max.apply(null, JSON.parse(json).data);
       //console.log("🚀 ~ file: index.js ~ line 123 ~ _PRESENCEDEVICE.on ~ deviceValue", deviceValue);
-      if (deviceValue === 0 && presence) {
+      if (deviceValue > 55 && presence) {
         presence = false;
         console.log("🚀 ~ file: index.js ~ line 129 ~ _PRESENCEDEVICE.on ~ presence", presence);
         eventEmitter.emit('presence/false');
         return
       }
-      if (deviceValue === 1 && !presence) {
+      if (deviceValue < 37 && !presence) {
         presence = true;
         console.log("🚀 ~ file: index.js ~ line 125 ~ _PRESENCEDEVICE.on ~ presence", presence);
         eventEmitter.emit('presence/true');
@@ -252,7 +252,7 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 
-  //eventEmitter.emit('connectToPresence');
+  eventEmitter.emit('connectToPresence');
   //eventEmitter.emit('connectToPolar');
 
 /*  try {
