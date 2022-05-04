@@ -95,8 +95,8 @@ eventEmitter.on('connected', async () => {
   });
 });
 
-eventEmitter.on('setDevice', async () => {
-  await sleep(3000);
+eventEmitter.on('connectToPolar', async () => {
+  //await sleep(3000);
   try {
     await polar.connect();
     eventEmitter.emit('connected');
@@ -185,7 +185,7 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 
-	eventEmitter.emit('setDevice');
+	eventEmitter.emit('connectToPolar');
   
   await sleep(3000);
 	eventEmitter.emit('getLantern');
