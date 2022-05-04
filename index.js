@@ -27,6 +27,7 @@ const polar = new ConnectionToDevice(
   '0000180d-0000-1000-8000-00805f9b34fb',
   '00002a37-0000-1000-8000-00805f9b34fb'
 );
+let _POLARDEVICE = null;
 const timerScan = 15;
 const {ID, GROUP, IP} = process.env;
 
@@ -80,7 +81,8 @@ eventEmitter.on('connected', async () => {
  /* if (polar.device === null) {
     return;
   }*/
-  polar.device.on('valuechanged', async (buffer) => {
+  _POLARDEVICE = await polar.device;
+  _POLARDEVICE.on('valuechanged', async (buffer) => {
     let json = JSON.stringify(buffer);
     let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
     if (deviceHeartrate < 30 || deviceHeartrate > 180) {
