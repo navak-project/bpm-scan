@@ -18,7 +18,7 @@ export class Polar {
     
   }
 
-  get device() {
+  polarDevice() {
     return this._polar
   }
 
@@ -80,7 +80,6 @@ export class Polar {
     
     // assign _self to the class in order to read it in the future
     this._polar = _self;
-    console.log("🚀 ~ file: polar.js ~ line 83 ~ Polar ~ connect ~ this._self ", this._polar );
     
     // return _self;;
 }
