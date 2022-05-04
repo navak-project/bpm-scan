@@ -74,7 +74,9 @@ export class ConnectionToDevice {
 
 		device.on('disconnect', async function () {
 			//eventEmitter.emit('test');
-			await _self.stopNotifications();
+      await _self.stopNotifications();
+      this._device = null;
+      this.connect();
 		});
 
 		// assign _self to the class in order to read it in the future
