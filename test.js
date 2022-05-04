@@ -1,7 +1,7 @@
 import { createBluetooth } from 'node-ble';
 const { bluetooth } = createBluetooth();
-test('34:94:54:39:18:A6')
-test('A0:9E:1A:9F:0E:B4')
+await test('34:94:54:39:18:A6')
+await test('A0:9E:1A:9F:0E:B4')
 async function test(deviceToConnect, metricsStatus, metricsState) {
   const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
     if (err) {
