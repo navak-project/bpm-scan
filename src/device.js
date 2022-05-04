@@ -3,7 +3,7 @@
 import {createBluetooth} from 'node-ble';
 const {bluetooth} = createBluetooth();
 import {metrics} from './metrics.js';
-import {eventEmitter} from './events.js';
+import {eventEmitter} from '../index.js';
 
 export class ConnectionToDevice {
 	constructor(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
