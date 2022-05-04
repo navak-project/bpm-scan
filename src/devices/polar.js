@@ -11,6 +11,7 @@ export class Polar {
     this.gattService = gattService;
     this.gattService = gattService;
     this.gattCharacteristic = gattCharacteristic;
+    this.device = null
   }
 
   async connect() {
@@ -61,13 +62,19 @@ export class Polar {
 
       console.log('Connected!');
       eventEmitter.emit('connected');
-    await metrics({ [this.metricsStatus]: `Connected: ${deviceName} : ${macAdresss}` });
-    await metrics({ [this.metricsState]: 3 });
+      await metrics({ [this.metricsStatus]: `Connected: ${deviceName} : ${macAdresss}` });
+      await metrics({ [this.metricsState]: 3 });
 
       device.on('disconnect', async function () {
         eventEmitter.emit('test');
         await _self.stopNotifications();
       });
-      return _self;;
+    
+    this.device = _self;
+     // return _self;;
+  }
+
+  device() {
+    return this.device;
   }
 }

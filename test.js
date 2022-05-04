@@ -19,13 +19,13 @@ import { Polar } from './src/devices/polar.js';
 //   '0000180d-0000-1000-8000-00805f9b34fb',
 //   '00002a37-0000-1000-8000-00805f9b34fb');
 async function coTest() {
-  const polar = new Polar('A0:9E:1A:9F:0E:B4',
+  const polar = await new Polar('A0:9E:1A:9F:0E:B4',
   'polarStatus',
   'polarState',
   '0000180d-0000-1000-8000-00805f9b34fb',
-  '00002a37-0000-1000-8000-00805f9b34fb')
-  await polar.connect();
-  console.log("🚀 ~ file: test.js ~ line 29 ~ connectToDevice ~ polar", polar);
+    '00002a37-0000-1000-8000-00805f9b34fb').connect();
+
+  console.log("🚀 ~ file: test.js ~ line 29 ~ connectToDevice ~ polar", polar.device());
 }
 coTest();
 async function connectToDevice(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
