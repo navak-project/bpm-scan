@@ -1,5 +1,8 @@
+import 'dotenv/config';
 import axios from 'axios';
 const { IP, ID } = process.env;
+console.log("🚀 ~ file: metrics.js ~ line 3 ~ ID", ID);
+console.log("🚀 ~ file: metrics.js ~ line 3 ~ IP", IP);
 
 export async function metrics(value) {
   return new Promise(async (resolve, reject) => {
