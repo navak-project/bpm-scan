@@ -80,6 +80,7 @@ export class Polar {
     
     // assign _self to the class in order to read it in the future
     this._self = _self;
+    console.log("🚀 ~ file: polar.js ~ line 83 ~ Polar ~ connect ~ this._self ", this._self );
     
     // return _self;;
 }
