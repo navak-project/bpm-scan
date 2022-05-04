@@ -109,7 +109,7 @@ eventEmitter.on('connected', async () => {
   });
 });
 
-eventEmitter.on('connectToPolar', async () => {
+eventEmitter.on('connectToPresence', async () => {
   //await sleep(3000);
   try {
     await presence.connect();
@@ -132,7 +132,7 @@ eventEmitter.on('connectToPolar', async () => {
 });
 
 
-eventEmitter.on('connectToDevice', async () => {
+eventEmitter.on('connectToPolar', async () => {
   try {
     await polar.connect();
     if (polar.device === null) {
@@ -236,7 +236,7 @@ eventEmitter.on('processexit', async (msg) => {
   await metrics({ bpm: heartrate });
 
   eventEmitter.emit('connectToPolar');
-  eventEmitter.emit('ConnectionToDevice');
+  eventEmitter.emit('connectToPresence');
   
   await sleep(3000);
 	eventEmitter.emit('getLantern');
