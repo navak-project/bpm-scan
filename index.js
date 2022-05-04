@@ -120,15 +120,16 @@ eventEmitter.on('connectToPresence', async () => {
     _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
       let json = JSON.stringify(buffer);
       let deviceValue = Math.max.apply(null, JSON.parse(json).data);
+      console.log("🚀 ~ file: index.js ~ line 123 ~ _PRESENCEDEVICE.on ~ deviceValue", deviceValue);
       if (deviceValue < 38) {
         presence = true;
         eventEmitter.emit('presence/true');
       }
-      if (deviceValue < 45) {
+      if (deviceValue > 45) {
         presence = false;
         eventEmitter.emit('presence/false');
       }
-
+      await sleep(1000);
     });
   } catch (error) {
     console.log("🚀 ~ file: events.js ~ line 33 ~ eventEmitter.on ~ error", error);
