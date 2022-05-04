@@ -73,11 +73,8 @@ export class ConnectionToDevice {
 		await metrics({[this.metricsState]: 3});
 
 		device.on('disconnect', async function () {
-			//eventEmitter.emit('test');
-      console.log('Disconnect!');
       await _self.stopNotifications();
       this._device = null;
-      throw "Disconnect"
 		});
 
 		// assign _self to the class in order to read it in the future

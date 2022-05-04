@@ -82,6 +82,12 @@ eventEmitter.on('connected', async () => {
     return;
   }*/
   _POLARDEVICE = await polar.device;
+
+  _POLARDEVICE.on('disconnect', async function () {
+    eventEmitter.emit('connectToPolar');
+    console.log('Disconnect!');
+  });
+
   _POLARDEVICE.on('valuechanged', async (buffer) => {
     let json = JSON.stringify(buffer);
     let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
