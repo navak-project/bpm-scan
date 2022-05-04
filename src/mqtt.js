@@ -2,7 +2,7 @@ import 'dotenv/config';
 import mqtt from 'mqtt';
 const {MQTTIP, ID} = process.env;
 
-export function clientConnect() {
+export async function clientConnect() {
 	let client;
 	try {
     const host = MQTTIP;

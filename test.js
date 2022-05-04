@@ -33,6 +33,8 @@ const esp32 = new ConnectionToDevice(
 //   '0000180d-0000-1000-8000-00805f9b34fb',
 //   '00002a37-0000-1000-8000-00805f9b34fb');
 async function coTest() {
+  console.log("🚀 ~ file: test.js ~ line 38 ~ coTest ~ polar.device", polar.device);
+
   await polar.connect();
   const POLAR = polar.device
 
