@@ -202,20 +202,22 @@ eventEmitter.on('done', async () => {
 
 eventEmitter.on('presence/true', async () => {
   let state = await getState();
+  await metrics({ presence: true });
   if (presence && state.name === 'ready') {
     await setState(7);
     await metrics({ message: 'User Ready, waiting' });
-    while (!alluser) {
+    /*while (!alluser) {
       await checkUsers();
-    }
-    if (alluser) {
+    }*/
+   // if (alluser) {
       await scan();
-    }
+   // }
   }
 });
 
 eventEmitter.on('presence/false', async (value) => {
   let state = await getState();
+  await metrics({ presence: false });
   alluser = false;
   if (state.name === 'scan' || state.name == 'outoflantern') {
     return;
@@ -244,7 +246,7 @@ eventEmitter.on('processexit', async (msg) => {
   await metrics({ bpm: heartrate });
 
   eventEmitter.emit('connectToPresence');
-  eventEmitter.emit('connectToPolar');
+  //eventEmitter.emit('connectToPolar');
   
   await sleep(3000);
 	eventEmitter.emit('getLantern');
