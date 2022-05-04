@@ -25,6 +25,7 @@ async function coTest() {
   '0000180d-0000-1000-8000-00805f9b34fb',
     '00002a37-0000-1000-8000-00805f9b34fb').connect();
 
+  console.log('polar', polar.device);
 }
 coTest();
 async function connectToDevice(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {

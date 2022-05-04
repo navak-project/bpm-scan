@@ -11,7 +11,7 @@ export class Polar {
     this.gattService = gattService;
     this.gattService = gattService;
     this.gattCharacteristic = gattCharacteristic;
-    this._self = null;
+    this._polar = null;
   }
 
   set device(val) {
@@ -19,7 +19,7 @@ export class Polar {
   }
 
   get device() {
-    return this._self
+    return this._polar
   }
 
   async connect() {
@@ -79,8 +79,8 @@ export class Polar {
       });
     
     // assign _self to the class in order to read it in the future
-    this._self = _self;
-    console.log("🚀 ~ file: polar.js ~ line 83 ~ Polar ~ connect ~ this._self ", this._self );
+    this._polar = _self;
+    console.log("🚀 ~ file: polar.js ~ line 83 ~ Polar ~ connect ~ this._self ", this._polar );
     
     // return _self;;
 }
