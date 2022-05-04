@@ -68,7 +68,7 @@ export class ConnectionToDevice {
 		await _self.startNotifications();
 
 		console.log('Connected!');
-		eventEmitter.emit('connected');
+		//eventEmitter.emit('connected');
 		await metrics({[this.metricsStatus]: `Connected: ${deviceName} : ${macAdresss}`});
 		await metrics({[this.metricsState]: 3});
 
