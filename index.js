@@ -31,7 +31,7 @@ const polar = new ConnectionToDevice(
 let _POLARDEVICE = null;
 
 const presenceDevice = new ConnectionToDevice(
-  '10:52:1C:68:77:E2',
+  '34:94:54:39:18:A6',
   'presenceStatus',
   'presenceState',
   '4fafc201-1fb5-459e-8fcc-c5c9c331914b',
