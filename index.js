@@ -91,7 +91,12 @@ eventEmitter.on('connected', async () => {
 eventEmitter.on('setDevice', async () => {
   await sleep(3000);
   try {
-    polarDevice = await connectToDevice();
+    polarDevice = await connectToDevice(
+      'A0:9E:1A:9F:0E:B4',
+      'polarStatus',
+      'polarState',
+      '0000180d-0000-1000-8000-00805f9b34fb',
+      '00002a37-0000-1000-8000-00805f9b34fb');
     eventEmitter.emit('connected');
   } catch (error) {
     console.log("No devices found!");
