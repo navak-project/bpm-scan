@@ -4,7 +4,6 @@ import { metrics } from '../metrics.js';
 import { eventEmitter } from '../events.js'
 
 export class Polar {
-  _device = '';
   constructor(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
     this.deviceToConnect = deviceToConnect;
     this.metricsStatus = metricsStatus;
@@ -12,6 +11,7 @@ export class Polar {
     this.gattService = gattService;
     this.gattService = gattService;
     this.gattCharacteristic = gattCharacteristic;
+    this._device = '';
   }
 
   set device(val) {
@@ -78,7 +78,7 @@ export class Polar {
         await _self.stopNotifications();
       });
     
-    device = _self;
+    device(_self);
      // return _self;;
 }
   
