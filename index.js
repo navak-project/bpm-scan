@@ -131,6 +131,7 @@ eventEmitter.on('connectToPresence', async () => {
         presence = true;
         console.log("🚀 ~ file: index.js ~ line 125 ~ _PRESENCEDEVICE.on ~ presence", presence);
         eventEmitter.emit('presence/true');
+        return
       }
 
       //await sleep(1000);
@@ -251,7 +252,7 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 
-  eventEmitter.emit('connectToPresence');
+  //eventEmitter.emit('connectToPresence');
   //eventEmitter.emit('connectToPolar');
 
 /*  try {
