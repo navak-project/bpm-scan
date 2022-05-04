@@ -121,16 +121,18 @@ eventEmitter.on('connectToPresence', async () => {
       let json = JSON.stringify(buffer);
       let deviceValue = Math.max.apply(null, JSON.parse(json).data);
       //console.log("🚀 ~ file: index.js ~ line 123 ~ _PRESENCEDEVICE.on ~ deviceValue", deviceValue);
-      if (deviceValue < 38 && !presence) {
-        console.log("🚀 ~ file: index.js ~ line 125 ~ _PRESENCEDEVICE.on ~ presence", presence);
+      if (deviceValue === 0 && presence) {
+        presence = false;
+        console.log("🚀 ~ file: index.js ~ line 129 ~ _PRESENCEDEVICE.on ~ presence", presence);
+        eventEmitter.emit('presence/false');
+        return
+      }
+      if (deviceValue === 1 && !presence) {
         presence = true;
+        console.log("🚀 ~ file: index.js ~ line 125 ~ _PRESENCEDEVICE.on ~ presence", presence);
         eventEmitter.emit('presence/true');
       }
-      if (deviceValue > 45 && presence) {
-        console.log("🚀 ~ file: index.js ~ line 129 ~ _PRESENCEDEVICE.on ~ presence", presence);
-        presence = false;
-        eventEmitter.emit('presence/false');
-      }
+
       //await sleep(1000);
     });
   } catch (error) {
