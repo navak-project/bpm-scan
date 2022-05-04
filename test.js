@@ -16,7 +16,8 @@ async function test(deviceToConnect, metricsStatus, metricsState) {
     await adapter.startDiscovery();
   }
   console.log('Discovering device...');
-
+  await metrics({ [metricsStatus]: 'Discovering device...' });
+  await metrics({ [metricsState]: 6 });
   const device = await adapter.waitDevice(deviceToConnect).catch(async (err) => {
     if (err) {
       console.log(err);
