@@ -3,7 +3,7 @@
 import {createBluetooth} from 'node-ble';
 const {bluetooth} = createBluetooth();
 import {metrics} from './metrics.js';
-import {eventEmitter} from '../index.js';
+//import {eventEmitter} from '../index.js';
 
 export class ConnectionToDevice {
 	constructor(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
@@ -42,7 +42,7 @@ export class ConnectionToDevice {
 				console.log(err);
 				await metrics({[this.metricsStatus]: 'No device'});
 				await metrics({[this.metricsState]: 4});
-				eventEmitter.emit('test');
+				//eventEmitter.emit('test');
 				return;
 			}
 		});
@@ -58,7 +58,7 @@ export class ConnectionToDevice {
 		} catch (err) {
 			console.log('Device:', err.text);
 			await metrics({[this.metricsStatus]: err.text});
-			eventEmitter.emit('test');
+			//eventEmitter.emit('test');
 			return;
 		}
 
@@ -73,7 +73,7 @@ export class ConnectionToDevice {
 		await metrics({[this.metricsState]: 3});
 
 		device.on('disconnect', async function () {
-			eventEmitter.emit('test');
+			//eventEmitter.emit('test');
 			await _self.stopNotifications();
 		});
 
