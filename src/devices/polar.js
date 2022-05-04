@@ -1,3 +1,5 @@
+"use strict"
+
 import { createBluetooth } from 'node-ble';
 const { bluetooth } = createBluetooth();
 import { metrics } from '../metrics.js';
@@ -14,11 +16,9 @@ export class Polar {
     this._polar = null;
   }
 
-  set device(val) {
-    
-  }
+ 
 
-  polarDevice() {
+  get device() {
     return this._polar
   }
 

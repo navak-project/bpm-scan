@@ -23,8 +23,8 @@ async function coTest() {
   'polarStatus',
   'polarState',
   '0000180d-0000-1000-8000-00805f9b34fb',
-    '00002a37-0000-1000-8000-00805f9b34fb').connect();
-
+    '00002a37-0000-1000-8000-00805f9b34fb')
+  await polar.connect();
   console.log('polar', polar.polarDevice());
   console.log("🚀 ~ file: test.js ~ line 29 ~ coTest ~ polar", polar);
 }
