@@ -29,7 +29,6 @@ const polar = new ConnectionToDevice(
 );
 const timerScan = 15;
 const {ID, GROUP, IP} = process.env;
-const dontUseDevice = false;
 
 client.on('error', function (err) {
 	console.dir(err);
@@ -78,10 +77,10 @@ client.on('message', async function (topic, message) {
 });
 
 eventEmitter.on('connected', async () => {
-  if (polarDevice === null || polarDevice === undefined) {
+ /* if (polar.device === null) {
     return;
-  }
-  polarDevice.on('valuechanged', async (buffer) => {
+  }*/
+  polar.device.on('valuechanged', async (buffer) => {
     let json = JSON.stringify(buffer);
     let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
     if (deviceHeartrate < 30 || deviceHeartrate > 180) {
@@ -97,8 +96,8 @@ eventEmitter.on('connected', async () => {
 eventEmitter.on('setDevice', async () => {
   await sleep(3000);
   try {
-    polar =
-      eventEmitter.emit('connected');
+    await polar.connect();
+    eventEmitter.emit('connected');
   } catch (error) {
     console.log("🚀 ~ file: events.js ~ line 33 ~ eventEmitter.on ~ error", error);
     // console.log('No devices found!');
@@ -254,8 +253,7 @@ async function checkUsers() {
 async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     await metrics({ timer: timerInstance.getTimeValues().toString() });
-    if (polarDevice === undefined || polarDevice === null) {
-      polarDevice = null;
+    if (polar.device === null) {
       heartrate = randomIntFromInterval(70, 90);
       await metrics({ bpm: heartrate });
     }
