@@ -17,7 +17,7 @@ import './src/artnet.cjs';
 
 const client = await clientConnect();
 let lantern = null;
-let presence = false;
+//let presence = false;
 let alluser = false;
 let heartrate = 0;
 const polar = new ConnectionToDevice(
@@ -29,6 +29,17 @@ const polar = new ConnectionToDevice(
   'connectToPolar'
 );
 let _POLARDEVICE = null;
+
+const presence = new ConnectionToDevice(
+  '10:52:1C:68:77:E2',
+  'presenceStatus',
+  'presenceState',
+  '4fafc201-1fb5-459e-8fcc-c5c9c331914b',
+  'beb5483e-36e1-4688-b7f5-ea07361b26a8',
+  'connectToPresence'
+);
+let _PRESENCEDEVICE = null;
+
 const timerScan = 15;
 const {ID, GROUP, IP} = process.env;
 
@@ -59,7 +70,7 @@ client.on('message', async function (topic, message) {
 		}
 	}
 
-	if (topic === `/station/${ID}/presence`) {
+	/*if (topic === `/station/${ID}/presence`) {
 		let buff = message.toString();
 		let value = JSON.parse(buff);
 		presence = JSON.parse(value.presence.toLowerCase());
@@ -75,22 +86,15 @@ client.on('message', async function (topic, message) {
 			default:
 				break;
 		}
-	}
+	}*/
 });
 
 eventEmitter.on('connected', async () => {
   if (polar.device === null) {
     return;
   }
-  //_GATTSERVER =   await polar.gattServer;
-  _POLARDEVICE = await polar.device;
 
-  // _POLARDEVICE.on('disconnect', async function () {
-  //   await polar.device.stopNotifications();
-  //   polar.device = null;
-  //   eventEmitter.emit('connectToPolar');
-  //   console.log('Disconnect!');
-  // });
+  _POLARDEVICE = await polar.device;
 
   _POLARDEVICE.on('valuechanged', async (buffer) => {
     let json = JSON.stringify(buffer);
@@ -108,8 +112,44 @@ eventEmitter.on('connected', async () => {
 eventEmitter.on('connectToPolar', async () => {
   //await sleep(3000);
   try {
+    await presence.connect();
+    if (presence.device === null) {
+      return;
+    }
+    _PRESENCEDEVICE = await polar.device;
+    _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
+      let json = JSON.stringify(buffer);
+      let deviceValue = Math.max.apply(null, JSON.parse(json).data);
+
+    });
+  } catch (error) {
+    console.log("🚀 ~ file: events.js ~ line 33 ~ eventEmitter.on ~ error", error);
+    // console.log('No devices found!');
+    // await metrics({polarStatus: 'No device'});
+    // await metrics({polarState: 4});
+    return;
+  }
+});
+
+
+eventEmitter.on('connectToDevice', async () => {
+  try {
     await polar.connect();
-    eventEmitter.emit('connected');
+    if (polar.device === null) {
+      return;
+    }
+    _POLARDEVICE = await polar.device;
+    _POLARDEVICE.on('valuechanged', async (buffer) => {
+      let json = JSON.stringify(buffer);
+      let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
+      if (deviceHeartrate < 30 || deviceHeartrate > 180) {
+        heartrate = randomIntFromInterval(70, 90);
+        await metrics({ bpm: heartrate });
+        return;
+      }
+      heartrate = deviceHeartrate;
+      await metrics({ bpm: heartrate });
+    });
   } catch (error) {
     console.log("🚀 ~ file: events.js ~ line 33 ~ eventEmitter.on ~ error", error);
     // console.log('No devices found!');
@@ -195,7 +235,8 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 
-	eventEmitter.emit('connectToPolar');
+  eventEmitter.emit('connectToPolar');
+  eventEmitter.emit('ConnectionToDevice');
   
   await sleep(3000);
 	eventEmitter.emit('getLantern');
