@@ -77,7 +77,7 @@ export class ConnectionToDevice {
       console.log('Disconnect!');
       await _self.stopNotifications();
       this._device = null;
-      connect();
+      throw "Disconnect"
 		});
 
 		// assign _self to the class in order to read it in the future
