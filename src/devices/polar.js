@@ -78,7 +78,7 @@ export class Polar {
         await _self.stopNotifications();
       });
     
-    this._device = _self;
+    this.device(_self)
      // return _self;;
 }
   
