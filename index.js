@@ -28,6 +28,7 @@ const polar = new ConnectionToDevice(
   '00002a37-0000-1000-8000-00805f9b34fb'
 );
 let _POLARDEVICE = null;
+let _GATTSERVER = null;
 const timerScan = 15;
 const {ID, GROUP, IP} = process.env;
 
