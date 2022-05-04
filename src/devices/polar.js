@@ -4,6 +4,7 @@ import { metrics } from '../metrics.js';
 import { eventEmitter } from '../events.js'
 
 export class Polar {
+  _device = '';
   constructor(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
     this.deviceToConnect = deviceToConnect;
     this.metricsStatus = metricsStatus;
@@ -11,7 +12,14 @@ export class Polar {
     this.gattService = gattService;
     this.gattService = gattService;
     this.gattCharacteristic = gattCharacteristic;
-    this.device = null
+  }
+
+  set device(val) {
+    this._device = val;
+  }
+
+  get device() {
+    return this._device;
   }
 
   async connect() {
@@ -72,9 +80,6 @@ export class Polar {
     
     this.device = _self;
      // return _self;;
-  }
-
-  device() {
-    return this.device;
-  }
+}
+  
 }
