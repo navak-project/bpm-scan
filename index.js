@@ -160,6 +160,7 @@ eventEmitter.on('connectToPolar', async () => {
     });
   } catch (error) {
     console.log("🚀 ~ file: events.js ~ line 33 ~ eventEmitter.on ~ error", error);
+    eventEmitter.emit('connectToPresence');
     // console.log('No devices found!');
     // await metrics({polarStatus: 'No device'});
     // await metrics({polarState: 4});
@@ -245,10 +246,10 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 
-  //eventEmitter.emit('connectToPresence');
+  eventEmitter.emit('connectToPresence');
   //eventEmitter.emit('connectToPolar');
 
-  try {
+/*  try {
     await presenceDevice.connect();
     if (presenceDevice.device === null) {
       return;
@@ -273,7 +274,7 @@ eventEmitter.on('processexit', async (msg) => {
     // await metrics({polarStatus: 'No device'});
     // await metrics({polarState: 4});
     return;
-  }
+  }*/
 
 
   
