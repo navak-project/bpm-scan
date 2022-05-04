@@ -1,6 +1,8 @@
 import { createBluetooth } from 'node-ble';
 const { bluetooth } = createBluetooth();
 import { metrics } from './src/metrics.js';
+import { eventEmitter } from './src/events.js'
+
 await connectToDevice(
   '34:94:54:39:18:A6',
   'presenceStatus',
@@ -35,7 +37,7 @@ async function connectToDevice(deviceToConnect, metricsStatus, metricsState, gat
       console.log(err);
       await metrics({ [metricsStatus]: 'No device' });
       await metrics({ [metricsState]: 4 });
-      eventEmitter.emit('setDevice');
+      eventEmitter.emit('test');
       return;
     }
   });
@@ -51,7 +53,7 @@ try {
 } catch (err) {
   console.log('Device:', err.text);
   await metrics({ [metricsStatus]: err.text });
-  eventEmitter.emit('setDevice');
+  eventEmitter.emit('test');
   return;
   }
   
@@ -66,7 +68,7 @@ try {
   await metrics({ [metricsState]: 3 });
 
   device.on('disconnect', async function () {
-    eventEmitter.emit('setDevice');
+    eventEmitter.emit('test');
     await _self.stopNotifications();
   });
   return _self;
