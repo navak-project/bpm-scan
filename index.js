@@ -17,7 +17,7 @@ import './src/artnet.cjs';
 
 const client = await clientConnect();
 let lantern = null;
-//let presence = false;
+let presence = false;
 let alluser = false;
 let heartrate = 0;
 const polar = new ConnectionToDevice(
@@ -30,7 +30,7 @@ const polar = new ConnectionToDevice(
 );
 let _POLARDEVICE = null;
 
-const presence = new ConnectionToDevice(
+const presenceDevice = new ConnectionToDevice(
   '10:52:1C:68:77:E2',
   'presenceStatus',
   'presenceState',
@@ -112,14 +112,22 @@ eventEmitter.on('connected', async () => {
 eventEmitter.on('connectToPresence', async () => {
   //await sleep(3000);
   try {
-    await presence.connect();
-    if (presence.device === null) {
+    await presenceDevice.connect();
+    if (presenceDevice.device === null) {
       return;
     }
     _PRESENCEDEVICE = await polar.device;
     _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
       let json = JSON.stringify(buffer);
       let deviceValue = Math.max.apply(null, JSON.parse(json).data);
+      if (deviceValue < 38) {
+        presence = true;
+        eventEmitter.emit('presence/true');
+      }
+      if (deviceValue < 45) {
+        presence = false;
+        eventEmitter.emit('presence/false');
+      }
 
     });
   } catch (error) {
@@ -235,8 +243,8 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 
-  eventEmitter.emit('connectToPolar');
   eventEmitter.emit('connectToPresence');
+  eventEmitter.emit('connectToPolar');
   
   await sleep(3000);
 	eventEmitter.emit('getLantern');
