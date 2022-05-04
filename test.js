@@ -2,6 +2,8 @@ import { createBluetooth } from 'node-ble';
 const { bluetooth } = createBluetooth();
 import { metrics } from './src/metrics.js';
 import { eventEmitter } from './src/events.js'
+import { Polar } from './src/devices/polar.js';
+
 
 await connectToDevice(
   '34:94:54:39:18:A6',
@@ -16,8 +18,17 @@ await connectToDevice(
   'polarState',
   '0000180d-0000-1000-8000-00805f9b34fb',
   '00002a37-0000-1000-8000-00805f9b34fb');
+
 async function connectToDevice(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
+  const polar = new Polar('A0:9E:1A:9F:0E:B4',
+  'polarStatus',
+  'polarState',
+  '0000180d-0000-1000-8000-00805f9b34fb',
+  '00002a37-0000-1000-8000-00805f9b34fb')
+  polar.connect();
+  console.log("🚀 ~ file: test.js ~ line 29 ~ connectToDevice ~ polar", polar);
   eventEmitter.emit('test');
+  return
   const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
     if (err) {
       await metrics({ [metricsStatus]: 'No bluetooth adapter' });
