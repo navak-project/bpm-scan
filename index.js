@@ -11,7 +11,7 @@ import isReachable from 'is-reachable';
 import {Timer} from 'easytimer.js';
 const timerInstance = new Timer();
 import {server} from './src/server.js';
-import {EventEmitter} from './src/events';
+import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
 import './src/artnet.cjs';
 
