@@ -31,6 +31,9 @@ async function test(deviceToConnect, metricsStatus, metricsState) {
     console.log('Device:', err.text);
     return;
   }
+  device.on('disconnect', async function () {
+    console.log("🚀 ~ file: test.js ~ line 39 ~ disconnect", deviceName);
+  });
   console.log('Connected!')
 }
 
