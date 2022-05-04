@@ -11,15 +11,15 @@ export class Polar {
     this.gattService = gattService;
     this.gattService = gattService;
     this.gattCharacteristic = gattCharacteristic;
-    this._device = '';
+
   }
 
   set device(val) {
-    this._device = val;
+    
   }
 
   get device() {
-    return this._device;
+    return this._self
   }
 
   async connect() {
@@ -78,8 +78,11 @@ export class Polar {
         await _self.stopNotifications();
       });
     
-    this.device(_self)
-     // return _self;;
+    // assign _self to the class variable in order to use it in the class methods
+
+    this._self = _self;
+    
+    // return _self;;
 }
   
 }
