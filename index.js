@@ -123,13 +123,11 @@ eventEmitter.on('connectToPresence', async () => {
       //console.log("🚀 ~ file: index.js ~ line 123 ~ _PRESENCEDEVICE.on ~ deviceValue", deviceValue);
       if (deviceValue > 37 && presence) {
         presence = false;
-        console.log("🚀 ~ file: index.js ~ line 129 ~ _PRESENCEDEVICE.on ~ presence", presence);
         eventEmitter.emit('presence/false');
         return
       }
       if (deviceValue < 37 && !presence) {
         presence = true;
-        console.log("🚀 ~ file: index.js ~ line 125 ~ _PRESENCEDEVICE.on ~ presence", presence);
         eventEmitter.emit('presence/true');
         return
       }
@@ -209,6 +207,7 @@ eventEmitter.on('done', async () => {
 
 eventEmitter.on('presence/true', async () => {
   let state = await getState();
+  console.log('Presence true');
   await metrics({ presence: true });
   if (presence && state.name === 'ready') {
     await setState(7);
@@ -224,6 +223,7 @@ eventEmitter.on('presence/true', async () => {
 
 eventEmitter.on('presence/false', async (value) => {
   let state = await getState();
+  console.log('Presence false');
   await metrics({ presence: false });
   alluser = false;
   if (state.name === 'scan' || state.name == 'outoflantern') {
