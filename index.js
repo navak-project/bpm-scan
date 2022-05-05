@@ -207,7 +207,8 @@ async function getLantern() {
 		try {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
-			eventEmitter.emit('ready');
+      //eventEmitter.emit('ready');
+      ready();
 			client.subscribe(`/lanterns/${lantern.data.id}/reset`);
 			client.subscribe(`/${lantern.data.id}/status`);
 			resolve(lantern.data.id);
