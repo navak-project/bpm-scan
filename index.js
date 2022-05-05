@@ -184,12 +184,7 @@ async function connectBluetooth(deviceToConnect) {
 }
 
 eventEmitter.on('getLantern', async () => {
-  try {
-    await getLantern();
-  } catch (error) {
-    await sleep(2000);
-    eventEmitter.emit('getLantern');
-  }
+  
 });
 
 eventEmitter.on('ready', async () => {
@@ -261,6 +256,14 @@ eventEmitter.on('processexit', async (msg) => {
 	await setState(6);
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
+  //eventEmitter.emit('getLantern');
+  await getLantern();
+
+ /* try {
+  } catch (error) {
+    await sleep(2000);
+    await getLantern();
+  }*/
 
   _PRESENCEDEVICE = await connectBluetooth(presenceDevice);
   _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
@@ -306,20 +309,17 @@ eventEmitter.on('processexit', async (msg) => {
 
 
   
-  await sleep(3000);
-	eventEmitter.emit('getLantern');
+
 })();
 
 /*------------------------------------------------------*/
 
 async function getLantern() {
-	if (lantern !== null) {
-		return;
-	}
 	await setState(5);
 	return new Promise(async function (resolve, reject) {
-		if (!(await pingAPI())) {
-			reject();
+    if (!(await pingAPI())) {
+      await pingAPI();
+			//reject();
 		}
 		try {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
@@ -333,7 +333,9 @@ async function getLantern() {
 			await setState(3);
       await metrics({ message: error.response.data });
       await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: '50, 50, 50, 255', lantern: null });
-			reject(error.response.data);
+      sleep(2000);
+      await getLantern();
+			//reject(error.response.data);
 		}
 	});
 }
@@ -343,7 +345,14 @@ async function done() {
 	await metrics({timer: `00:00:${timerScan}`});
 	await setState(9); //remove from touch
 	await sleep(18000);
-	eventEmitter.emit('getLantern');
+  //eventEmitter.emit('getLantern');
+  await getLantern();
+ /* try {
+    
+  } catch (error) {
+    await sleep(2000);
+    await getLantern();
+  }*/
 }
 
 async function getStations() {
