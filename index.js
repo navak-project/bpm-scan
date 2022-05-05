@@ -14,7 +14,7 @@ import {server} from './src/server.js';
 import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
 import './src/artnet.cjs';
-import { readSync } from 'fs';
+import {readSync} from 'fs';
 
 const client = await clientConnect();
 let lantern = null;
@@ -102,19 +102,17 @@ async function connectBluetooth(deviceToConnect) {
 }
 
 async function ready() {
-  await metrics({lantern: lantern.data.id});
-  await setState(0);
-  if (presence) {
-    presence(true)
-    return;
-  }
-  await metrics({message: 'Ready to scan'});
-  console.log('Ready!');
+	await metrics({lantern: lantern.data.id});
+	await setState(0);
+	if (presence) {
+		setPresence(true);
+		return;
+	}
+	await metrics({message: 'Ready to scan'});
+	console.log('Ready!');
 }
 
-eventEmitter.on('ready', async () => {
-
-});
+eventEmitter.on('ready', async () => {});
 
 eventEmitter.on('done', async () => {
 	await setState(2);
@@ -128,47 +126,43 @@ eventEmitter.on('done', async () => {
 	await metrics({message: 'Done!'});
 });
 
-eventEmitter.on('presence/true', async () => {
+eventEmitter.on('presence/true', async () => {});
 
-});
-
-eventEmitter.on('presence/false', async (value) => {
-
-});
+eventEmitter.on('presence/false', async (value) => {});
 
 eventEmitter.on('processexit', async (msg) => {
 	await metrics({status: false});
 	process.exit(0);
 });
 
-async function presence(val) {
-  if (val === true) {
-    let state = await getState();
-    await metrics({presence: true});
-    if (presence && state.name === 'ready') {
-      await setState(7);
-      await metrics({message: 'User Ready, waiting'});
-      /*while (!alluser) {
-        await checkUsers();
-      }*/
-      // if (alluser) {
-      await scan();
-      // }
-    }
-  }
-  if(val === false) {
-    let state = await getState();
-    await metrics({presence: false});
-    alluser = false;
-    if (state.name === 'scan' || state.name == 'outoflantern') {
-      return;
-    }
-    if (state.name === 'done') {
-      done();
-      return;
-    }
-    ready();
-  }
+async function setPresence(val) {
+	if (val === true) {
+		let state = await getState();
+		await metrics({presence: true});
+		if (presence && state.name === 'ready') {
+			await setState(7);
+			await metrics({message: 'User Ready, waiting'});
+			while (!alluser) {
+				await checkUsers();
+			}
+			if (alluser) {
+				await scan();
+			}
+		}
+	}
+	if (val === false) {
+		let state = await getState();
+		await metrics({presence: false});
+		alluser = false;
+		if (state.name === 'scan' || state.name == 'outoflantern') {
+			return;
+		}
+		if (state.name === 'done') {
+			done();
+			return;
+		}
+		ready();
+	}
 }
 
 /*------------------------------------------------------*/
@@ -190,10 +184,12 @@ async function presence(val) {
 		let deviceValue = Math.max.apply(null, JSON.parse(json).data);
 		if (deviceValue < 38) {
 			//presence = true;
+			//setPresence(true);
 			//eventEmitter.emit('presence/true');
 		}
 		if (deviceValue < 45) {
 			//presence = false;
+			//setPresence(false);
 			//eventEmitter.emit('presence/false');
 		}
 	});
