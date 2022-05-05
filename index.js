@@ -150,7 +150,7 @@ eventEmitter.on('connectToPresence', async () => {
 
 eventEmitter.on('connectToPolar', async () => {
     await polarDevice.connect().then(async (device) => { 
-      _POLARDEVICE = device;
+      _POLARDEVICE = device.device;
       _POLARDEVICE.on('valuechanged', async (buffer) => {
         let json = JSON.stringify(buffer);
         let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
@@ -163,7 +163,7 @@ eventEmitter.on('connectToPolar', async () => {
         await metrics({ bpm: heartrate });
       });
 
-      _POLARDEVICE.on('disconnect', async function () {
+      device.on('disconnect', async function () {
         console.log('Disconnect!');
         eventEmitter.emit('connectToPolar');
       });
