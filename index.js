@@ -163,10 +163,10 @@ eventEmitter.on('connectToPolar', async () => {
         await metrics({ bpm: heartrate });
       });
 
-      _POLARDEVICE.on('disconnect', async function () {
+     /* _POLARDEVICE.on('disconnect', async function () {
         console.log('Disconnect!');
         eventEmitter.emit('connectToPolar');
-      });
+      });*/
 
     }).catch(async (error) => { 
       console.log("🚀 ~ error:", error);
@@ -288,10 +288,10 @@ eventEmitter.on('processexit', async (msg) => {
     }
   });
 
-  _PRESENCEDEVICE.on('disconnect', async function () {
+  /*_PRESENCEDEVICE.on('disconnect', async function () {
       console.log('Disconnect!');
     _PRESENCEDEVICE = await connectBluetooth(presenceDevice);
-  });
+  });*/
   //eventEmitter.emit('connectToPolar');
 
 /*  try {
