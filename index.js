@@ -63,7 +63,7 @@ client.on('message', async function (topic, message) {
 		presence = JSON.parse(value.presence.toLowerCase());
 		console.log('🚀 ~ file: index.js ~ line 60 ~ presence', presence);
 		await metrics({presence: presence});
-		presence(presence);
+		setPresence(presence);
 	}
 });
 
