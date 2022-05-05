@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import axios from 'axios';
 const { IP, ID } = process.env;
 
@@ -23,7 +24,9 @@ export async function metricsReset(value) {
       "lantern": null,
       "timer": "00:00:15",
       "presence": "false",
-      "state": parseInt('01101010 00101011 01101110', 24)
+      "state": 0,
+      "polarStatus": "No device",
+      "polarState": 4,
     }
     await axios
       .put(`http://${IP}/api/stations/${ID}`, data)
