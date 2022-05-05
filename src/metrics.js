@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import axios from 'axios';
 const { IP, ID } = process.env;
 
