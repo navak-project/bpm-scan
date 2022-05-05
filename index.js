@@ -323,7 +323,6 @@ async function getLantern() {
 		}
 		try {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
-      console.log("🚀 ~ file: index.js ~ line 326 ~ lantern", lantern);
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
 			eventEmitter.emit('ready');
 			client.subscribe(`/lanterns/${lantern.data.id}/reset`);
@@ -333,6 +332,7 @@ async function getLantern() {
 			await setState(3);
       await metrics({ message: error.response.data });
       await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: '50, 50, 50, 255', lantern: null });
+      await metrics({ message: 'Retrying...' });
       sleep(2000);
       await getLantern();
 			//reject(error.response.data);
