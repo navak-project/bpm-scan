@@ -149,31 +149,27 @@ eventEmitter.on('connectToPresence', async () => {
 
 
 eventEmitter.on('connectToPolar', async () => {
-  try {
-    await polar.connect();
-    if (polar.device === null) {
-      return;
-    }
-    _POLARDEVICE = await polar.device;
-    _POLARDEVICE.on('valuechanged', async (buffer) => {
-      let json = JSON.stringify(buffer);
-      let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
-      if (deviceHeartrate < 30 || deviceHeartrate > 180) {
-        heartrate = randomIntFromInterval(70, 90);
+    await polar.connect().then(async (device) => { 
+      _POLARDEVICE = device;
+      _POLARDEVICE.on('valuechanged', async (buffer) => {
+        let json = JSON.stringify(buffer);
+        let deviceHeartrate = Math.max.apply(null, JSON.parse(json).data);
+        if (deviceHeartrate < 30 || deviceHeartrate > 180) {
+          heartrate = randomIntFromInterval(70, 90);
+          await metrics({ bpm: heartrate });
+          return;
+        }
+        heartrate = deviceHeartrate;
         await metrics({ bpm: heartrate });
-        return;
-      }
-      heartrate = deviceHeartrate;
-      await metrics({ bpm: heartrate });
+      });
+
+    }).catch(async (error) => { 
+      console.log("🚀 ~ error:", error);
+      eventEmitter.emit('connectToPresence');
     });
-  } catch (error) {
-    console.log("🚀 ~ file: events.js ~ line 33 ~ eventEmitter.on ~ error", error);
-    eventEmitter.emit('connectToPresence');
-    // console.log('No devices found!');
-    // await metrics({polarStatus: 'No device'});
-    // await metrics({polarState: 4});
-    return;
-  }
+    /*if (polar.device === null) {
+      return;
+    }*/
 });
 
 eventEmitter.on('getLantern', async () => {
