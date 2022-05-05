@@ -2,6 +2,7 @@
 // also if lantern crash, ping status if false, then reset the station
 
 import 'dotenv/config';
+const { ID, GROUP, IP, POLARMACADDRESS, PRESENCEMACADDRESS } = process.env;
 import {metrics, metricsReset} from './src/metrics.js';
 import {setState, getState} from './src/states.js';
 import axios from 'axios';
@@ -14,21 +15,20 @@ import {server} from './src/server.js';
 import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
 import './src/artnet.cjs';
-import {readSync} from 'fs';
 
 const client = await clientConnect();
 let lantern = null;
 let presence = false;
 let alluser = false;
 let heartrate = 0;
-const polarDevice = new ConnectionToDevice('A0:9E:1A:9F:0E:B4', 'polarStatus', 'polarState', '0000180d-0000-1000-8000-00805f9b34fb', '00002a37-0000-1000-8000-00805f9b34fb');
+const polarDevice = new ConnectionToDevice(POLARMACADDRESS, 'polarStatus', 'polarState', '0000180d-0000-1000-8000-00805f9b34fb', '00002a37-0000-1000-8000-00805f9b34fb');
 let _POLARDEVICE = null;
 
-const presenceDevice = new ConnectionToDevice('34:94:54:39:18:A6', 'presenceStatus', 'presenceState', '4fafc201-1fb5-459e-8fcc-c5c9c331914b', 'beb5483e-36e1-4688-b7f5-ea07361b26a8');
+const presenceDevice = new ConnectionToDevice(PRESENCEMACADDRESS, 'presenceStatus', 'presenceState', '4fafc201-1fb5-459e-8fcc-c5c9c331914b', 'beb5483e-36e1-4688-b7f5-ea07361b26a8');
 let _PRESENCEDEVICE = null;
 
 const timerScan = 15;
-const {ID, GROUP, IP} = process.env;
+
 
 client.on('error', function (err) {
 	console.dir(err);
