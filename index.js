@@ -172,6 +172,16 @@ eventEmitter.on('connectToPolar', async () => {
     }*/
 });
 
+async function connectBluetooth(deviceToConnect) {
+  try {
+    await deviceToConnect.connect();
+    return deviceToConnect.device;
+  } catch (error) {
+    console.log("🚀 ~ error", error);
+    return;
+  }
+}
+
 eventEmitter.on('getLantern', async () => {
   try {
     await getLantern();
@@ -252,7 +262,20 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 
-  eventEmitter.emit('connectToPresence');
+ // eventEmitter.emit('connectToPresence');
+  _PRESENCEDEVICE = await connectBluetooth(presenceDevice);
+  console.log("🚀 ~ file: index.js ~ line 312 ~ _PRESENCEDEVICE.on ~ _PRESENCEDEVICE", _PRESENCEDEVICE);
+  _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
+  let json = JSON.stringify(buffer);
+  let deviceValue = Math.max.apply(null, JSON.parse(json).data);
+  if (deviceValue < 38) {
+    presence = true;
+    eventEmitter.emit('presence/true');
+  }
+  if (deviceValue < 45) {
+    presence = false;
+    eventEmitter.emit('presence/false');
+  }
   //eventEmitter.emit('connectToPolar');
 
 /*  try {
