@@ -20,7 +20,7 @@ let lantern = null;
 let presence = false;
 let alluser = false;
 let heartrate = 0;
-const polar = new ConnectionToDevice(
+const polarDevice = new ConnectionToDevice(
   'A0:9E:1A:9F:0E:B4',
   'polarStatus',
   'polarState',
@@ -66,7 +66,7 @@ client.on('message', async function (topic, message) {
 			client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 			sleep(2000);
       lantern = null;
-      eventEmitter.emit('getLantern');
+      await getLantern();
 		}
 	}
 
@@ -149,7 +149,7 @@ eventEmitter.on('connectToPresence', async () => {
 
 
 eventEmitter.on('connectToPolar', async () => {
-    await polar.connect().then(async (device) => { 
+    await polarDevice.connect().then(async (device) => { 
       _POLARDEVICE = device;
       _POLARDEVICE.on('valuechanged', async (buffer) => {
         let json = JSON.stringify(buffer);
@@ -163,9 +163,13 @@ eventEmitter.on('connectToPolar', async () => {
         await metrics({ bpm: heartrate });
       });
 
+      _POLARDEVICE.on('disconnect', async function () {
+        eventEmitter.emit('connectToPolar');
+      });
+
     }).catch(async (error) => { 
       console.log("🚀 ~ error:", error);
-      eventEmitter.emit('connectToPresence');
+      eventEmitter.emit('connectToPolar');
     });
     /*if (polar.device === null) {
       return;
@@ -257,7 +261,7 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
   //eventEmitter.emit('getLantern');
-  await getLantern();
+  
 
  /* try {
   } catch (error) {
@@ -266,6 +270,10 @@ eventEmitter.on('processexit', async (msg) => {
   }*/
 
   _PRESENCEDEVICE = await connectBluetooth(presenceDevice);
+  eventEmitter.emit('connectToPolar');
+
+  await getLantern();
+
   _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
   let json = JSON.stringify(buffer);
   let deviceValue = Math.max.apply(null, JSON.parse(json).data);
@@ -277,6 +285,10 @@ eventEmitter.on('processexit', async (msg) => {
     presence = false;
     eventEmitter.emit('presence/false');
     }
+  });
+
+  _PRESENCEDEVICE.on('disconnect', async function () {
+    _PRESENCEDEVICE = await connectBluetooth(presenceDevice);
   });
   //eventEmitter.emit('connectToPolar');
 
@@ -385,7 +397,7 @@ async function checkUsers() {
 async function scan() {
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
     await metrics({ timer: timerInstance.getTimeValues().toString() });
-    if (polar.device === null) {
+    if (_POLARDEVICE === null) {
       heartrate = randomIntFromInterval(70, 90);
       await metrics({ bpm: heartrate });
     }
