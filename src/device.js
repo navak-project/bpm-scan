@@ -3,17 +3,14 @@
 import {createBluetooth} from 'node-ble';
 const {bluetooth} = createBluetooth();
 import {metrics} from './metrics.js';
-import {eventEmitter} from '../index.js';
-
 export class ConnectionToDevice {
-	constructor(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic, resetEmitter) {
+	constructor(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
 		this.deviceToConnect = deviceToConnect;
 		this.metricsStatus = metricsStatus;
 		this.metricsState = metricsState;
 		this.gattService = gattService;
 		this.gattService = gattService;
 		this.gattCharacteristic = gattCharacteristic;
-		this.resetEmitter = resetEmitter;
 		this._device = null;
 		this._gattServer = null;
 	}
@@ -91,11 +88,8 @@ export class ConnectionToDevice {
         this._device = null;
         console.log(`Disconnected: ${deviceName} : ${macAdresss}`);
         self.connect();
-				//eventEmitter.emit(this.resetEmitter);
 			});
 
-			// assign _self to the class in order to read it in the future
-			// this._gattServer = device;
 			this._device = _self;
 			resolve(this._device);
 		});
