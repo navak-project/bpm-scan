@@ -128,6 +128,9 @@ eventEmitter.on('connectToPresence', async () => {
         return
       }
       if (deviceValue > 25 && presence) {
+        if (deviceValue < 50) {
+          return
+        }
         presence = false;
         eventEmitter.emit('presence/false');
         return
