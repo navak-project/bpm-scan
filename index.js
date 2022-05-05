@@ -178,6 +178,7 @@ async function connectBluetooth(deviceToConnect) {
     return deviceToConnect.device;
   } catch (error) {
     console.log("🚀 ~ error", error);
+    await connectBluetooth(deviceToConnect)
     return;
   }
 }
@@ -186,7 +187,6 @@ eventEmitter.on('getLantern', async () => {
   try {
     await getLantern();
   } catch (error) {
-    //console.log(error);
     await sleep(2000);
     eventEmitter.emit('getLantern');
   }
@@ -262,9 +262,7 @@ eventEmitter.on('processexit', async (msg) => {
 	await metrics({message: 'Booting...'});
   await metrics({ bpm: heartrate });
 
- // eventEmitter.emit('connectToPresence');
   _PRESENCEDEVICE = await connectBluetooth(presenceDevice);
-  console.log("🚀 ~ file: index.js ~ line 312 ~ _PRESENCEDEVICE.on ~ _PRESENCEDEVICE", _PRESENCEDEVICE);
   _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
   let json = JSON.stringify(buffer);
   let deviceValue = Math.max.apply(null, JSON.parse(json).data);
@@ -325,6 +323,7 @@ async function getLantern() {
 		}
 		try {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
+      console.log("🚀 ~ file: index.js ~ line 326 ~ lantern", lantern);
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
 			eventEmitter.emit('ready');
 			client.subscribe(`/lanterns/${lantern.data.id}/reset`);
