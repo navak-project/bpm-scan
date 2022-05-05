@@ -88,8 +88,7 @@ export class ConnectionToDevice {
 			device.on('disconnect', async function () {
 				await _self.stopNotifications();
 				this.device = null;
-				eventEmitter.emit(this.resetEmitter);
-				console.log('Disconnect!');
+				//eventEmitter.emit(this.resetEmitter);
 			});
 
 			// assign _self to the class in order to read it in the future

@@ -164,6 +164,7 @@ eventEmitter.on('connectToPolar', async () => {
       });
 
       _POLARDEVICE.on('disconnect', async function () {
+        console.log('Disconnect!');
         eventEmitter.emit('connectToPolar');
       });
 
@@ -278,16 +279,17 @@ eventEmitter.on('processexit', async (msg) => {
   let json = JSON.stringify(buffer);
   let deviceValue = Math.max.apply(null, JSON.parse(json).data);
   if (deviceValue < 38) {
-    presence = true;
-    eventEmitter.emit('presence/true');
+    //presence = true;
+    //eventEmitter.emit('presence/true');
   }
   if (deviceValue < 45) {
-    presence = false;
-    eventEmitter.emit('presence/false');
+    //presence = false;
+    //eventEmitter.emit('presence/false');
     }
   });
 
   _PRESENCEDEVICE.on('disconnect', async function () {
+      console.log('Disconnect!');
     _PRESENCEDEVICE = await connectBluetooth(presenceDevice);
   });
   //eventEmitter.emit('connectToPolar');
