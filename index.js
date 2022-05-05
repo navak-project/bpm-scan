@@ -275,7 +275,8 @@ eventEmitter.on('processexit', async (msg) => {
   if (deviceValue < 45) {
     presence = false;
     eventEmitter.emit('presence/false');
-  }
+    }
+  });
   //eventEmitter.emit('connectToPolar');
 
 /*  try {
