@@ -30,7 +30,8 @@ export class ConnectionToDevice {
 		this._device = value;
 	}
 
-	async connect() {
+  async connect() {
+    var self = this;
 		return new Promise(async (resolve, reject) => {
 			const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
 				if (err) {
@@ -88,7 +89,8 @@ export class ConnectionToDevice {
 			device.on('disconnect', async function () {
 				await _self.stopNotifications();
         this._device = null;
-        console.log("🚀 ~ file: device.js ~ line 91 ~ ConnectionToDevice ~ this._device", this._device);
+        console.log(`Disconnected: ${deviceName} : ${macAdresss}`);
+        self.connect();
 				//eventEmitter.emit(this.resetEmitter);
 			});
 
