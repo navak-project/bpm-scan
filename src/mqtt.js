@@ -12,6 +12,7 @@ export async function clientConnect() {
       console.log(`🚀 ~ Connected to MQTT broker: mqtt://${host}:${port}`);
       await client.subscribe(`/station/${ID}/presence`);
       await client.subscribe(`/station/${ID}/reboot`);
+      console.log(`My IP is: ${ip.address()}`);
     });
 	} catch (err) {
 		console.log('🚀 ~ file: mqtt.js ~ line 39 ~ returnnewpromise ~ err', err);
