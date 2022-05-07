@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import mqtt from 'mqtt';
+import ip from 'ip';
 const {MQTTIP, ID} = process.env;
 
 export async function clientConnect() {
