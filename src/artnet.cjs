@@ -53,7 +53,7 @@ const colors = channel.array;
 
 	setInterval(function () {
 		ws281x.render();
-	}, 1000 / 144);
+	}, 1000 / 60);
 
 
 function rgb2Int(r, g, b) {
