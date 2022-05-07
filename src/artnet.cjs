@@ -1,7 +1,6 @@
 
 // Load dmxnet as libary
-import 'dotenv/config';
-const { UNI1, UNI2 } = process.env;
+require('dotenv').config()
 var dmxlib = require('dmxnet');
 const ws281x = require('@gbkwiatt/node-rpi-ws281x-native');
 //import ws281x from '@gbkwiatt/node-rpi-ws281x-native';
@@ -19,13 +18,13 @@ var dmxnet = new dmxlib.dmxnet({
 // Create a new receiver instance, listening for universe 5 on net 0 subnet 0
 var receiver = dmxnet.newReceiver({
 	subnet: 15,
-  universe: UNI1,
+  universe: process.env.UNI1,
 	net: 0
 });
 
 var receiver2 = dmxnet.newReceiver({
 	subnet: 15,
-  universe: UNI2,
+  universe: process.env.UNI2,
 	net: 0
 });
 
@@ -41,13 +40,13 @@ var dmxnet = new dmxlib.dmxnet({
 // Create a new receiver instance, listening for universe 5 on net 0 subnet 0
 var receiver3 = dmxnet.newReceiver({
   subnet: 15,
-  universe: UNI1,
+  universe: process.env.UNI1,
   net: 0
 });
 
 var receiver4 = dmxnet.newReceiver({
   subnet: 15,
-  universe: UNI2,
+  universe: process.env.UNI2,
   net: 0
 });
 
