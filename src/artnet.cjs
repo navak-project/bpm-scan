@@ -93,6 +93,7 @@ const channel2 = ws281x(512, {
       channels[0].array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
       channels[1].array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
+    console.log("🚀 ~ file: artnet.cjs ~ line 97 ~ data", data);
   });
 
   receiver2.on('data', function (data) {
