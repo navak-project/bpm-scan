@@ -52,11 +52,11 @@ var receiver4 = dmxnet.newReceiver({
 });
 */
 // ---- trap the SIGINT and reset before exit
-process.on('SIGINT', function () {
+/*process.on('SIGINT', function () {
     ws281x.reset();
     log.debug("Reseting Leds on exit...")
     process.nextTick(function () { process.exit(0); });
-});
+});*/
 
 const channels = ws281x.init({
   dma: 10,
@@ -88,6 +88,7 @@ const channel2 = ws281x(512, {
 //const colors2 = channel2.array;
 (async function () {
   //await sleep(2000);
+  channels[0].array[12] = 0xff0000;
   receiver.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
       channels[0].array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
