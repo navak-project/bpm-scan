@@ -79,7 +79,8 @@ const channel2 = ws281x(512, {
 	stripType: ws281x.stripType.WS2812
 });*/
 
-const colors = channels.array;
+const colors = channels[0].array;
+const colors2 = channels[1].array;
 console.log("🚀 ~ file: artnet.cjs ~ line 83 ~ colors", colors);
 //const colors2 = channel2.array;
 
@@ -100,13 +101,13 @@ function light1() {
 function light2(i) {
   receiver3.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors2[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 
   receiver4.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors2[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 }
