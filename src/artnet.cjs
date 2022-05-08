@@ -69,7 +69,8 @@ const channel2 = ws281x(512, {
 
 receiver.on('data', function (data) {
 	for (let i = 0; i < data.length / 3; i++) {
-		channel.array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    channel.array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    channel2.array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
 	}
 });
 
@@ -79,20 +80,6 @@ receiver2.on('data', function (data) {
 	}
 });
 
-receiver3.on('data', function (data) {
-	for (let i = 0; i < data.length / 3; i++) {
-		channel2.array[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-	}
-});
-
-receiver4.on('data', function (data) {
-  
-  console.log("🚀 ~ file: artnet.cjs ~ line 93 ~ data", data);
-
-	for (let i = 0; i < data.length / 3; i++) {
-		channel2.array[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-	}
-});
 
 setInterval(function () {
 	ws281x.render();
