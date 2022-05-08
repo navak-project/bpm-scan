@@ -5,7 +5,7 @@ const ws281x = require('@gbkwiatt/node-rpi-ws281x-native');
 //import ws281x from '@gbkwiatt/node-rpi-ws281x-native';
 // Create new dmxnet instance
 
-var dmxnet = new dmxlib.dmxnet({
+/*var dmxnet = new dmxlib.dmxnet({
 	dma: 10,
 	freq: 800000,
 	gpio: 18,
@@ -21,8 +21,10 @@ var dmxnet2 = new dmxlib.dmxnet({
 	invert: false,
 	brightness: 255,
 	stripType: ws281x.stripType.WS2812
-});
+});*/
 
+var dmxnet = new dmxlib.dmxnet(options);
+var dmxnet2 = new dmxlib.dmxnet(options);
 // Create a new receiver instance, listening for universe 5 on net 0 subnet 0
 var receiver = dmxnet.newReceiver({
 	subnet: 15,
@@ -49,7 +51,17 @@ var receiver4 = dmxnet2.newReceiver({
 	net: 0
 });
 
-const channel = ws281x(512, {
+
+const channels = ws281x.init({
+  dma: 10,
+  freq: 800000,
+  channels: [
+    { gpio: 18, invert: false, brightness: 255, stripType: ws281x.stripType.WS2812 },
+    {  gpio: 21, invert: false, brightness: 255, stripType: ws281x.stripType.WS2812 }
+  ]
+});
+
+/*const channel = ws281x(512, {
 	dma: 10,
 	freq: 800000,
 	gpio: 18,
@@ -65,7 +77,7 @@ const channel2 = ws281x(512, {
 	invert: false,
 	brightness: 255,
 	stripType: ws281x.stripType.WS2812
-});
+});*/
 
 const colors = channel.array;
 const colors2 = channel2.array;
@@ -87,13 +99,13 @@ function light1() {
 function light2(i) {
   receiver3.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors2[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 
   receiver4.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors2[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 }
