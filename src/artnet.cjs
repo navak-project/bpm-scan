@@ -28,7 +28,7 @@ var receiver2 = dmxnet.newReceiver({
 	net: 0
 });
 
-var dmxnet = new dmxlib.dmxnet({
+var dmxnet2 = new dmxlib.dmxnet({
   dma: 10,
   freq: 800000,
   gpio: 23,
