@@ -56,8 +56,8 @@ const channels = ws281x.init({
   dma: 10,
   freq: 800000,
   channels: [
-    { gpio: 18, invert: false, brightness: 255, stripType: ws281x.stripType.WS2812 },
-    {  gpio: 21, invert: false, brightness: 255, stripType: ws281x.stripType.WS2812 }
+    {count:512, gpio: 18, invert: false, brightness: 255, stripType: ws281x.stripType.WS2812 },
+    { count: 512,  gpio: 21, invert: false, brightness: 255, stripType: ws281x.stripType.WS2812 }
   ]
 });
 
@@ -86,13 +86,13 @@ console.log("🚀 ~ file: artnet.cjs ~ line 83 ~ colors", colors);
 function light1() {
   receiver.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors[0][i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 
   receiver2.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors[0][i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 }
@@ -100,13 +100,13 @@ function light1() {
 function light2(i) {
   receiver3.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors[0][i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 
   receiver4.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors[0][i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 }
