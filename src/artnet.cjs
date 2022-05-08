@@ -24,7 +24,7 @@ var dmxnet2 = new dmxlib.dmxnet({
 });*/
 
 var dmxnet = new dmxlib.dmxnet();
-var dmxnet2 = new dmxlib.dmxnet();
+//var dmxnet2 = new dmxlib.dmxnet();
 // Create a new receiver instance, listening for universe 5 on net 0 subnet 0
 var receiver = dmxnet.newReceiver({
 	subnet: 15,
@@ -39,13 +39,13 @@ var receiver2 = dmxnet.newReceiver({
 });
 
 // Create a new receiver instance, listening for universe 5 on net 0 subnet 0
-var receiver3 = dmxnet2.newReceiver({
+var receiver3 = dmxnet.newReceiver({
 	subnet: 15,
 	universe: process.env.UNI1,
 	net: 0
 });
 
-var receiver4 = dmxnet2.newReceiver({
+var receiver4 = dmxnet.newReceiver({
 	subnet: 15,
 	universe: process.env.UNI2,
 	net: 0
@@ -83,17 +83,19 @@ const colors = channels[0].array;
 const colors2 = channels[1].array;
 console.log("🚀 ~ file: artnet.cjs ~ line 83 ~ colors", colors);
 //const colors2 = channel2.array;
-
+light1()
 function light1() {
   receiver.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
       colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors2[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 
   receiver2.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
       colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors2[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 }
@@ -112,8 +114,8 @@ function light2(i) {
   });
 }
 
-light1()
-light2()
+
+//light2()
 
 setInterval(function () {
 	ws281x.render();
