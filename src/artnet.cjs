@@ -23,8 +23,8 @@ var dmxnet2 = new dmxlib.dmxnet({
 	stripType: ws281x.stripType.WS2812
 });*/
 
-var dmxnet = new dmxlib.dmxnet(options);
-var dmxnet2 = new dmxlib.dmxnet(options);
+var dmxnet = new dmxlib.dmxnet();
+var dmxnet2 = new dmxlib.dmxnet();
 // Create a new receiver instance, listening for universe 5 on net 0 subnet 0
 var receiver = dmxnet.newReceiver({
 	subnet: 15,
