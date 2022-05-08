@@ -85,13 +85,13 @@ const colors = channels.array;
 function light1() {
   receiver.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors[0][i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 
   receiver2.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors[0][i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 }
@@ -99,13 +99,13 @@ function light1() {
 function light2(i) {
   receiver3.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors[1][i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 
   receiver4.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
-      colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      colors[1][i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
 }
