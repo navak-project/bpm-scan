@@ -70,29 +70,36 @@ const channel2 = ws281x(512, {
 const colors = channel.array;
 const colors2 = channel2.array;
 
-receiver.on('data', function (data) {
-	for (let i = 0; i < data.length / 3; i++) {
-		colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-	}
-});
+function light1() {
+  receiver.on('data', function (data) {
+    for (let i = 0; i < data.length / 3; i++) {
+      colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    }
+  });
 
-receiver2.on('data', function (data) {
-	for (let i = 0; i < data.length / 3; i++) {
-		colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-	}
-});
+  receiver2.on('data', function (data) {
+    for (let i = 0; i < data.length / 3; i++) {
+      colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    }
+  });
+}
 
-receiver3.on('data', function (data) {
-	for (let i = 0; i < data.length / 3; i++) {
-		colors2[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-	}
-});
+function light2(i) {
+  receiver3.on('data', function (data) {
+    for (let i = 0; i < data.length / 3; i++) {
+      colors2[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    }
+  });
 
-receiver4.on('data', function (data) {
-	for (let i = 0; i < data.length / 3; i++) {
-		colors2[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-	}
-});
+  receiver4.on('data', function (data) {
+    for (let i = 0; i < data.length / 3; i++) {
+      colors2[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    }
+  });
+}
+
+light1()
+light2()
 
 setInterval(function () {
 	ws281x.render();
