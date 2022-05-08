@@ -38,13 +38,13 @@ var dmxnet2 = new dmxlib.dmxnet({
 });
 
 // Create a new receiver instance, listening for universe 5 on net 0 subnet 0
-var receiver3 = dmxnet.newReceiver({
+var receiver3 = dmxnet2.newReceiver({
   subnet: 15,
   universe: process.env.UNI1,
   net: 0
 });
 
-var receiver4 = dmxnet.newReceiver({
+var receiver4 = dmxnet2.newReceiver({
   subnet: 15,
   universe: process.env.UNI2,
   net: 0
@@ -63,7 +63,7 @@ const channel = ws281x(512, {
 const channel2 = ws281x(512, {
   dma: 10,
   freq: 800000,
-  gpio: 18,
+  gpio: 23,
   invert: false,
   brightness: 255,
   stripType: ws281x.stripType.WS2812
