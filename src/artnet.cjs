@@ -87,7 +87,7 @@ const channel2 = ws281x(512, {
 //console.log("🚀 ~ file: artnet.cjs ~ line 83 ~ colors", colors);
 //const colors2 = channel2.array;
 (async function () {
-  await sleep(2000);
+  //await sleep(2000);
   receiver.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
       channels[0].array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
