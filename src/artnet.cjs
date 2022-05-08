@@ -80,7 +80,7 @@ const channel2 = ws281x(512, {
 });*/
 
 const colors = channels.array;
-const colors2 = channel2.array;
+//const colors2 = channel2.array;
 
 function light1() {
   receiver.on('data', function (data) {
