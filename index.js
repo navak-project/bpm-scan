@@ -15,7 +15,7 @@ import { server } from './src/server.js';
 import { EventEmitter } from 'events';
 export const eventEmitter = new EventEmitter();
 import './src/artnet.cjs';
-
+import './src/artnet2.cjs';
 const client = await clientConnect();
 const polarDevice = new ConnectionToDevice(POLARMACADDRESS, 'polarStatus', 'polarState', '0000180d-0000-1000-8000-00805f9b34fb', '00002a37-0000-1000-8000-00805f9b34fb');
 const presenceDevice = new ConnectionToDevice(PRESENCEMACADDRESS, 'presenceStatus', 'presenceState', '4fafc201-1fb5-459e-8fcc-c5c9c331914b', 'beb5483e-36e1-4688-b7f5-ea07361b26a8');
