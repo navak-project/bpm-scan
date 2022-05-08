@@ -38,6 +38,19 @@ var receiver2 = dmxnet.newReceiver({
 	net: 0
 });
 
+var receiver3 = dmxnet.newReceiver({
+  subnet: 15,
+  universe: process.env.UNI1,
+  net: 0
+});
+
+var receiver4 = dmxnet.newReceiver({
+  subnet: 15,
+  universe: process.env.UNI2,
+  net: 0
+});
+
+
 // Create a new receiver instance, listening for universe 5 on net 0 subnet 0
 /*var receiver3 = dmxnet.newReceiver({
 	subnet: 15,
@@ -53,7 +66,8 @@ var receiver4 = dmxnet.newReceiver({
 */
 // ---- trap the SIGINT and reset before exit
 process.on('SIGINT', function () {
-    console.log('Goodbye!')
+  console.log('Goodbye!');
+  process.nextTick(function () { process.exit(0); });
 });
 
 /*const channels = ws281x.init({
@@ -89,14 +103,23 @@ const channel2 = ws281x(512, {
   receiver.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
       channel.array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-      channel2.array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
-    console.log("🚀 ~ file: artnet.cjs ~ line 97 ~ data", data);
   });
 
   receiver2.on('data', function (data) {
     for (let i = 0; i < data.length / 3; i++) {
       channel.array[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    }
+  });
+
+  receiver3.on('data', function (data) {
+    for (let i = 0; i < data.length / 3; i++) {
+      channel2.array[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    }
+  });
+
+  receiver4.on('data', function (data) {
+    for (let i = 0; i < data.length / 3; i++) {
       channel2.array[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
     }
   });
