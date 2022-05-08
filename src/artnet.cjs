@@ -39,7 +39,7 @@ var receiver2 = dmxnet.newReceiver({
 });
 
 // Create a new receiver instance, listening for universe 5 on net 0 subnet 0
-var receiver3 = dmxnet.newReceiver({
+/*var receiver3 = dmxnet.newReceiver({
 	subnet: 15,
 	universe: process.env.UNI1,
 	net: 0
@@ -50,7 +50,7 @@ var receiver4 = dmxnet.newReceiver({
 	universe: process.env.UNI2,
 	net: 0
 });
-
+*/
 
 const channels = ws281x.init({
   dma: 10,
@@ -81,38 +81,23 @@ const channel2 = ws281x(512, {
 
 const colors = channels[0].array;
 const colors2 = channels[1].array;
-console.log("🚀 ~ file: artnet.cjs ~ line 83 ~ colors", colors);
+//console.log("🚀 ~ file: artnet.cjs ~ line 83 ~ colors", colors);
 //const colors2 = channel2.array;
-light1()
-function light1() {
-  receiver.on('data', function (data) {
-    for (let i = 0; i < data.length / 3; i++) {
-      colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-      colors2[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-    }
-  });
 
-  receiver2.on('data', function (data) {
-    for (let i = 0; i < data.length / 3; i++) {
-      colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-      colors2[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-    }
-  });
-}
+receiver.on('data', function (data) {
+  for (let i = 0; i < data.length / 3; i++) {
+    colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    colors2[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+  }
+});
 
-function light2(i) {
-  receiver3.on('data', function (data) {
-    for (let i = 0; i < data.length / 3; i++) {
-      colors2[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-    }
-  });
+receiver2.on('data', function (data) {
+  for (let i = 0; i < data.length / 3; i++) {
+    colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    colors2[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+  }
+});
 
-  receiver4.on('data', function (data) {
-    for (let i = 0; i < data.length / 3; i++) {
-      colors2[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-    }
-  });
-}
 
 
 //light2()
