@@ -51,6 +51,12 @@ var receiver4 = dmxnet.newReceiver({
 	net: 0
 });
 */
+// ---- trap the SIGINT and reset before exit
+process.on('SIGINT', function () {
+    ws281x.reset();
+    log.debug("Reseting Leds on exit...")
+    process.nextTick(function () { process.exit(0); });
+});
 
 const channels = ws281x.init({
   dma: 10,
@@ -78,34 +84,36 @@ const channel2 = ws281x(512, {
 	brightness: 255,
 	stripType: ws281x.stripType.WS2812
 });*/
-
-const colors = channels[0].array;
-const colors2 = channels[1].array;
 //console.log("🚀 ~ file: artnet.cjs ~ line 83 ~ colors", colors);
 //const colors2 = channel2.array;
+(async function () {
+  await sleep(2000);
+  receiver.on('data', function (data) {
+    for (let i = 0; i < data.length / 3; i++) {
+      channels[0].array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      channels[1].array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    }
+  });
 
-receiver.on('data', function (data) {
-  for (let i = 0; i < data.length / 3; i++) {
-    colors[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-    colors2[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-  }
+  receiver2.on('data', function (data) {
+    for (let i = 0; i < data.length / 3; i++) {
+      channels[0].array[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+      channels[1].array[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    }
+  });
+
+  setInterval(function () {
+    ws281x.render();
+  }, 1000 / 60);
 });
-
-receiver2.on('data', function (data) {
-  for (let i = 0; i < data.length / 3; i++) {
-    colors[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-    colors2[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-  }
-});
-
-
-
-//light2()
-
-setInterval(function () {
-	ws281x.render();
-}, 1000 / 60);
 
 function rgb2Int(r, g, b) {
 	return ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
+}
+
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
