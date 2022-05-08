@@ -53,7 +53,7 @@ var receiver4 = dmxnet.newReceiver({
 */
 // ---- trap the SIGINT and reset before exit
 process.on('SIGINT', function () {
-    log.debug("Goodbye!");
+    console.log('Goodbye!')
 });
 
 /*const channels = ws281x.init({
@@ -77,7 +77,7 @@ const channel = ws281x(512, {
 const channel2 = ws281x(512, {
 	dma: 10,
 	freq: 800000,
-	gpio: 21,
+	gpio: 18,
 	invert: false,
 	brightness: 255,
 	stripType: ws281x.stripType.WS2812
