@@ -79,7 +79,7 @@ const channel2 = ws281x(512, {
 	stripType: ws281x.stripType.WS2812
 });*/
 
-const colors = channel.array;
+const colors = channels.array;
 const colors2 = channel2.array;
 
 function light1() {
