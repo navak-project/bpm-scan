@@ -201,7 +201,7 @@ timer.addEventListener('targetAchieved', async function (e) {
       if (togglePresenceMqtt === true) { return }
       setPresence(false);
     }*/
-    if (deviceValue < 35 && deviceValue > 25 && !presenceFlag) {
+    if (deviceValue < 30 && deviceValue > 25 && !presenceFlag) {
       if (presence === true) { return }
       presenceFlag = true;
       timer.stop();
@@ -217,7 +217,7 @@ timer.addEventListener('targetAchieved', async function (e) {
       timer.stop();
       return
     }
-    if (deviceValue > 40) { 
+    if (deviceValue > 35) { 
       timer.stop();
       if (togglePresenceMqtt === true) { return }
       setPresence(false);
@@ -329,4 +329,11 @@ async function pingAPI() {
       //  reject(false)
     }
   })
+}
+
+function per(num, amount) {
+  return num + (num * amount / 100);
+}
+function less(num, amount) {
+  return num - (num * amount / 100);
 }
