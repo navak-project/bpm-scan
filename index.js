@@ -46,7 +46,11 @@ client.on('message', async function (topic, message) {
 		process.exit(0);
 	}
 	if (lantern !== null) {
-		if (topic === `/${lantern.data.id}/status` || topic === `/lanterns/${lantern.data.id}/reset`) {
+    if (topic === `/${lantern.data.id}/status` || topic === `/lanterns/${lantern.data.id}/reset`) {
+      let buff = message.toString();
+      let value = JSON.parse(buff);
+      statusValue = JSON.parse(value.presence.toLowerCase());
+      console.log("🚀 ~ file: index.js ~ line 53 ~ status", statusValue);
 			await metrics({message: `Lantern ${lantern.data.id} offline`});
 			await metrics({lantern: null});
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
