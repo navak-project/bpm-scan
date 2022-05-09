@@ -133,7 +133,6 @@ eventEmitter.on('done', async () => {
 
 async function setPresence(val) {
   presence = val;
-  console.log("🚀 ~ file: index.js ~ line 133 ~ setPresence ~ presence", presence);
   if (val === true) {
     let state = await getState();
     await metrics({ presence: true });
