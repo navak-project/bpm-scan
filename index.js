@@ -196,15 +196,19 @@ timer.addEventListener('targetAchieved', async function (e) {
     let json = JSON.stringify(buffer);
     let deviceValue = Math.max.apply(null, JSON.parse(json).data);
     _deviceValue = deviceValue
+    if (deviceValue > 30) { 
+      presenceFlag = false;
+    }
     if (deviceValue < 35 && deviceValue > 25 && !presenceFlag) {
-      //console.log('true', _deviceValue)
+      console.log('true', _deviceValue)
       if (presence === true) { return }
       presenceFlag = true;
       timer.stop();
       timer.start({ countdown: true, startValues: { seconds: 1 } });
       console.log("There's a user...loading timer", _deviceValue)
-    } else if (deviceValue > 30 && presenceFlag) {
-      //console.log('false', _deviceValue)
+    }
+    if (deviceValue > 30 && presenceFlag) {
+      console.log('false', _deviceValue)
       if (presence === false) { return }
       presenceFlag = false;
       setPresence(false);
