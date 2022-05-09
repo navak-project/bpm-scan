@@ -133,11 +133,11 @@ eventEmitter.on('done', async () => {
 
 
 async function setPresence(val) {
- /* if (_deviceValue > 35 && presenceFlag) {
+  if (_deviceValue > 35 && presenceFlag) {
     console.log("🚀 ~ file: index.js ~ line 138 ~ setPresence ~ _deviceValue", _deviceValue);
     console.log('NO WAY TO SET PRESENCE');
     return
-  }*/
+  }
   presence = val;
   if (val === true) {
     let state = await getState();
@@ -183,7 +183,6 @@ timer.addEventListener('secondsUpdated', function (e) {
 timer.addEventListener('targetAchieved', async function (e) {
   timer.stop();
   setPresence(true);
-  console.log('Presence true')
 });
 
 (async function () {
