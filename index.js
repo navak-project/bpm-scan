@@ -168,17 +168,20 @@ async function setPresence(val) {
 var timer = new Timer();
 timer.addEventListener('secondsUpdated', function (e) {
 	console.log(timer.getTimeValues().toString());
-	if (_deviceValue > 35) {
+  if (_deviceValue > 35) {
+    setPresence(false);
+    presenceFlag = false;
 		timer.stop();
-		presenceFlag = false;
-		setPresence(false);
 		console.log('GOTTEM.. nothing happen', _deviceValue);
 		return;
 	}
 });
 timer.addEventListener('targetAchieved', async function (e) {
-	timer.stop();
-	setPresence(true);
+  if (_deviceValue < 35) {
+    timer.stop();
+    setPresence(true);
+    return;
+  }
 });
 
 (async function () {
