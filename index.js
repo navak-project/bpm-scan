@@ -177,9 +177,9 @@ timer.addEventListener('secondsUpdated', function (e) {
   }
 });
 timer.addEventListener('targetAchieved', async function (e) {
-  timer.stop();
   setPresence(true);
-  console.log('Presence true reseting timer')
+  timer.stop();
+  console.log('Presence true')
 });
 
 (async function () {
@@ -200,7 +200,7 @@ timer.addEventListener('targetAchieved', async function (e) {
       if (togglePresenceMqtt === true) { return }
       timer.stop();
       setPresence(false);
-      console.log('no people')
+      console.log('No presence')
       return
     }
     if (deviceValue < 35) {
