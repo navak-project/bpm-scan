@@ -134,7 +134,7 @@ eventEmitter.on('done', async () => {
 
 
 async function setPresence(val) {
-  if (_deviceValue > 35) {
+  if (_deviceValue > 35 && presenceFlag) {
     console.log("🚀 ~ file: index.js ~ line 138 ~ setPresence ~ _deviceValue", _deviceValue);
     console.log('NO WAY TO SET PRESENCE');
     return
