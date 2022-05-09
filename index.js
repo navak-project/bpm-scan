@@ -182,8 +182,8 @@ timer.addEventListener('targetAchieved', async function (e) {
 (async function () {
 	// await pingAPI();
 	//await pingAPI();
-	await server();
-	await metricsReset();
+  await metricsReset();
+  await server();
 	await setState(6);
 	await metrics({message: 'Booting...'});
 	await metrics({bpm: heartrate});
