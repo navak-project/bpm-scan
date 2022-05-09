@@ -197,7 +197,10 @@ timer.addEventListener('targetAchieved', async function (e) {
     let deviceValue = Math.max.apply(null, JSON.parse(json).data);
     _deviceValue = deviceValue
     if (deviceValue > 30) { 
-      presenceFlag = true;
+      setPresence(false);
+      console.log('Presence false reseting timer')
+      timer.stop();
+      return
     }
     if (deviceValue < 35 && deviceValue > 25 && !presenceFlag) {
       console.log('true', _deviceValue)
