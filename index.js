@@ -192,7 +192,8 @@ timer.addEventListener('targetAchieved', async function (e) {
 	await metrics({bpm: heartrate});
 
 	_PRESENCEDEVICE = await connectBluetooth(presenceDevice);
-	_PRESENCEDEVICE.on('valuechanged', async (buffer) => {
+  _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
+    return
 		let json = JSON.stringify(buffer);
 		let deviceValue = Math.max.apply(null, JSON.parse(json).data);
 		_deviceValue = deviceValue;
@@ -240,8 +241,8 @@ async function getLantern() {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
 			ready();
-			//client.subscribe(`/lanterns/${lantern.data.id}/reset`);
-			//client.subscribe(`/${lantern.data.id}/status`);
+			client.subscribe(`/lanterns/${lantern.data.id}/reset`);
+			client.subscribe(`/${lantern.data.id}/status`);
 			await metrics({lantern: lantern.data.id});
 			resolve(lantern.data.id);
 		} catch (error) {
