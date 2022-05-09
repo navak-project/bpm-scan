@@ -198,10 +198,7 @@ timer.addEventListener('targetAchieved', async function (e) {
     _deviceValue = deviceValue
     if (deviceValue > 40) { 
       if (togglePresenceMqtt === true) { return }
-      timer.stop();
       setPresence(false);
-      console.log('No presence')
-      return
     }
     if (deviceValue < 35 && !presenceFlag) {
       if (presence === true) { return }
