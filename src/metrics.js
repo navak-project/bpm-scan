@@ -24,9 +24,11 @@ export async function metricsReset(value) {
       "lantern": null,
       "timer": "00:00:15",
       "presence": "false",
-      "state": 0,
+      "state": 6,
       "polarStatus": "No device",
       "polarState": 4,
+      "presenceStatus": "No device",
+      "presenceState": 4,
     }
     await axios
       .put(`http://${IP}/api/stations/${ID}`, data)

@@ -201,6 +201,7 @@ timer.addEventListener('targetAchieved', async function (e) {
     let json = JSON.stringify(buffer);
     let deviceValue = Math.max.apply(null, JSON.parse(json).data);
     _deviceValue = deviceValue
+    console.log("🚀 ~ file: index.js ~ line 204 ~ _PRESENCEDEVICE.on ~ _deviceValue", _deviceValue);
    /* if (deviceValue > 40) { 
       timer.stop();
       if (togglePresenceMqtt === true) { return }
