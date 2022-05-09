@@ -209,7 +209,7 @@ timer.addEventListener('targetAchieved', async function (e) {
       if (presence === true) { return }
       presenceFlag = true;
       timer.stop();
-      timer.start({ countdown: true, startValues: { seconds: 1 } });
+      timer.start({ countdown: true, startValues: { seconds: 2 } });
       console.log("There's a user...loading timer", _deviceValue)
     }
     if (deviceValue > 35) {
