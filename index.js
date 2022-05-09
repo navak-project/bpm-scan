@@ -46,15 +46,14 @@ client.on('message', async function (topic, message) {
 		process.exit(0);
 	}
 	if (lantern !== null) {
-    if (topic === `/${lantern.data.id}/status` || topic === `/lanterns/${lantern.data.id}/reset`) {
-
+		if (topic === `/${lantern.data.id}/status` || topic === `/lanterns/${lantern.data.id}/reset`) {
 			await metrics({message: `Lantern ${lantern.data.id} offline`});
-      await metrics({ lantern: null });
-      lantern = null;
-      await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: '50, 50, 50, 255', lantern: null });
-      client.unsubscribe(`/${lantern.data.id}/status`);
+			await metrics({lantern: null});
+			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
+			client.unsubscribe(`/${lantern.data.id}/status`);
       client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
-			sleep(3000);
+      lantern = null;
+			sleep(2000);
 			await getLantern();
 		}
 	}
@@ -111,6 +110,7 @@ async function connectBluetooth(deviceToConnect) {
 }
 
 async function ready() {
+  
 	await setState(0);
 	if (presence) {
 		setPresence(true);
@@ -121,9 +121,9 @@ async function ready() {
 
 eventEmitter.on('done', async () => {
 	await setState(2);
-  client.publish(`/lantern/${lantern.id}/audio/ignite`);
-  client.unsubscribe(`/${lantern.data.id}/status`);
-  client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
+	client.publish(`/lantern/${lantern.id}/audio/ignite`);
+	client.unsubscribe(`/${lantern.data.id}/status`);
+	client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 	await metrics({lantern: null});
 	lantern = null;
 	if (!presence) {
@@ -141,12 +141,12 @@ async function setPresence(val) {
 		if (presence && state.name === 'ready') {
 			await setState(7);
 			await metrics({message: 'User Ready, waiting'});
-			//while (!alluser) {
-			//  await checkUsers();
-			//}
-			//  if (alluser) {
-			await scan();
-			// }
+			while (!alluser) {
+				await checkUsers();
+			}
+			if (alluser) {
+				await scan();
+			}
 		}
 	}
 	if (val === false) {
@@ -168,20 +168,20 @@ async function setPresence(val) {
 var timer = new Timer();
 timer.addEventListener('secondsUpdated', function (e) {
 	console.log(timer.getTimeValues().toString());
-  if (_deviceValue > 35) {
-    setPresence(false);
-    presenceFlag = false;
+	if (_deviceValue > 35) {
+		setPresence(false);
+		presenceFlag = false;
 		timer.stop();
 		console.log('GOTTEM.. nothing happen', _deviceValue);
 		return;
 	}
 });
 timer.addEventListener('targetAchieved', async function (e) {
-  if (_deviceValue < 35) {
-    timer.stop();
-    setPresence(true);
-    return;
-  }
+	if (_deviceValue < 35) {
+		timer.stop();
+		setPresence(true);
+		return;
+	}
 });
 
 (async function () {
@@ -193,9 +193,9 @@ timer.addEventListener('targetAchieved', async function (e) {
 	await metrics({message: 'Booting...'});
 	await metrics({bpm: heartrate});
 
-  _PRESENCEDEVICE = await connectBluetooth(presenceDevice);
-  await getLantern();
-  _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
+	_PRESENCEDEVICE = await connectBluetooth(presenceDevice);
+	await getLantern();
+	_PRESENCEDEVICE.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
 		let deviceValue = Math.max.apply(null, JSON.parse(json).data);
 		_deviceValue = deviceValue;
@@ -229,14 +229,15 @@ timer.addEventListener('targetAchieved', async function (e) {
 		}
 	});
 
-	
 	console.log('Ready!');
 })();
 
 /*------------------------------------------------------*/
 
 async function getLantern() {
-  if (lantern !== null) { return }
+	if (lantern !== null) {
+		return;
+	}
 	await setState(5);
 	sleep(3000);
 	return new Promise(async function (resolve, reject) {
@@ -263,9 +264,9 @@ async function getLantern() {
 async function done() {
 	await metrics({message: 'User is done and left!'});
 	await metrics({timer: `00:00:${timerScan}`});
-  await setState(9);
-  await sleep(4000);
-//	await sleep(18000);
+	await setState(9);
+
+	await sleep(18000);
 	await getLantern();
 }
 
