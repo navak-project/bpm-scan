@@ -134,6 +134,10 @@ eventEmitter.on('done', async () => {
 
 
 async function setPresence(val) {
+  if (_deviceValue > 35) {
+    console.log('NO WAY TO SET PRESENCE');
+    return
+  }
   presence = val;
   if (val === true) {
     let state = await getState();
