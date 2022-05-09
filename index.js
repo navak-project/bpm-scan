@@ -90,6 +90,7 @@ eventEmitter.on('connectToPolar', async () => {
     })
     .catch(async (error) => {
       console.log('🚀 ~ error:', error);
+      await sleep(5000);
       eventEmitter.removeListener('connectToPolar', removeListener)
       eventEmitter.emit('connectToPolar');
     });
@@ -101,6 +102,7 @@ async function connectBluetooth(deviceToConnect) {
     return deviceToConnect.device;
   } catch (error) {
     console.log('🚀 ~ error', error);
+    await sleep(5000);
     await connectBluetooth(deviceToConnect);
     return;
   }
