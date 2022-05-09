@@ -49,15 +49,13 @@ client.on('message', async function (topic, message) {
     if (topic === `/${lantern.data.id}/status` || topic === `/lanterns/${lantern.data.id}/reset`) {
       let buff = message.toString();
       let value = JSON.parse(buff);
-      statusValue = JSON.parse(value.presence.toLowerCase());
+      statusValue = JSON.parse(value.toLowerCase());
       console.log("🚀 ~ file: index.js ~ line 53 ~ status", statusValue);
 			await metrics({message: `Lantern ${lantern.data.id} offline`});
-			await metrics({lantern: null});
+      await metrics({ lantern: null });
+      lantern = null;
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
-			client.unsubscribe(`/${lantern.data.id}/status`);
-			client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
-			sleep(2000);
-			lantern = null;
+			sleep(3000);
 			await getLantern();
 		}
 	}
@@ -258,10 +256,13 @@ async function getLantern() {
 }
 
 async function done() {
+  client.unsubscribe(`/${lantern.data.id}/status`);
+  client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 	await metrics({message: 'User is done and left!'});
 	await metrics({timer: `00:00:${timerScan}`});
-	await setState(9);
-	await sleep(18000);
+  await setState(9);
+  await sleep(4000);
+//	await sleep(18000);
 	await getLantern();
 }
 
