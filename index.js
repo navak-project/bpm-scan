@@ -41,8 +41,8 @@ client.on('message', async function (topic, message) {
     return;
   }
   if (topic === `/station/${ID}/reboot`) {
-    eventEmitter.emit('processexit', 'Reboot!');
-    return;
+    await metrics({ status: false });
+    process.exit(0);
   }
   if (lantern !== null) {
     if (topic === `/${lantern.data.id}/status` || topic === `/lanterns/${lantern.data.id}/reset`) {
@@ -130,10 +130,6 @@ eventEmitter.on('done', async () => {
   await metrics({ message: 'Done!' });
 });
 
-eventEmitter.on('processexit', async (msg) => {
-  await metrics({ status: false });
-  process.exit(0);
-});
 
 async function setPresence(val) {
   presence = val;
