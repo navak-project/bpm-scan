@@ -28,6 +28,7 @@ let heartrate = 0;
 let _POLARDEVICE = null;
 let _PRESENCEDEVICE = null;
 let presenceFlag = false;
+let togglePresenceMqtt = false;
 let _deviceValue = 0;
 
 client.on('error', function (err) {
@@ -64,6 +65,7 @@ client.on('message', async function (topic, message) {
     console.log('🚀 ~ file: index.js ~ line 60 ~ presence', presence);
     await metrics({ presence: presence });
     setPresence(presence);
+    togglePresenceMqtt = presence;
   }
 });
 
@@ -166,9 +168,9 @@ async function setPresence(val) {
 var timer = new Timer();
 timer.addEventListener('secondsUpdated', function (e) {
   console.log(timer.getTimeValues().toString())
-  if (_deviceValue > 40 && presenceFlag) {
-    presenceFlag = false
+  if (_deviceValue > 40) {
     timer.stop();
+    presenceFlag = false
     setPresence(false)
     console.log('GOTTEM.. nothing happen', _deviceValue)
     return
@@ -196,7 +198,7 @@ timer.addEventListener('targetAchieved', async function (e) {
     let deviceValue = Math.max.apply(null, JSON.parse(json).data);
     _deviceValue = deviceValue
     console.log("🚀 ~ file: index.js ~ line 199 ~ _PRESENCEDEVICE.on ~ _deviceValue", _deviceValue);
-    if (deviceValue > 40) { 
+    if (deviceValue > 40 && togglePresenceMqtt === false) { 
       setPresence(false);
       console.log('no people')
       //return
