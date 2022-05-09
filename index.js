@@ -47,14 +47,13 @@ client.on('message', async function (topic, message) {
 	}
 	if (lantern !== null) {
     if (topic === `/${lantern.data.id}/status` || topic === `/lanterns/${lantern.data.id}/reset`) {
-      let buff = message.toString();
-      let value = JSON.parse(buff);
-      statusValue = JSON.parse(value.toLowerCase());
-      console.log("🚀 ~ file: index.js ~ line 53 ~ status", statusValue);
+
 			await metrics({message: `Lantern ${lantern.data.id} offline`});
       await metrics({ lantern: null });
       lantern = null;
-			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
+      await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: '50, 50, 50, 255', lantern: null });
+      client.unsubscribe(`/${lantern.data.id}/status`);
+      client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 			sleep(3000);
 			await getLantern();
 		}
@@ -191,9 +190,9 @@ timer.addEventListener('targetAchieved', async function (e) {
 	await metrics({message: 'Booting...'});
 	await metrics({bpm: heartrate});
 
-	_PRESENCEDEVICE = await connectBluetooth(presenceDevice);
+  _PRESENCEDEVICE = await connectBluetooth(presenceDevice);
+  await getLantern();
   _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
-    return
 		let json = JSON.stringify(buffer);
 		let deviceValue = Math.max.apply(null, JSON.parse(json).data);
 		_deviceValue = deviceValue;
@@ -227,13 +226,14 @@ timer.addEventListener('targetAchieved', async function (e) {
 		}
 	});
 
-	await getLantern();
+	
 	console.log('Ready!');
 })();
 
 /*------------------------------------------------------*/
 
 async function getLantern() {
+  if (lantern !== null) { return }
 	await setState(5);
 	sleep(3000);
 	return new Promise(async function (resolve, reject) {
