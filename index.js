@@ -196,9 +196,10 @@ timer.addEventListener('targetAchieved', async function (e) {
     let json = JSON.stringify(buffer);
     let deviceValue = Math.max.apply(null, JSON.parse(json).data);
     _deviceValue = deviceValue
-    if (deviceValue > 30) { 
+    console.log("🚀 ~ file: index.js ~ line 199 ~ _PRESENCEDEVICE.on ~ _deviceValue", _deviceValue);
+    if (deviceValue > 40) { 
       setPresence(false);
-      console.log('Presence false reseting timer')
+      console.log('no people')
       timer.stop();
       return
     }
