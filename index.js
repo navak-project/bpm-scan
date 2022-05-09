@@ -111,7 +111,6 @@ async function connectBluetooth(deviceToConnect) {
 }
 
 async function ready() {
-  await metrics({ lantern: lantern.data.id });
   await setState(0);
   if (presence) {
     setPresence(true);
@@ -246,6 +245,7 @@ async function getLantern() {
       ready();
       client.subscribe(`/lanterns/${lantern.data.id}/reset`);
       client.subscribe(`/${lantern.data.id}/status`);
+      await metrics({ lantern: lantern.data.id });
       resolve(lantern.data.id);
     } catch (error) {
       await setState(3);
