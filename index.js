@@ -122,7 +122,9 @@ async function ready() {
 
 eventEmitter.on('done', async () => {
 	await setState(2);
-	client.publish(`/lantern/${lantern.id}/audio/ignite`);
+  client.publish(`/lantern/${lantern.id}/audio/ignite`);
+  client.unsubscribe(`/${lantern.data.id}/status`);
+  client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 	await metrics({lantern: null});
 	lantern = null;
 	if (!presence) {
@@ -256,8 +258,6 @@ async function getLantern() {
 }
 
 async function done() {
-  client.unsubscribe(`/${lantern.data.id}/status`);
-  client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 	await metrics({message: 'User is done and left!'});
 	await metrics({timer: `00:00:${timerScan}`});
   await setState(9);
