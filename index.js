@@ -201,7 +201,7 @@ timer.addEventListener('targetAchieved', async function (e) {
       setPresence(false);
       console.log('no people')
       timer.stop();
-      return
+      //return
     }
     if (deviceValue < 35 && deviceValue > 25 && !presenceFlag) {
       console.log('true', _deviceValue)
