@@ -140,12 +140,12 @@ async function setPresence(val) {
     if (presence && state.name === 'ready') {
       await setState(7);
       await metrics({ message: 'User Ready, waiting' });
-      while (!alluser) {
-        await checkUsers();
-      }
-      if (alluser) {
+      //while (!alluser) {
+      //  await checkUsers();
+      //}
+    //  if (alluser) {
         await scan();
-      }
+     // }
     }
   }
   if (val === false) {
