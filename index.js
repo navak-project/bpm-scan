@@ -196,7 +196,6 @@ timer.addEventListener('targetAchieved', async function (e) {
     let json = JSON.stringify(buffer);
     let deviceValue = Math.max.apply(null, JSON.parse(json).data);
     _deviceValue = deviceValue
-    console.log("🚀 ~ file: index.js ~ line 199 ~ _PRESENCEDEVICE.on ~ _deviceValue", _deviceValue);
     if (deviceValue > 40) { 
       if (togglePresenceMqtt === true) { return }
       timer.stop();
@@ -205,7 +204,6 @@ timer.addEventListener('targetAchieved', async function (e) {
       return
     }
     if (deviceValue < 35) {
-      console.log('true', _deviceValue)
       if (presence === true) { return }
       presenceFlag = true;
       timer.stop();
@@ -213,7 +211,6 @@ timer.addEventListener('targetAchieved', async function (e) {
       console.log("There's a user...loading timer", _deviceValue)
     }
     if (deviceValue > 35) {
-      console.log('false', _deviceValue)
       if (presence === false) { return }
       presenceFlag = false;
       setPresence(false);
