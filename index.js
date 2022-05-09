@@ -45,18 +45,17 @@ client.on('message', async function (topic, message) {
 		await metrics({status: false});
 		process.exit(0);
 	}
-	if (topic === `/${lantern.data.id}/status` || topic === `/lanterns/${lantern.data.id}/reset`) {
-		if (lantern !== null) {
-			return;
+	if (lantern !== null) {
+		if (topic === `/${lantern.data.id}/status` || topic === `/lanterns/${lantern.data.id}/reset`) {
+			await metrics({message: `Lantern ${lantern.data.id} offline`});
+			await metrics({lantern: null});
+			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
+			client.unsubscribe(`/${lantern.data.id}/status`);
+			client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
+			sleep(2000);
+			lantern = null;
+			await getLantern();
 		}
-		await metrics({message: `Lantern ${lantern.data.id} offline`});
-		await metrics({lantern: null});
-		await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
-		client.unsubscribe(`/${lantern.data.id}/status`);
-		client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
-		sleep(2000);
-		lantern = null;
-		await getLantern();
 	}
 
 	if (topic === `/station/${ID}/presence`) {
@@ -182,8 +181,8 @@ timer.addEventListener('targetAchieved', async function (e) {
 (async function () {
 	// await pingAPI();
 	//await pingAPI();
-  await metricsReset();
-  await server();
+	await metricsReset();
+	await server();
 	await setState(6);
 	await metrics({message: 'Booting...'});
 	await metrics({bpm: heartrate});
@@ -238,7 +237,7 @@ async function getLantern() {
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
 			ready();
 			client.subscribe(`/lanterns/${lantern.data.id}/reset`);
-      console.log("🚀 ~ file: index.js ~ line 241 ~ lantern.data.id", lantern.data.id);
+			console.log('🚀 ~ file: index.js ~ line 241 ~ lantern.data.id', lantern.data.id);
 			client.subscribe(`/${lantern.data.id}/status`);
 			await metrics({lantern: lantern.data.id});
 			resolve(lantern.data.id);
