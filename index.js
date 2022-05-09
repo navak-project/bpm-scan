@@ -62,10 +62,10 @@ client.on('message', async function (topic, message) {
     let buff = message.toString();
     let value = JSON.parse(buff);
     presence = JSON.parse(value.presence.toLowerCase());
-    console.log('🚀 ~ file: index.js ~ line 60 ~ presence', presence);
+    togglePresenceMqtt = presence;
     await metrics({ presence: presence });
     setPresence(presence);
-    togglePresenceMqtt = presence;
+   
   }
 });
 
@@ -168,7 +168,7 @@ async function setPresence(val) {
 var timer = new Timer();
 timer.addEventListener('secondsUpdated', function (e) {
   console.log(timer.getTimeValues().toString())
-  if (_deviceValue > 40) {
+  if (_deviceValue > 35) {
     timer.stop();
     presenceFlag = false
     setPresence(false)
@@ -180,7 +180,6 @@ timer.addEventListener('targetAchieved', async function (e) {
   timer.stop();
   setPresence(true);
   console.log('Presence true reseting timer')
-  //throw 'oups this should not happen in a stresstest!!!!'
 });
 
 (async function () {
@@ -198,10 +197,12 @@ timer.addEventListener('targetAchieved', async function (e) {
     let deviceValue = Math.max.apply(null, JSON.parse(json).data);
     _deviceValue = deviceValue
     console.log("🚀 ~ file: index.js ~ line 199 ~ _PRESENCEDEVICE.on ~ _deviceValue", _deviceValue);
-    if (deviceValue > 40 && togglePresenceMqtt === false) { 
+    if (deviceValue > 40) { 
+      if (togglePresenceMqtt === true) { return }
+      timer.stop();
       setPresence(false);
       console.log('no people')
-      //return
+      return
     }
     if (deviceValue < 35) {
       console.log('true', _deviceValue)
@@ -211,7 +212,7 @@ timer.addEventListener('targetAchieved', async function (e) {
       timer.start({ countdown: true, startValues: { seconds: 1 } });
       console.log("There's a user...loading timer", _deviceValue)
     }
-    if (deviceValue > 30) {
+    if (deviceValue > 35) {
       console.log('false', _deviceValue)
       if (presence === false) { return }
       presenceFlag = false;
