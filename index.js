@@ -140,12 +140,12 @@ async function setPresence(val) {
     if (presence && state.name === 'ready') {
       await setState(7);
       await metrics({ message: 'User Ready, waiting' });
-      //while (!alluser) {
-      //		await checkUsers();
-      //}
-      //	if (alluser) {
-      await scan();
-      //		}
+      while (!alluser) {
+        await checkUsers();
+      }
+      if (alluser) {
+        await scan();
+      }
     }
   }
   if (val === false) {
@@ -201,7 +201,7 @@ timer.addEventListener('targetAchieved', async function (e) {
       if (presence === true) { return }
       presenceFlag = true;
       timer.stop();
-      timer.start({ countdown: true, startValues: { seconds: 3 } });
+      timer.start({ countdown: true, startValues: { seconds: 2 } });
       console.log("There's a user...loading timer", _deviceValue)
     } else if (deviceValue > 30 && presenceFlag) {
       //console.log('false', _deviceValue)
