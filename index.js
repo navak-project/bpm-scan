@@ -177,8 +177,8 @@ timer.addEventListener('secondsUpdated', function (e) {
   }
 });
 timer.addEventListener('targetAchieved', async function (e) {
-  setPresence(true);
   timer.stop();
+  setPresence(true);
   console.log('Presence true')
 });
 
@@ -197,6 +197,7 @@ timer.addEventListener('targetAchieved', async function (e) {
     let deviceValue = Math.max.apply(null, JSON.parse(json).data);
     _deviceValue = deviceValue
     if (deviceValue > 40) { 
+      timer.stop();
       if (togglePresenceMqtt === true) { return }
       setPresence(false);
     }
