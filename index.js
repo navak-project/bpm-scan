@@ -203,14 +203,14 @@ timer.addEventListener('targetAchieved', async function (e) {
       console.log('No presence')
       return
     }
-    if (deviceValue < 35) {
+    if (deviceValue < 35 && !presenceFlag) {
       if (presence === true) { return }
       presenceFlag = true;
       timer.stop();
       timer.start({ countdown: true, startValues: { seconds: 2 } });
       console.log("There's a user...loading timer", _deviceValue)
     }
-    if (deviceValue > 35) {
+    if (deviceValue > 35 && presenceFlag) {
       if (presence === false) { return }
       presenceFlag = false;
       setPresence(false);
