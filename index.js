@@ -46,6 +46,7 @@ client.on('message', async function (topic, message) {
     process.exit(0);
   }
   if (lantern !== null) {
+    console.log("🚀 ~ file: index.js ~ line 49 ~ lantern", lantern);
     if (topic === `/${lantern.data.id}/status` || topic === `/lanterns/${lantern.data.id}/reset`) {
       await metrics({ message: `Lantern ${lantern.data.id} offline` });
       await metrics({ lantern: null });
