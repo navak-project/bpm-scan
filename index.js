@@ -10,7 +10,7 @@ import {clientConnect} from './src/mqtt.js';
 import {ConnectionToDevice} from './src/device.js';
 import isReachable from 'is-reachable';
 import {Timer} from 'easytimer.js';
-const timerInstance = new Timer();
+const timerInstance = null;
 import {server} from './src/server.js';
 import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
@@ -292,6 +292,7 @@ async function checkUsers() {
 }
 
 async function scan() {
+  timerInstance = new Timer();
 	timerInstance.addEventListener('secondsUpdated', async function (e) {
 		await metrics({timer: timerInstance.getTimeValues().toString()});
 		if (_POLARDEVICE === null) {
@@ -300,7 +301,6 @@ async function scan() {
 		}
 	});
   timerInstance.addEventListener('targetAchieved', async function (e) {
-    console.log(timerInstance.getTimeValues().toString());
 		timerInstance.stop();
 		await axios.put(`http://${IP}/api/lanterns/${lantern.data.id}`, {pulse: heartrate});
 		await setState(2);
@@ -309,7 +309,7 @@ async function scan() {
 		client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 		await metrics({lantern: null});
     lantern = null;
-    console.log('!!', timerInstance.getTimeValues().toString());
+    timerInstance = null
     await sleep(1000);
     done();
 	/*	if (!presence) {
