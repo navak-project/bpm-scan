@@ -194,7 +194,6 @@ async function setPresence(val) {
         if (_deviceValue > 35) {
           setPresence(false);
           presenceFlag = false;
-          timer.stop();
           timer = null;
           console.log('GOTTEM.. nothing happen', _deviceValue);
           return;
@@ -202,7 +201,6 @@ async function setPresence(val) {
       });
       timer.addEventListener('targetAchieved', async function (e) {
         if (_deviceValue < 35) {
-          timer.stop();
           timer = null;
           setPresence(true);
           return;
@@ -219,11 +217,11 @@ async function setPresence(val) {
 			presenceFlag = false;
 			setPresence(false);
 			console.log('Presence false reseting timer');
-			timer.stop();
+      timer = null;
 			return;
 		}
 		if (deviceValue > 35) {
-			timer.stop();
+      timer = null;
 			if (togglePresenceMqtt === true) {
 				return;
 			}
