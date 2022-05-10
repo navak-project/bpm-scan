@@ -52,7 +52,7 @@ client.on('message', async function (topic, message) {
 			client.unsubscribe(`/${lantern.data.id}/status`);
 			client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 			lantern = null;
-			await getLantern();
+			//await getLantern();
 		}
 	}
 
@@ -143,7 +143,7 @@ async function setPresence(val) {
 				await checkUsers();
 			}
 			if (alluser) {
-				await sleep(2000);
+				await sleep(1000);
 				await scan();
 			}
 		}
