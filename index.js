@@ -50,8 +50,8 @@ client.on('message', async function (topic, message) {
 			await metrics({message: `Lantern ${lantern.data.id} offline`});
 			await metrics({lantern: null});
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
-			client.unsubscribe(`/${lantern.data.id}/status`);
-      client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
+			//client.unsubscribe(`/${lantern.data.id}/status`);
+      //client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
       lantern = null;
 			sleep(4000);
 			await getLantern();
@@ -122,8 +122,8 @@ async function ready() {
 eventEmitter.on('done', async () => {
 	await setState(2);
 	client.publish(`/lantern/${lantern.id}/audio/ignite`);
-	client.unsubscribe(`/${lantern.data.id}/status`);
-	client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
+	//client.unsubscribe(`/${lantern.data.id}/status`);
+	//client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 	await metrics({lantern: null});
 	lantern = null;
 	if (!presence) {
@@ -245,8 +245,8 @@ async function getLantern() {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
 			ready();
-			client.subscribe(`/lanterns/${lantern.data.id}/reset`);
-			client.subscribe(`/${lantern.data.id}/status`);
+			//client.subscribe(`/lanterns/${lantern.data.id}/reset`);
+			//client.subscribe(`/${lantern.data.id}/status`);
 			await metrics({lantern: lantern.data.id});
 			resolve(lantern.data.id);
 		} catch (error) {
