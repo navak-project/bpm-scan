@@ -156,7 +156,7 @@ async function setPresence(val) {
 			return;
 		}
 		if (state.name === 'done') {
-			//done();
+			done();
 			return;
 		}
 		ready();
