@@ -310,9 +310,8 @@ async function scan() {
 		client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 		await metrics({lantern: null});
     lantern = null;
-    await sleep(1000);
+    //await sleep(1000);
     done();
-
 	/*	if (!presence) {
 			done();
 			return;
