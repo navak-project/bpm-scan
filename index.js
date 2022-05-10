@@ -53,7 +53,7 @@ client.on('message', async function (topic, message) {
 			client.unsubscribe(`/${lantern.data.id}/status`);
       client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
       lantern = null;
-			sleep(2000);
+			sleep(4000);
 			await getLantern();
 		}
 	}
@@ -110,7 +110,7 @@ async function connectBluetooth(deviceToConnect) {
 }
 
 async function ready() {
-  
+
 	await setState(0);
 	if (presence) {
 		setPresence(true);

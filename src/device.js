@@ -5,6 +5,7 @@ const {bluetooth} = createBluetooth();
 import {metrics} from './metrics.js';
 export class ConnectionToDevice {
 	constructor(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
+    console.log("🚀 ~ file: device.js ~ line 8 ~ ConnectionToDevice ~ constructor ~ deviceToConnect", deviceToConnect);
 		this.deviceToConnect = deviceToConnect;
 		this.metricsStatus = metricsStatus;
 		this.metricsState = metricsState;
