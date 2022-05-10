@@ -257,7 +257,8 @@ async function getLantern() {
 
 async function done() {
   await metrics({ message: 'Done!' });
-	await metrics({message: 'User is done and left!'});
+  //await metrics({ message: 'User is done and left!' });
+  timerInstance = null
 //	await metrics({timer: `00:00:${timerScan}`});
 	await setState(9);
 	await sleep(4000);
@@ -311,7 +312,7 @@ async function scan() {
     lantern = null;
     await sleep(1000);
     done();
-    timerInstance = null
+
 	/*	if (!presence) {
 			done();
 			return;
