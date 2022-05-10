@@ -142,7 +142,8 @@ async function setPresence(val) {
 			while (!alluser) {
 				await checkUsers();
 			}
-			if (alluser) {
+      if (alluser) {
+        await sleep(2000)
 				await scan();
 			}
 		}
@@ -245,9 +246,8 @@ async function getLantern() {
 		client.subscribe(`/${lantern.data.id}/status`);
 		await metrics({lantern: lantern.data.id});
 	} catch (error) {
-		console.log('🚀 ~ file: index.js ~ line 253 ~ error', error);
 		await setState(3);
-		await metrics({message: error});
+		await metrics({message: error.response.data});
 		await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
 		await metrics({message: 'Retrying...'});
 		await sleep(4000);
