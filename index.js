@@ -250,8 +250,9 @@ async function getLantern() {
 			await metrics({lantern: lantern.data.id});
 			resolve(lantern.data.id);
 		} catch (error) {
+      console.log("🚀 ~ file: index.js ~ line 253 ~ error", error);
 			await setState(3);
-			await metrics({message: error.response.data});
+			await metrics({message: error});
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
 			await sleep(3000);
 			await metrics({message: 'Retrying...'});
