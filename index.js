@@ -130,7 +130,7 @@ eventEmitter.on('done', async () => {
 });
 
 async function setPresence(val) {
-  if(lantern === null) { await getLantern(); }
+  //if(lantern === null) { await getLantern(); }
 	presence = val;
 	if (val === true) {
 		let state = await getState();
