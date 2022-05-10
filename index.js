@@ -111,10 +111,10 @@ async function connectBluetooth(deviceToConnect) {
 
 async function ready() {
 	await setState(0);
-	if (presence) {
+	/*if (presence) {
 		setPresence(true);
 		return;
-	}
+	}*/
 	await metrics({message: 'Ready to scan'});
 }
 
@@ -318,10 +318,10 @@ async function scan() {
 		await metrics({lantern: null});
     lantern = null;
     done();
-		if (!presence) {
+	/*	if (!presence) {
 			done();
 			return;
-		}
+		}*/
 	
 	});
 	await setState(1);
