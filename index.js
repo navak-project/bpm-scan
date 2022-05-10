@@ -36,7 +36,6 @@ client.on('error', function (err) {
 });
 
 client.on('message', async function (topic, message) {
-	console.log(topic);
 	let state = await getState();
 	if (state.name === 'boot') {
 		return;
@@ -50,8 +49,8 @@ client.on('message', async function (topic, message) {
 			await metrics({message: `Lantern ${lantern.data.id} offline`});
 			await metrics({lantern: null});
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
-			//client.unsubscribe(`/${lantern.data.id}/status`);
-      //client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
+			client.unsubscribe(`/${lantern.data.id}/status`);
+      client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
       lantern = null;
 			sleep(4000);
 			await getLantern();
@@ -122,8 +121,8 @@ async function ready() {
 eventEmitter.on('done', async () => {
 	await setState(2);
 	client.publish(`/lantern/${lantern.id}/audio/ignite`);
-	//client.unsubscribe(`/${lantern.data.id}/status`);
-	//client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
+	client.unsubscribe(`/${lantern.data.id}/status`);
+	client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 	await metrics({lantern: null});
 	lantern = null;
 	if (!presence) {
@@ -245,8 +244,8 @@ async function getLantern() {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
 			ready();
-			//client.subscribe(`/lanterns/${lantern.data.id}/reset`);
-			//client.subscribe(`/${lantern.data.id}/status`);
+			client.subscribe(`/lanterns/${lantern.data.id}/reset`);
+			client.subscribe(`/${lantern.data.id}/status`);
 			await metrics({lantern: lantern.data.id});
 			resolve(lantern.data.id);
 		} catch (error) {
@@ -265,8 +264,8 @@ async function done() {
 	await metrics({message: 'User is done and left!'});
 	await metrics({timer: `00:00:${timerScan}`});
 	await setState(9);
-
-	await sleep(18000);
+  await sleep(4000)
+	//await sleep(18000);
 	await getLantern();
 }
 
@@ -289,7 +288,8 @@ async function checkUsers() {
 		var isAllTrue = Object.keys(arr).every(function (key) {
 			if (arr[key].presence === true && arr[key].lantern != null) return true;
 		});
-		alluser = isAllTrue;
+    alluser = isAllTrue;
+    await sleep(2000);
 		resolve(alluser);
 	}).catch((err) => {
 		reject(err);
