@@ -234,18 +234,19 @@ timer.addEventListener('targetAchieved', async function (e) {
 /*------------------------------------------------------*/
 
 async function getLantern() {
+  if(lantern !== null) { return; }
 	await setState(5);
 	await metrics({message: 'Getting Lantern...'});
 	console.log('Getting Lantern...');
 	try {
-		await sleep(4000);
+		//await sleep(4000);
 		lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 		console.log('🚀 ~ file: index.js ~ line 246 ~ lantern', lantern.data.id);
 		await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
-		ready();
 		client.subscribe(`/lanterns/${lantern.data.id}/reset`);
 		client.subscribe(`/${lantern.data.id}/status`);
-		await metrics({lantern: lantern.data.id});
+    await metrics({ lantern: lantern.data.id });
+    ready();
 	} catch (error) {
 		await setState(3);
 		await metrics({message: error.response.data});
