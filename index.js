@@ -311,11 +311,11 @@ async function scan() {
 		await metrics({lantern: null});
     lantern = null;
     //await sleep(1000);
-    done();
-	/*	if (!presence) {
+    //done();
+	  if (!presence) {
 			done();
 			return;
-		}*/
+		}
 	
 	});
 	await setState(1);
