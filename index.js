@@ -240,7 +240,7 @@ async function getLantern() {
   await metrics({ message: 'Getting Lantern...' });
   console.log('Getting Lantern...');
   sleep(10000);
-	return new Promise(async function (resolve, reject) {
+	//return new Promise(async function (resolve, reject) {
 		try {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 			await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: lantern.data.rgb});
@@ -258,7 +258,7 @@ async function getLantern() {
 			await sleep(3000);
 			await getLantern();
 		}
-	});
+//	});
 }
 
 async function done() {
