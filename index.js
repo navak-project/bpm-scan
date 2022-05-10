@@ -231,9 +231,6 @@ timer.addEventListener('targetAchieved', async function (e) {
 /*------------------------------------------------------*/
 
 async function getLantern() {
-	if (lantern !== null) {
-		return;
-	}
 	await setState(5);
 	await metrics({message: 'Getting Lantern...'});
 	console.log('Getting Lantern...');
@@ -246,15 +243,13 @@ async function getLantern() {
 		client.subscribe(`/lanterns/${lantern.data.id}/reset`);
 		client.subscribe(`/${lantern.data.id}/status`);
 		await metrics({lantern: lantern.data.id});
-		//resolve(lantern.data.id);
 	} catch (error) {
 		console.log('🚀 ~ file: index.js ~ line 253 ~ error', error);
 		await setState(3);
 		await metrics({message: error});
 		await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
-		await sleep(3000);
 		await metrics({message: 'Retrying...'});
-		await sleep(3000);
+		await sleep(4000);
 		await getLantern();
 	}
 	//	});
@@ -267,7 +262,7 @@ async function done() {
 	await setState(9);
 	await sleep(4000);
 	//await sleep(18000);
-	await getLantern();
+	//await getLantern();
 }
 
 async function getStations() {
@@ -304,7 +299,8 @@ async function scan() {
 			await metrics({bpm: heartrate});
 		}
 	});
-	timerInstance.addEventListener('targetAchieved', async function (e) {
+  timerInstance.addEventListener('targetAchieved', async function (e) {
+    console.log(timerInstance.getTimeValues().toString());
 		timerInstance.stop();
 		await axios.put(`http://${IP}/api/lanterns/${lantern.data.id}`, {pulse: heartrate});
 		await setState(2);
@@ -313,6 +309,8 @@ async function scan() {
 		client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 		await metrics({lantern: null});
     lantern = null;
+    console.log('!!', timerInstance.getTimeValues().toString());
+    await sleep(1000);
     done();
 	/*	if (!presence) {
 			done();
