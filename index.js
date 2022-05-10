@@ -156,7 +156,7 @@ async function setPresence(val) {
 			return;
 		}
 		if (state.name === 'done') {
-			done();
+			//done();
 			return;
 		}
 		ready();
@@ -265,8 +265,9 @@ async function getLantern() {
 }
 
 async function done() {
+  await metrics({ message: 'Done!' });
 	await metrics({message: 'User is done and left!'});
-	await metrics({timer: `00:00:${timerScan}`});
+//	await metrics({timer: `00:00:${timerScan}`});
 	await setState(9);
 	await sleep(4000);
 	//await sleep(18000);
@@ -315,12 +316,13 @@ async function scan() {
 		client.unsubscribe(`/${lantern.data.id}/status`);
 		client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 		await metrics({lantern: null});
-		lantern = null;
+    lantern = null;
+    done();
 		if (!presence) {
 			done();
 			return;
 		}
-		await metrics({message: 'Done!'});
+	
 	});
 	await setState(1);
 	await metrics({message: 'Scanning...'});
