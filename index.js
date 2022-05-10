@@ -53,7 +53,7 @@ client.on('message', async function (topic, message) {
 			client.unsubscribe(`/${lantern.data.id}/status`);
 			client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 			lantern = null;
-			//await getLantern();
+			await getLantern();
 		}
 	}
 
