@@ -10,7 +10,7 @@ import {clientConnect} from './src/mqtt.js';
 import {ConnectionToDevice} from './src/device.js';
 import isReachable from 'is-reachable';
 import {Timer} from 'easytimer.js';
-const timerInstance = null;
+let timerInstance = null;
 import {server} from './src/server.js';
 import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
