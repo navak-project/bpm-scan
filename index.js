@@ -184,17 +184,16 @@ timer.addEventListener('targetAchieved', async function (e) {
 });
 
 (async function () {
-	// await pingAPI();
+  //await pingAPI();
 	//await pingAPI();
 	await metricsReset();
 	await server();
 	await setState(6);
 	await metrics({message: 'Booting...'});
 	await metrics({bpm: heartrate});
-
+  await getLantern();
 	_PRESENCEDEVICE = await connectBluetooth(presenceDevice);
-	await getLantern();
-	_PRESENCEDEVICE.on('valuechanged', async (buffer) => {
+/*	_PRESENCEDEVICE.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
 		let deviceValue = Math.max.apply(null, JSON.parse(json).data);
 		_deviceValue = deviceValue;
@@ -226,7 +225,7 @@ timer.addEventListener('targetAchieved', async function (e) {
 			setPresence(false);
 			return;
 		}
-	});
+	});*/
 
 	console.log('Ready!');
 })();
@@ -238,7 +237,7 @@ async function getLantern() {
 		return;
 	}
 	await setState(5);
-	sleep(3000);
+  sleep(3000);
 	return new Promise(async function (resolve, reject) {
 		try {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
@@ -289,7 +288,6 @@ async function checkUsers() {
 			if (arr[key].presence === true && arr[key].lantern != null) return true;
 		});
     alluser = isAllTrue;
-    await sleep(2000);
 		resolve(alluser);
 	}).catch((err) => {
 		reject(err);
