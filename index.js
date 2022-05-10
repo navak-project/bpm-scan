@@ -191,9 +191,9 @@ timer.addEventListener('targetAchieved', async function (e) {
 	await setState(6);
 	await metrics({message: 'Booting...'});
 	await metrics({bpm: heartrate});
-
+  await getLantern();
 	_PRESENCEDEVICE = await connectBluetooth(presenceDevice);
-	await getLantern();
+
 	_PRESENCEDEVICE.on('valuechanged', async (buffer) => {
 		let json = JSON.stringify(buffer);
 		let deviceValue = Math.max.apply(null, JSON.parse(json).data);
