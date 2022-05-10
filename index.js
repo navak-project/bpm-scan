@@ -248,7 +248,8 @@ async function getLantern() {
 	} catch (error) {
 		await setState(3);
 		await metrics({message: error.response.data});
-		await axios.put(`http://${IP}/api/stations/${ID}`, {rgb: '50, 50, 50, 255', lantern: null});
+    await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: '50, 50, 50, 255', lantern: null });
+    await sleep(2000);
 		await metrics({message: 'Retrying...'});
 		await sleep(4000);
 		await getLantern();
