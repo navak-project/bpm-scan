@@ -309,7 +309,17 @@ async function scan() {
 	timerInstance.addEventListener('targetAchieved', async function (e) {
 		timerInstance.stop();
 		await axios.put(`http://${IP}/api/lanterns/${lantern.data.id}`, {pulse: heartrate});
-		eventEmitter.emit('done');
+		await setState(2);
+    client.publish(`/lantern/${lantern.id}/audio/ignite`);
+    client.unsubscribe(`/${lantern.data.id}/status`);
+    client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
+    await metrics({lantern: null});
+    lantern = null;
+    /*if (!presence) {
+      done();
+      return;
+    }*/
+    await metrics({message: 'Done!'});
 	});
 	await setState(1);
 	await metrics({message: 'Scanning...'});
