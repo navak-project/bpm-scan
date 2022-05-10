@@ -11,6 +11,7 @@ import {ConnectionToDevice} from './src/device.js';
 import isReachable from 'is-reachable';
 import {Timer} from 'easytimer.js';
 let timerInstance = null;
+let timer = null;
 import {server} from './src/server.js';
 import {EventEmitter} from 'events';
 export const eventEmitter = new EventEmitter();
@@ -164,24 +165,8 @@ async function setPresence(val) {
 }
 
 /*------------------------------------------------------*/
-var timer = new Timer();
-timer.addEventListener('secondsUpdated', function (e) {
-	console.log(timer.getTimeValues().toString());
-	if (_deviceValue > 35) {
-		setPresence(false);
-		presenceFlag = false;
-		timer.stop();
-		console.log('GOTTEM.. nothing happen', _deviceValue);
-		return;
-	}
-});
-timer.addEventListener('targetAchieved', async function (e) {
-	if (_deviceValue < 35) {
-		timer.stop();
-		setPresence(true);
-		return;
-	}
-});
+
+
 
 (async function () {
 	//await pingAPI();
@@ -203,7 +188,26 @@ timer.addEventListener('targetAchieved', async function (e) {
 				return;
 			}
 			presenceFlag = true;
-			timer.stop();
+      timer = new Timer();
+      timer.addEventListener('secondsUpdated', function (e) {
+        console.log(timer.getTimeValues().toString());
+        if (_deviceValue > 35) {
+          setPresence(false);
+          presenceFlag = false;
+          timer.stop();
+          timer = null;
+          console.log('GOTTEM.. nothing happen', _deviceValue);
+          return;
+        }
+      });
+      timer.addEventListener('targetAchieved', async function (e) {
+        if (_deviceValue < 35) {
+          timer.stop();
+          timer = null;
+          setPresence(true);
+          return;
+        }
+      });
 			timer.start({countdown: true, startValues: {seconds: 1}});
 			console.log("There's a user...loading timer", _deviceValue);
 			return;
