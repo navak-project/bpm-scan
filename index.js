@@ -194,18 +194,19 @@ async function setPresence(val) {
         if (_deviceValue > 35) {
           setPresence(false);
           presenceFlag = false;
-          timer = null;
           console.log('GOTTEM.. nothing happen', _deviceValue);
+          timer = null;
           return;
         }
       });
       timer.addEventListener('targetAchieved', async function (e) {
         if (_deviceValue < 35) {
-          timer = null;
           setPresence(true);
+          timer = null;
           return;
         }
       });
+      /*--*/
 			timer.start({countdown: true, startValues: {seconds: 1}});
 			console.log("There's a user...loading timer", _deviceValue);
 			return;
