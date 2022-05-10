@@ -248,7 +248,7 @@ async function getLantern() {
 			client.subscribe(`/lanterns/${lantern.data.id}/reset`);
 			client.subscribe(`/${lantern.data.id}/status`);
 			await metrics({lantern: lantern.data.id});
-			resolve(lantern.data.id);
+			//resolve(lantern.data.id);
 		} catch (error) {
       console.log("🚀 ~ file: index.js ~ line 253 ~ error", error);
 			await setState(3);
