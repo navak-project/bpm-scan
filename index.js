@@ -156,7 +156,7 @@ async function setPresence(val) {
 			return;
 		}
 		if (state.name === 'done') {
-			done();
+			//done();
 			return;
 		}
 		ready();
@@ -315,10 +315,10 @@ async function scan() {
     client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
     await metrics({lantern: null});
     lantern = null;
-    /*if (!presence) {
+    if (!presence) {
       done();
       return;
-    }*/
+    }
     await metrics({message: 'Done!'});
 	});
 	await setState(1);
