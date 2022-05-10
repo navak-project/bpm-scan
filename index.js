@@ -236,8 +236,10 @@ async function getLantern() {
 	if (lantern !== null) {
 		return;
 	}
-	await setState(5);
-  sleep(3000);
+  await setState(5);
+  await metrics({ message: 'Getting Lantern...' });
+  console.log('Getting Lantern...');
+  sleep(10000);
 	return new Promise(async function (resolve, reject) {
 		try {
 			lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
