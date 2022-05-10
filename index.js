@@ -21,7 +21,6 @@ const polarDevice = new ConnectionToDevice(POLARMACADDRESS, 'polarStatus', 'pola
 const presenceDevice = new ConnectionToDevice(PRESENCEMACADDRESS, 'presenceStatus', 'presenceState', '4fafc201-1fb5-459e-8fcc-c5c9c331914b', 'beb5483e-36e1-4688-b7f5-ea07361b26a8');
 const timerScan = 15;
 
-let gettingLantern = false;
 let lantern = null;
 let presence = false;
 let alluser = false;
@@ -53,8 +52,6 @@ client.on('message', async function (topic, message) {
 			client.unsubscribe(`/${lantern.data.id}/status`);
 			client.unsubscribe(`/lanterns/${lantern.data.id}/reset`);
 			lantern = null;
-			sleep(4000);
-			await getLantern();
 		}
 	}
 
@@ -133,6 +130,7 @@ eventEmitter.on('done', async () => {
 });
 
 async function setPresence(val) {
+  if(lantern === null) { await getLantern(); }
 	presence = val;
 	if (val === true) {
 		let state = await getState();
@@ -233,14 +231,13 @@ timer.addEventListener('targetAchieved', async function (e) {
 /*------------------------------------------------------*/
 
 async function getLantern() {
-	if (lantern !== null && gettingLantern === false) {
+	if (lantern !== null) {
 		return;
 	}
 	await setState(5);
 	await metrics({message: 'Getting Lantern...'});
 	console.log('Getting Lantern...');
 	try {
-		gettingLantern = true;
 		await sleep(10000);
 		lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
 		console.log('🚀 ~ file: index.js ~ line 246 ~ lantern', lantern.data.id);
@@ -249,7 +246,6 @@ async function getLantern() {
 		client.subscribe(`/lanterns/${lantern.data.id}/reset`);
 		client.subscribe(`/${lantern.data.id}/status`);
 		await metrics({lantern: lantern.data.id});
-		gettingLantern = false;
 		//resolve(lantern.data.id);
 	} catch (error) {
 		console.log('🚀 ~ file: index.js ~ line 253 ~ error', error);
