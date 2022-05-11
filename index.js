@@ -249,7 +249,7 @@ async function getLantern() {
     client.subscribe(`/${lantern.data.id}/status`);
     await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: lantern.data.rgb });
     await metrics({ lantern: lantern.data.id });
-    await sleep(1000);
+    await sleep(4000);
     ready();
 	} catch (error) {
 		await setState(3);
