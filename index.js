@@ -273,7 +273,7 @@ async function done() {
 	await setState(9);
 	//await sleep(4000);
   await sleep(18000);
-  await setState(10);
+  //await setState(10);
   process.exit(0);
 	await getLantern();
 }
