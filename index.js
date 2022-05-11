@@ -234,7 +234,6 @@ async function setPresence(val) {
     }
  
 	});
-
 	console.log('Ready!');
 })();
 
@@ -274,6 +273,7 @@ async function done() {
 	await setState(9);
 	await sleep(4000);
 	//await sleep(18000);
+  process.exit(0);
 	await getLantern();
 }
 
