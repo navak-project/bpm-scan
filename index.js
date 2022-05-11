@@ -181,6 +181,7 @@ async function setPresence(val) {
 	_PRESENCEDEVICE = await connectBluetooth(presenceDevice);
   await getLantern();
   _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
+
     if(lantern === null) { return; }
 		let json = JSON.stringify(buffer);
 		let deviceValue = Math.max.apply(null, JSON.parse(json).data);
@@ -230,7 +231,8 @@ async function setPresence(val) {
 			}
 			setPresence(false);
 			return;
-		}
+    }
+    await sleep(300);
 	});
 
 	console.log('Ready!');
