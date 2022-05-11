@@ -270,9 +270,9 @@ async function done() {
 	await metrics({message: 'User is done and left!'});
 	timerInstance = null;
 	await metrics({timer: `00:00:${timerScan}`});
-	await setState(9);
 	//await sleep(4000);
   await sleep(18000);
+  await setState(9);
   //await setState(10);
   process.exit(0);
 	await getLantern();
