@@ -271,9 +271,9 @@ async function done() {
 	timerInstance = null;
 	await metrics({timer: `00:00:${timerScan}`});
 	//await sleep(4000);
-  await sleep(18000);
+  await sleep(15000);
   await setState(9);
-  //await setState(10);
+  await sleep(3000);
   process.exit(0);
 	await getLantern();
 }
