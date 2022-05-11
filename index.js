@@ -109,12 +109,13 @@ async function connectBluetooth(deviceToConnect) {
 }
 
 async function ready() {
-	await setState(0);
+  await setState(0);
+  await metrics({ message: 'Ready to scan' });
 	/*if (presence) {
 		setPresence(true);
 		return;
 	}*/
-	await metrics({message: 'Ready to scan'});
+
 }
 
 eventEmitter.on('done', async () => {
@@ -176,9 +177,9 @@ async function setPresence(val) {
 	await setState(6);
 	await metrics({message: 'Booting...'});
 	await metrics({bpm: heartrate});
-  await getLantern();
-	_PRESENCEDEVICE = await connectBluetooth(presenceDevice);
 
+	_PRESENCEDEVICE = await connectBluetooth(presenceDevice);
+  await getLantern();
   _PRESENCEDEVICE.on('valuechanged', async (buffer) => {
     if(lantern === null) { return; }
 		let json = JSON.stringify(buffer);
