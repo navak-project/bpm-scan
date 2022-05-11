@@ -245,7 +245,7 @@ async function getLantern() {
 	await metrics({message: 'Getting Lantern...'});
 	console.log('Getting Lantern...');
 	try {
-		await sleep(4000);
+		await sleep(1000);
     lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
     ready();
 		client.subscribe(`/lanterns/${lantern.data.id}/reset`);
@@ -271,8 +271,8 @@ async function done() {
 	timerInstance = null;
 	await metrics({timer: `00:00:${timerScan}`});
 	await setState(9);
-	await sleep(4000);
-	//await sleep(18000);
+	//await sleep(4000);
+	await sleep(18000);
   process.exit(0);
 	await getLantern();
 }
