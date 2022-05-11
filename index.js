@@ -245,13 +245,12 @@ async function getLantern() {
 	console.log('Getting Lantern...');
 	try {
 		await sleep(4000);
-		lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
+    lantern = await axios.get(`http://${IP}/api/lanterns/randomUser/${GROUP}`);
+    ready();
 		client.subscribe(`/lanterns/${lantern.data.id}/reset`);
     client.subscribe(`/${lantern.data.id}/status`);
     await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: lantern.data.rgb });
     await metrics({ lantern: lantern.data.id });
-    await sleep(4000);
-    ready();
 	} catch (error) {
 		await setState(3);
 		await metrics({message: error.response.data});
