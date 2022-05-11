@@ -48,8 +48,11 @@ export async function setState(id) {
 		case 9:
       name = 'left';
 			break;
-		default:
-			break;
+    case 10:
+      name = 'fullcolor';
+      break;
+    default:
+      break;
   }
   if (id == 9 || id == 5) { return }
 	return new Promise(async (resolve, reject) => {
