@@ -11,6 +11,7 @@ const {IP, ID} = process.env;
  * `STATE 7` = CLICKED
  * `STATE 8` = REBOOT
  * `STATE 9` = USER LEFT
+ * `STATE 10` = FULLCOLOR
  * Set the state of the station
  * @return {Promise<axios>} return the current bpm value
  * @param {Number} id

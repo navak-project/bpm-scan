@@ -1,6 +1,6 @@
 {
   "name": "bpm-scan",
-  "version": "5.0.0",
+  "version": "5.2.0",
   "description": "nodejs library with heartbeat scanning for navak project",
   "main": "index.js",
   "type": "module",

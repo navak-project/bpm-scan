@@ -1,6 +1,3 @@
-// when lantern reset, reset the station also by mqtt
-// also if lantern crash, ping status if false, then reset the station
-
 import 'dotenv/config';
 const {ID, GROUP, IP, POLARMACADDRESS, PRESENCEMACADDRESS} = process.env;
 import {metrics, metricsReset} from './src/metrics.js';
@@ -10,11 +7,8 @@ import {clientConnect} from './src/mqtt.js';
 import {ConnectionToDevice} from './src/device.js';
 import isReachable from 'is-reachable';
 import {Timer} from 'easytimer.js';
-let timerInstance = null;
-let timer = null;
 import {server} from './src/server.js';
 import {EventEmitter} from 'events';
-export const eventEmitter = new EventEmitter();
 import './src/artnet.cjs';
 
 const client = await clientConnect();
@@ -22,6 +16,8 @@ const polarDevice = new ConnectionToDevice(POLARMACADDRESS, 'polarStatus', 'pola
 const presenceDevice = new ConnectionToDevice(PRESENCEMACADDRESS, 'presenceStatus', 'presenceState', '4fafc201-1fb5-459e-8fcc-c5c9c331914b', 'beb5483e-36e1-4688-b7f5-ea07361b26a8');
 const timerScan = 15;
 
+let timerInstance = null;
+let timer = null;
 let lantern = null;
 let presence = false;
 let alluser = false;
@@ -31,6 +27,8 @@ let _PRESENCEDEVICE = null;
 let presenceFlag = false;
 let togglePresenceMqtt = false;
 let _deviceValue = 0;
+
+export const eventEmitter = new EventEmitter();
 
 client.on('error', function (err) {
 	console.dir(err);
@@ -167,11 +165,8 @@ async function setPresence(val) {
 
 /*------------------------------------------------------*/
 
-
-
 (async function () {
-	//await pingAPI();
-	//await pingAPI();
+	await pingAPI();
 	await metricsReset();
 	await server();
 	await setState(6);
@@ -209,7 +204,6 @@ async function setPresence(val) {
           return;
         }
       });
-      /*--*/
 			timer.start({countdown: true, startValues: {seconds: 1}});
 			console.log("There's a user...loading timer", _deviceValue);
 			return;
@@ -263,19 +257,16 @@ async function getLantern() {
 		await sleep(4000);
 		await getLantern();
 	}
-	//	});
 }
 
 async function done() {
 	await metrics({message: 'User is done and left!'});
 	timerInstance = null;
 	await metrics({timer: `00:00:${timerScan}`});
-	//await sleep(4000);
   await sleep(10000);
   await setState(9);
   await sleep(5000);
   process.exit(0);
-	await getLantern();
 }
 
 async function getStations() {
@@ -323,8 +314,6 @@ async function scan() {
 		await metrics({lantern: null});
 		lantern = null;
 		await metrics({message: 'Done!'});
-		//await sleep(1000);
-		//done();
 		if (!presence) {
 			done();
 			return;
@@ -332,7 +321,6 @@ async function scan() {
 	});
 	await setState(1);
 	await metrics({message: 'Scanning...'});
-
 	timerInstance.start({countdown: true, startValues: {seconds: timerScan}});
 }
 
@@ -352,18 +340,10 @@ async function pingAPI() {
 		if (status) {
 			resolve(true);
 		} else {
-			//  console.log(`API: ${status}`)
-			// console.log('Retrying...')
-			// await sleep(1000);
+			console.log(`API: ${status}`)
+			console.log('Retrying...')
+			await sleep(4000);
 			await pingAPI();
-			//  reject(false)
 		}
 	});
-}
-
-function per(num, amount) {
-	return num + (num * amount) / 100;
-}
-function less(num, amount) {
-	return num - (num * amount) / 100;
 }

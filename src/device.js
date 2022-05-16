@@ -52,7 +52,6 @@ export class ConnectionToDevice {
 					console.log(err);
 					await metrics({[this.metricsStatus]: 'No device'});
 					await metrics({[this.metricsState]: 4});
-					//eventEmitter.emit(this.resetEmitter);
 					reject('No device');
 					return;
 				}
@@ -69,7 +68,6 @@ export class ConnectionToDevice {
 			} catch (err) {
 				console.log('Device:', err.text);
 				await metrics({[this.metricsStatus]: err.text});
-				//eventEmitter.emit(this.resetEmitter);
 				reject(err.text);
 				return;
 			}
