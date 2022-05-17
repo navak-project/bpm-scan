@@ -25,13 +25,13 @@ const channel = ws281x(512, {
 	stripType: ws281x.stripType.WS2812
 });
 
-receiver.on('data', function (data) {
+receiver.on('data', function (data : any) {
 	for (let i = 0; i < data.length / 3; i++) {
     channel.array[i] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
 	}
 });
 
-receiver2.on('data', function (data) {
+receiver2.on('data', function (data : any) {
 	for (let i = 0; i < data.length / 3; i++) {
 		channel.array[i + 170] = rgb2Int(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
 	}
@@ -42,11 +42,11 @@ setInterval(function () {
 	ws281x.render();
 }, 1000 / 60);
 
-function rgb2Int(r, g, b) {
+function rgb2Int(r : any, g : any, b : any) {
 	return ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
 }
 
-function sleep(ms) {
+function sleep(ms : number) {
 	return new Promise((resolve) => {
 		setTimeout(resolve, ms);
 	});

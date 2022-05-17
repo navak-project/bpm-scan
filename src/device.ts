@@ -4,7 +4,8 @@ import {createBluetooth} from 'node-ble';
 const {bluetooth} = createBluetooth();
 import {metrics} from './metrics.js';
 export class ConnectionToDevice {
-	constructor(deviceToConnect, metricsStatus, metricsState, gattService, gattCharacteristic) {
+  [x: string]: any;
+	constructor(deviceToConnect : any, metricsStatus : any, metricsState : any, gattService : any , gattCharacteristic : any) {
     console.log("🚀 ~ file: device.js ~ line 8 ~ ConnectionToDevice ~ constructor ~ deviceToConnect", deviceToConnect);
 		this.deviceToConnect = deviceToConnect;
 		this.metricsStatus = metricsStatus;
@@ -29,14 +30,14 @@ export class ConnectionToDevice {
 	}
 
   async connect() {
+    this._device = null;
     var self = this;
 		return new Promise(async (resolve, reject) => {
-			const adapter = await bluetooth.defaultAdapter().catch(async (err) => {
+			const adapter : any = await bluetooth.defaultAdapter().catch(async (err) => {
 				if (err) {
 					await metrics({[this.metricsStatus]: 'No bluetooth adapter'});
 					await metrics({[this.metricsState]: 4});
 					reject(err);
-					//throw err;
 				}
 			});
 
@@ -47,7 +48,7 @@ export class ConnectionToDevice {
 			await metrics({[this.metricsStatus]: 'Discovering device...'});
 			await metrics({[this.metricsState]: 1});
 
-			const device = await adapter.waitDevice(this.deviceToConnect).catch(async (err) => {
+			const device = await adapter.waitDevice(this.deviceToConnect).catch(async (err : any) => {
 				if (err) {
 					console.log(err);
 					await metrics({[this.metricsStatus]: 'No device'});
@@ -65,7 +66,7 @@ export class ConnectionToDevice {
 				await device.connect();
 				await metrics({[this.metricsStatus]: 'Connecting to device...'});
 				await metrics({[this.metricsState]: 2});
-			} catch (err) {
+			} catch (err : any) {
 				console.log('Device:', err.text);
 				await metrics({[this.metricsStatus]: err.text});
 				reject(err.text);
@@ -84,7 +85,6 @@ export class ConnectionToDevice {
 
 			device.on('disconnect', async function () {
 				await _self.stopNotifications();
-        this._device = null;
         console.log(`Disconnected: ${deviceName} : ${macAdresss}`);
         self.connect();
 			});

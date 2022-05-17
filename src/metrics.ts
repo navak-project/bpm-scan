@@ -2,12 +2,12 @@ import 'dotenv/config';
 import axios from 'axios';
 const { IP, ID } = process.env;
 
-export async function metrics(value) {
+export async function metrics(value : Object) {
   return new Promise(async (resolve, reject) => {
     await axios
       .put(`http://${IP}/api/stations/${ID}`, value)
       .then(() => {
-        resolve();
+        resolve('Metrics sent!');
       })
       .catch((err) => {
         reject(err);
@@ -15,7 +15,7 @@ export async function metrics(value) {
   });
 }
 
-export async function metricsReset(value) {
+export async function metricsReset() {
   await axios.put(`http://${IP}/api/stations/${ID}`, { rgb: '50, 50, 50, 255' });
   return new Promise(async (resolve, reject) => {
     const data = {
@@ -33,7 +33,7 @@ export async function metricsReset(value) {
     await axios
       .put(`http://${IP}/api/stations/${ID}`, data)
       .then(() => {
-        resolve();
+        resolve('Metrics reset!');
       })
       .catch((err) => {
         reject(err);

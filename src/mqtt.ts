@@ -4,7 +4,7 @@ import ip from 'ip';
 const {MQTTIP, ID} = process.env;
 
 export async function clientConnect() {
-	let client;
+	let client :any;
 	try {
     const host = MQTTIP;
     const port = '1883';

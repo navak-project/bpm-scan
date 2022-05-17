@@ -16,8 +16,8 @@ const {IP, ID} = process.env;
  * @return {Promise<axios>} return the current bpm value
  * @param {Number} id
  */
-export async function setState(id) {
-	let name = null;
+export async function setState(id : number) {
+	let name : string = '';
 	switch (id) {
 		case 0:
 			name = 'ready';
@@ -56,7 +56,7 @@ export async function setState(id) {
       break;
   }
   if (id == 5) { return }
-	return new Promise(async (resolve, reject) => {
+	return new Promise(async (resolve : any, reject) => {
 		await axios
 			.put(`http://${IP}/api/stations/${ID}`, {state: id, stateName: name})
 			.then(async () => {
