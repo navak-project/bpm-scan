@@ -9,12 +9,15 @@ import isReachable from 'is-reachable';
 import {Timer} from 'easytimer.js';
 import {server} from './src/server.js';
 import {EventEmitter} from 'events';
-import './src/artnet.cjs';
+import './src/artnet.js';
 
 const client = await clientConnect();
 const polarDevice = new ConnectionToDevice(POLARMACADDRESS, 'polarStatus', 'polarState', '0000180d-0000-1000-8000-00805f9b34fb', '00002a37-0000-1000-8000-00805f9b34fb');
 const presenceDevice = new ConnectionToDevice(PRESENCEMACADDRESS, 'presenceStatus', 'presenceState', '4fafc201-1fb5-459e-8fcc-c5c9c331914b', 'beb5483e-36e1-4688-b7f5-ea07361b26a8');
 const timerScan = 15;
+// get value from axios 
+let minDeviceValue;
+let maxDeviceValue;
 
 let timerInstance = null;
 let timer = null;
@@ -181,7 +184,7 @@ async function setPresence(val) {
 		let json = JSON.stringify(buffer);
 		let deviceValue = Math.max.apply(null, JSON.parse(json).data);
 		_deviceValue = deviceValue;
-		if (deviceValue < 30 && deviceValue > 25 && !presenceFlag) {
+    if (deviceValue > 25 && deviceValue < 30 && !presenceFlag) {
 			if (presence === true) {
 				return;
 			}
