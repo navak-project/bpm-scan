@@ -9,7 +9,7 @@ import isReachable from 'is-reachable';
 import {Timer} from 'easytimer.js';
 import {server} from './src/server.js';
 import {EventEmitter} from 'events';
-import './src/artnet.js';
+import './src/artnet.cjs';
 
 const client = await clientConnect();
 const polarDevice = new ConnectionToDevice(POLARMACADDRESS, 'polarStatus', 'polarState', '0000180d-0000-1000-8000-00805f9b34fb', '00002a37-0000-1000-8000-00805f9b34fb');
@@ -169,7 +169,9 @@ async function setPresence(val) {
 /*------------------------------------------------------*/
 
 (async function () {
-	await pingAPI();
+  await pingAPI();
+  minDeviceValue = await getMinDeviceValue();
+  minDeviceValue = await getMaxDeviceValue();
 	await metricsReset();
 	await server();
 	await setState(6);
@@ -349,4 +351,32 @@ async function pingAPI() {
 			await pingAPI();
 		}
 	});
+}
+
+async function getMinDeviceValue() {
+  //return minvalue from database using axios
+  return new Promise(async (resolve, reject) => {
+    await axios
+      .get(`http://${IP}/api/stations/${ID}`)
+      .then((val) => {
+        resolve(val.data.minDeviceValue);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+async function getMaxDeviceValue() {
+  //return minvalue from database using axios
+  return new Promise(async (resolve, reject) => {
+    await axios
+      .get(`http://${IP}/api/stations/${ID}`)
+      .then((val) => {
+        resolve(val.data.maxDeviceValue);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 }
